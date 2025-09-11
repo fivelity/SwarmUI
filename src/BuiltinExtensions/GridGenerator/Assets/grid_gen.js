@@ -518,7 +518,7 @@ class GridGenClass {
     };
 
     saveGridConfig() {
-        $('#gridgen_save_modal').modal('show');
+showModalById('gridgen_save_modal');
     }
 
     loadGridConfig() {
@@ -531,7 +531,7 @@ class GridGenClass {
             for (let config of data.history) {
                 selector.add(new Option(`History - ${config}`, `history/${config}`));
             }
-            $('#gridgen_load_modal').modal('show');
+showModalById('gridgen_load_modal');
         });
     }
 

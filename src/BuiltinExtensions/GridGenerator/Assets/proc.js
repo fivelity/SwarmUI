@@ -147,15 +147,16 @@ function getSelectedValKey(axis) {
 var popoverLastImg = null;
 
 function clickRowImage(rows, x, y) {
-    $('#image_info_modal').modal('hide');
+hideModalById('image_info_modal');
     var columns = rows[y].getElementsByTagName('td');
     columns[x].getElementsByTagName('img')[0].click();
 }
 
 window.addEventListener('keydown', function(kbevent) {
-    if ($('#image_info_modal').is(':visible')) {
+let __imgInfoModal = document.getElementById('image_info_modal');
+    if (__imgInfoModal && (__imgInfoModal.classList.contains('show') || __imgInfoModal.style.display === 'block')) {
         if (kbevent.key == 'Escape') {
-            $('#image_info_modal').modal('toggle');
+if (__imgInfoModal.classList.contains('show') || __imgInfoModal.style.display === 'block') { hideModalById('image_info_modal'); } else { showModalById('image_info_modal'); }
             kbevent.preventDefault();
             kbevent.stopPropagation();
             return false;
@@ -688,7 +689,7 @@ function doPopupFor(img) {
     }
     let params = escapeHtml(metaText).replaceAll('\n', '\n<br>');
     let text = 'Image: ' + img.alt + (params.length > 1 ? ', parameters: <br>' + params : '<br>(parameters hidden)');
-    modalElem.innerHTML = `<div class="modal-dialog" style="display:none">(click outside image to close)</div><div class="modal_inner_div"><img onclick="$('#image_info_modal').modal('hide')" class="popup_modal_img" src="${img.src}"><br><div class="popup_modal_undertext">${text}</div>`;
+modalElem.innerHTML = `<div class=\"modal-dialog\" style=\"display:none\">(click outside image to close)</div><div class=\"modal_inner_div\"><img onclick=\"hideModalById('image_info_modal')\" class=\"popup_modal_img\" src=\"${img.src}\"><br><div class=\"popup_modal_undertext\">${text}</div>`;
     $('#image_info_modal').modal('toggle');
 }
 
@@ -917,7 +918,7 @@ function makeImage(minRow = 0, doClear = true) {
         canvas.style.width = "200px";
         canvas.style.height = "200px";
     }
-    $('#save_image_output_modal').modal('show');
+showModalById('save_image_output_modal');
 }
 
 function makeGif() {
@@ -981,7 +982,7 @@ function makeGif() {
                 image1.remove();
                 image2.remove();
                 holder.appendChild(animatedImage);
-                $('#save_image_output_modal').modal('show');
+showModalById('save_image_output_modal');
             }
             else {
                 image2 = new Image();

@@ -1039,7 +1039,7 @@ function comfySaveWorkflowNow() {
         enableImage.checked = false;
         enableImage.disabled = true;
     }
-    $('#comfy_workflow_save_modal').modal('show');
+showModalById('comfy_workflow_save_modal');
 }
 
 function comfyLoadByName(name) {
@@ -1096,7 +1096,7 @@ function comfySaveModalSaveNow() {
     if (getRequiredElementById('comfy_save_use_image').checked) {
         image = imageToSmallPreviewData(getRequiredElementById('comfy_save_image').getElementsByTagName('img')[0]);
     }
-    $('#comfy_workflow_save_modal').modal('hide');
+hideModalById('comfy_workflow_save_modal');
     comfyNoticeMessage("Saving...");
     comfyBuildParams((params, prompt_text, retained, paramVal, workflow) => {
         params = JSON.parse(JSON.stringify(params));
@@ -1126,7 +1126,7 @@ function comfySaveModalSaveNow() {
 /** Cancel button in the Save modal. */
 function comfyHideSaveModal() {
     getRequiredElementById('comfy_save_modal_replace').value = '';
-    $('#comfy_workflow_save_modal').modal('hide');
+hideModalById('comfy_workflow_save_modal');
 }
 
 /** Fills the quick-load selector with the provided values. */
