@@ -617,11 +617,11 @@ class GridGenClass {
     }
 
     hideLoadModal() {
-        $('#gridgen_load_modal').modal('hide');
+hideModalById('gridgen_load_modal');
     }
 
     hideSaveModal() {
-        $('#gridgen_save_modal').modal('hide');
+hideModalById('gridgen_save_modal');
     }
 }
 

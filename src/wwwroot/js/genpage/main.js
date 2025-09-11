@@ -712,7 +712,8 @@ function genpageLoad() {
         }},
         { key: 'Auto Segment Image (SAM2)', action: () => {
             if (!currentBackendFeatureSet.includes('sam2')) {
-                let modal = new bootstrap.Modal(getRequiredElementById('sam2_installer'));\n                modal.show();
+let modal = new bootstrap.Modal(getRequiredElementById('sam2_installer'));
+                modal.show();
             }
             else {
                 let img = window.imageEditor.getFinalImageData();

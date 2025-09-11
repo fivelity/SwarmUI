@@ -27,7 +27,7 @@ class ServerLogsHelper {
     }
 
     doPastebinModal() {
-        $('#do_log_pastebin_modal').modal('show');
+showModalById('do_log_pastebin_modal');
         this.pastebinSubmitButton.disabled = false;
         this.pastebinCancelButton.innerText = translate('Cancel');
         this.pastebinResultArea.innerHTML = '';
