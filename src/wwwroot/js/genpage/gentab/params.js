@@ -141,7 +141,17 @@ function getHtmlForParam(param, prefix) {
                 if (param.values) {
                     return {html: makeMultiselectInput(param.feature_flag, `${prefix}${param.id}`, param.id, param.name, param.description, param.values, param.default, "Select...", param.toggleable, !param.no_popover) + pop,
                         runnable: () => {
-                            $(`#${prefix}${param.id}`).select2({ theme: "bootstrap-5", width: 'style', placeholder: $(this).data('placeholder'), closeOnSelect: false });
+                            const sel = getRequiredElementById(`${prefix}${param.id}`);
+                            if (!sel.choices) {
+                                sel.choices = new Choices(sel, {
+                                    removeItemButton: true,
+                                    allowHTML: true,
+                                    placeholder: true,
+                                    placeholderValue: sel.getAttribute('data-placeholder') || 'Select...',
+                                    searchEnabled: true,
+                                    shouldSort: false
+                                });
+                            }
                         }
                     };
                 }
@@ -997,8 +1007,16 @@ function refreshParameterValues(strong = true, callback = null) {
                     let listOpts = [...elem.options].map(o => o.value);
                     let newVals = values.filter(v => !listOpts.includes(v));
                     for (let val of newVals) {
-                        $(elem).append(new Option(val, val, false, false));
-                        $(presetElem).append(new Option(val, val, false, false));
+                        // Update underlying select options
+                        elem.add(new Option(val, val, false, false));
+                        presetElem.add(new Option(val, val, false, false));
+                        // If Choices is active, add to it as well
+                        if (elem.choices) {
+                            elem.choices.setChoices([{ value: val, label: val, selected: false }], 'value', 'label', false);
+                        }
+                        if (presetElem.choices) {
+                            presetElem.choices.setChoices([{ value: val, label: val, selected: false }], 'value', 'label', false);
+                        }
                     }
                 }
             }
@@ -1019,13 +1037,27 @@ function setDirectParamValue(param, value, paramElem = null, forceDropdowns = fa
     }
     else if (param.type == "list" && paramElem.tagName == "SELECT") {
         let vals = typeof value == 'string' ? value.split(',').map(v => v.trim()) : value;
+        // Ensure options exist
+        const existing = new Set([...paramElem.options].map(o => o.value));
         for (let val of vals) {
-            if (val && !$(paramElem).find(`option[value="${val}"]`).length) {
-                $(paramElem).append(new Option(val, val, false, false));
+            if (val && !existing.has(val)) {
+                paramElem.add(new Option(val, val, false, false));
+                if (paramElem.choices) {
+                    paramElem.choices.setChoices([{ value: val, label: val, selected: false }], 'value', 'label', false);
+                }
             }
         }
-        $(paramElem).val(vals);
-        $(paramElem).trigger('change');
+        // Apply selection
+        if (paramElem.choices) {
+            paramElem.choices.removeActiveItems();
+            paramElem.choices.setChoiceByValue(vals);
+        }
+        else {
+            for (let option of paramElem.options) {
+                option.selected = vals.includes(option.value);
+            }
+            paramElem.dispatchEvent(new Event('change'));
+        }
     }
     else if (param.type == "image" || param.type == "image_list") {
         // do not edit images directly, this will just misbehave

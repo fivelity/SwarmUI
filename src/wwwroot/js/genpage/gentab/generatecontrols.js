@@ -142,13 +142,13 @@ function toggleGeneratePreviews(override_preview_req = false) {
                             return;
                         }
                         loadUserData(() => {
-                            $('#gen_previews_missing_preset_modal').modal('hide');
+hideModalById('gen_previews_missing_preset_modal');
                             toggleGeneratePreviews();
                         });
                     });
                 });
             }
-            $('#gen_previews_missing_preset_modal').modal('show');
+showModalById('gen_previews_missing_preset_modal');
             return;
         }
     }

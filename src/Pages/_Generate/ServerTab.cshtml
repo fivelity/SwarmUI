@@ -185,7 +185,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary basic-button translate" id="log_submit_pastebin_button">Submit</button>
-                <button type="button" class="btn btn-secondary basic-button translate" id="log_cancel_pastebin_button" onclick="$('#do_log_pastebin_modal').modal('hide')">Cancel</button>
+                <button type=\"button\" class=\"btn btn-secondary basic-button translate\" id=\"log_cancel_pastebin_button\" data-bs-dismiss=\"modal\">Cancel</button>
             </div>
         @WebUtil.ModalFooter()
         <center>View: <select id="server_log_type_selector"></select> Filter: <input type="text" id="server_log_filter" placeholder="Filter" /> <button class="basic-button" id="server_log_pastebin">Pastebin</button></center>
@@ -281,7 +281,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary basic-button translate" onclick="userAdminManager.addUserMenuSubmit()">Add</button>
-                <button type="button" class="btn btn-secondary basic-button translate" onclick="$('#server_add_user_menu').modal('hide')">Cancel</button>
+                <button type=\"button\" class=\"btn btn-secondary basic-button translate\" data-bs-dismiss=\"modal\">Cancel</button>
             </div>
         @WebUtil.ModalFooter()
         @WebUtil.ModalHeader("server_add_role_menu", "Add New User Permission Role")
@@ -294,7 +294,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary basic-button translate" onclick="userAdminManager.addRoleMenuSubmit()">Add</button>
-                <button type="button" class="btn btn-secondary basic-button translate" onclick="$('#server_add_role_menu').modal('hide')">Cancel</button>
+                <button type=\"button\" class=\"btn btn-secondary basic-button translate\" data-bs-dismiss=\"modal\">Cancel</button>
             </div>
         @WebUtil.ModalFooter()
         @WebUtil.ModalHeader("server_change_user_password_modal", "Change User Password")
@@ -306,7 +306,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary basic-button translate" id="server_change_user_password_submit_button" onclick="userAdminManager.changeUserPwSubmit()">Submit</button>
-                <button type="button" class="btn btn-secondary basic-button translate" id="server_change_user_password_cancel_button" onclick="$('#server_change_user_password_modal').modal('hide')">Cancel</button>
+                <button type=\"button\" class=\"btn btn-secondary basic-button translate\" id=\"server_change_user_password_cancel_button\" data-bs-dismiss=\"modal\">Cancel</button>
             </div>
         @WebUtil.ModalFooter()
         <div class="manage-users-left" id="manage_users_leftbox">

@@ -1,0 +1,150 @@
+/* Void Runner Theme */
+@import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&display=swap');
+
+:root {
+    /* --- Palette --- */
+    --background: #020202; /* Void Black */
+    --background-panel: #111111; /* Grid Grey */
+    --background-panel-subtle: #1D1D1D;
+    --border-color: #333333; /* Circuit Grey */
+    
+    /* --- Accents --- */
+    --emphasis: #00CFFF; /* Neon Blue */
+    --emphasis-soft: #008fbb;
+    --emphasis-text: #FFFFFF;
+    --danger: #E50043; /* Red Alert */
+
+    /* --- Text --- */
+    --text-color: #F5F5F5;
+    --text-soft: #808080;
+
+    /* --- UI Elements --- */
+    --button-shadow: 0 0 10px var(--emphasis);
+    --scrollbar: var(--emphasis);
+    --panel-gap: 3px;
+}
+
+body {
+    background-color: var(--background);
+    color: var(--text-color);
+    font-family: 'Chakra Petch', sans-serif;
+    font-weight: 400;
+}
+
+h1, h2, h3, h4, h5, h6, .input-group .header-label {
+    color: var(--text-color);
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+/* --- Buttons --- */
+.basic-button, .btn {
+    background: transparent;
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    border-radius: 2px;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    position: relative;
+    overflow: hidden;
+}
+
+.basic-button:before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, var(--emphasis), transparent);
+    transition: left 0.3s ease-in-out;
+}
+
+.basic-button:hover:before {
+    left: 100%;
+}
+
+.basic-button:hover, .btn:hover {
+    color: var(--emphasis);
+    border-color: var(--emphasis-soft);
+    box-shadow: 0 0 5px var(--emphasis-soft);
+}
+
+.btn-primary { 
+    background: var(--emphasis-soft);
+    color: var(--background);
+    border-color: var(--emphasis-soft);
+}
+.btn-primary:hover {
+    background: var(--emphasis);
+    border-color: var(--emphasis);
+    box-shadow: var(--button-shadow);
+}
+
+/* --- Panels and Layout --- */
+.nav-tabs, #currentimagecontent, #inputsidebartab_content, #rightsidebarcontent, #t2i_bottom_bar, .browser-folder-tree-container, .browser-fullcontent-container, .input-group.input-group-open .input-group-content {
+    background-color: var(--background-panel);
+    border: 1px solid var(--border-color);
+    border-radius: 0;
+}
+
+.splitter-bar {
+    background-color: var(--border-color) !important;
+    width: var(--panel-gap);
+}
+.splitter-bar:hover {
+    background-color: var(--emphasis) !important;
+}
+
+/* --- Navigation / Tabs --- */
+.nav-tabs .nav-link {
+    color: var(--text-soft);
+    border: none;
+    border-radius: 0;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.nav-tabs .nav-link.active,
+.nav-tabs .nav-link:hover {
+    color: var(--emphasis);
+    background-color: var(--background-panel-subtle);
+    border-image: linear-gradient(to right, var(--emphasis-soft), var(--emphasis)) 1;
+    border-bottom: 2px solid;
+}
+
+/* --- Inputs and Forms --- */
+.auto-input, .form-control, .form-select, .auto-text, textarea {
+    background-color: var(--background-panel);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    border-radius: 0;
+    transition: all 0.2s ease;
+}
+
+.auto-input:focus, .form-control:focus, .form-select:focus, .auto-text:focus, textarea:focus {
+    background-color: #000;
+    border-color: var(--emphasis);
+    box-shadow: none;
+    outline: none;
+}
+
+/* --- Image and Model Blocks --- */
+.image-block, .model-block {
+    border: 1px solid var(--border-color);
+    border-radius: 2px;
+    transition: all 0.2s ease;
+    background: var(--background-panel-subtle);
+    position: relative;
+}
+
+.image-block:hover,
+.model-selected {
+    border-color: var(--emphasis);
+    background: var(--background-panel) !important;
+    transform: scale(1.01);
+}
+

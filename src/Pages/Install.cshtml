@@ -84,7 +84,7 @@
                 <br><b>WARNING: This is untested and probably doesn't work due to painfully strict versioning requirements. DirectML is particularly unreliable.</b>
             </div>
             <br>
-            <fieldset class="form-group" id="amd_selection_field">
+<fieldset class=\"mb-3\" id=\"amd_selection_field\">
                 <div class="form-check">
                     <input class="form-check-input" type="radio" name="amd_radio" id="amd_no" value="no">
                     <label class="form-check-label" for="amd_no">No</label>
@@ -103,7 +103,7 @@
         <div class="install_q_head">Choose install path:</div>
         <div class="install_hint">You can always change settings later.</div>
         <br>
-        <fieldset class="form-group" id="install_path_selection_field">
+<fieldset class=\"mb-3\" id=\"install_path_selection_field\">
             <div class="form-check installer-click-radio">
                 <input class="form-check-input" type="radio" name="install_path_radio" id="install_path_just_install" value="just_install">
                 <label class="form-check-label" for="install_path_just_install">Just Install</label>
@@ -123,7 +123,7 @@
             <div class="install_q_head">Would you like a Desktop shortcut for SwarmUI?</div>
             <div class="install_hint">You can always delete it later.</div>
             <br>
-            <fieldset class="form-group" id="shortcut_selection_field">
+<fieldset class=\"mb-3\" id=\"shortcut_selection_field\">
                 <div class="form-check">
                     <input class="form-check-input" type="radio" name="shortcut_radio" id="shortcut_no" value="no">
                     <label class="form-check-label" for="shortcut_no">No</label>
@@ -142,7 +142,7 @@
         <div class="install_q_head">Choose a theme:</div>
         <div class="install_hint">You can always change this later in the User Settings page.</div>
         <br>
-        <fieldset class="form-group theme_preview" id="theme_selection_field">
+<fieldset class=\"mb-3 theme_preview\" id=\"theme_selection_field\">
             <div class="form-check theme_preview_modern_dark" id="theme_input_modern_dark">
                 <input class="form-check-input" type="radio" name="theme_radio" id="theme_moderndark" value="modern_dark" checked="">
                 <label class="form-check-label" for="theme_moderndark">Modern Dark</label>
@@ -185,7 +185,7 @@
         <div class="install_q_head">Who is this SwarmUI installation going to be used by?</div>
         <div class="install_hint">This is to determine a preset of core settings. You can always change this later.</div>
         <br>
-        <fieldset class="form-group" id="installed_for_selection_field">
+<fieldset class=\"mb-3\" id=\"installed_for_selection_field\">
             <div class="form-check">
                 <input class="form-check-input" type="radio" name="installed_for_radio" id="installed_for_radio_yourself" value="just_self" checked="">
                 <label class="form-check-label" for="installed_for_radio_yourself">Just Yourself On This PC</label>
@@ -230,14 +230,14 @@
             <h4>You already have backends installed, you should probably select 'None' below.</h4>
             <br>
         }
-        <fieldset class="form-group" id="backend_selection_field">
+<fieldset class=\"mb-3\" id=\"backend_selection_field\">
             <h3>For New Users: Install One Now</h3>
             <br>
             <div class="form-check">
                 <input class="form-check-input" type="radio" name="backend_radio" id="backend_radio_comfy" value="comfyui" checked="">
                 <label class="form-check-label" for="backend_radio_comfy">ComfyUI (Local)</label>
                 <div class="install_hint">ComfyUI is a powerful node-based Stable Diffusion engine that runs entirely on your local PC. This option is best if you have a powerful GPU.
-                    <a href="#" onclick="javascript:$('#gpu_check_modal').modal('show')">Do I?</a> You can learn more about <a target="_blank" href="https://github.com/comfyanonymous/ComfyUI">ComfyUI here</a>.
+                    <a href=\"#\" data-bs-toggle=\"modal\" data-bs-target=\"#gpu_check_modal\">Do I?</a> You can learn more about <a target=\"_blank\" href=\"https://github.com/comfyanonymous/ComfyUI\">ComfyUI here</a>.
                 </div>
             </div>
             <hr>
@@ -256,7 +256,7 @@
         <div class="install_q_head">Download Models</div>
         <div class="install_hint">You can select models to automatically download for local running here.</div>
         <br>
-        <fieldset class="form-group" id="models_fieldset">
+<fieldset class=\"mb-3\" id=\"models_fieldset\">
             <div class="form-check form-switch">
                 <input class="form-check-input" type="checkbox" id="downloadmodel_sdxl1" checked="">
                 <label class="form-check-label" for="downloadmodel_sdxl1">Stable Diffusion XL 1.0 (Base)</label>

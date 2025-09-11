@@ -370,7 +370,7 @@ async function doPasswordChangeSubmit() {
             newPassword.value = '';
             newPassword2.value = '';
             submitButton.disabled = false;
-            $('#change_password_modal').modal('hide');
+hideModalById('change_password_modal');
         }, 1000);
     }, 0, e => {
         resultArea.innerText = 'Error: ' + e;

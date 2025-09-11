@@ -250,6 +250,37 @@ function triggerChangeFor(elem) {
     }
 }
 
+/** Safely show a Bootstrap 5 modal by element id (no jQuery). */
+function showModalById(id) {
+    let el = document.getElementById(id);
+    if (!el) { return; }
+    let Modal = window.bootstrap && window.bootstrap.Modal ? window.bootstrap.Modal : null;
+    if (!Modal) { el.style.display = 'block'; el.classList.add('show'); return; }
+    let instance = Modal.getOrCreateInstance(el);
+    instance.show();
+}
+
+/** Safely hide a Bootstrap 5 modal by element id (no jQuery). */
+function hideModalById(id) {
+    let el = document.getElementById(id);
+    if (!el) { return; }
+    let Modal = window.bootstrap && window.bootstrap.Modal ? window.bootstrap.Modal : null;
+    if (!Modal) { el.classList.remove('show'); el.style.display = 'none'; return; }
+    let instance = Modal.getOrCreateInstance(el);
+    instance.hide();
+}
+
+/** Set multiple values for a <select multiple> or single value for normal selects, then trigger change. */
+function setSelectValues(selectElem, values) {
+    if (!selectElem) return;
+    let vals = Array.isArray(values) ? values : [values];
+    let isMultiple = selectElem.multiple === true;
+    for (let opt of selectElem.options) {
+        opt.selected = isMultiple ? vals.includes(opt.value) : (vals.length > 0 && opt.value === vals[0]);
+    }
+    triggerChangeFor(selectElem);
+}
+
 function textPromptDoCount(elem, countElem = null, prefix = '') {
     let tokenCount = countElem ?? elem.parentElement.querySelector('.auto-input-prompt-tokencount');
     function countTokens() {

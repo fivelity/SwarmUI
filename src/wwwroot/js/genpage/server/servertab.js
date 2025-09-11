@@ -185,7 +185,7 @@ class UserAdminManager {
 
     editUserPw(name) {
         this.displayedUser = name;
-        $('#server_change_user_password_modal').modal('show');
+showModalById('server_change_user_password_modal');
     }
 
     async changeUserPwSubmit() {
@@ -211,7 +211,7 @@ class UserAdminManager {
                 newPassword.value = '';
                 newPassword2.value = '';
                 submitButton.disabled = false;
-                $('#server_change_user_password_modal').modal('hide');
+hideModalById('server_change_user_password_modal');
             }, 1000);
         }, 0, e => {
             resultArea.innerText = 'Error: ' + e;
@@ -461,7 +461,7 @@ class UserAdminManager {
         this.addUserPassInput.value = '';
         this.addUserRoleInput.value = 'user';
         this.rebuildRoleList();
-        $('#server_add_user_menu').modal('show');
+showModalById('server_add_user_menu');
     }
 
     async addUserMenuSubmit() {
@@ -480,7 +480,7 @@ class UserAdminManager {
             alert('New password must be at least 8 characters long');
             return;
         }
-        $('#server_add_user_menu').modal('hide');
+hideModalById('server_add_user_menu');
         let password = await doPasswordClientPrehash(name, pass);
         genericRequest('AdminAddUser', {'name': name, 'password': password, 'role': role}, data => {
             this.onTabButtonClick();
@@ -490,7 +490,7 @@ class UserAdminManager {
     showAddRoleMenu() {
         this.addRoleNameInput.value = '';
         this.rebuildRoleList();
-        $('#server_add_role_menu').modal('show');
+showModalById('server_add_role_menu');
     }
 
     addRoleMenuSubmit() {
@@ -499,7 +499,7 @@ class UserAdminManager {
             alert('Please fill in the name field, or cancel');
             return;
         }
-        $('#server_add_role_menu').modal('hide');
+hideModalById('server_add_role_menu');
         genericRequest('AdminAddRole', {'name': name}, data => {
             this.rebuildRoleList();
         });

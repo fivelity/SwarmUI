@@ -30,7 +30,7 @@
                     <br>
                     <button class="basic-button translate" id="logout_button" onclick="doUserLogout()">Logout</button>
                     // TODO: Other user stuff here. List of tokens/sessions, etc.
-                    <button class="basic-button translate" id="change_password_button" onclick="$('#change_password_modal').modal('show')">Change Password</button>
+                    <button class=\"basic-button translate\" id=\"change_password_button\" data-bs-toggle=\"modal\" data-bs-target=\"#change_password_modal\">Change Password</button>
                 }
             </div>
         </div>
@@ -44,7 +44,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary basic-button translate" id="change_password_submit_button" onclick="doPasswordChangeSubmit()">Submit</button>
-                <button type="button" class="btn btn-secondary basic-button translate" id="change_password_cancel_button" onclick="$('#change_password_modal').modal('hide')">Cancel</button>
+                <button type=\"button\" class=\"btn btn-secondary basic-button translate\" id=\"change_password_cancel_button\" data-bs-dismiss=\"modal\">Cancel</button>
             </div>
         @WebUtil.ModalFooter()
         <br>

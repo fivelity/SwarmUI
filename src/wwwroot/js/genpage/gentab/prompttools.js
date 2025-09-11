@@ -486,13 +486,13 @@ class PromptPlusButton {
             this.autoHideMenu();
             this.segmentModalClear();
             this.segmentModalProcessChanges();
-            $('#text_prompt_segment_modal').modal('show');
+showModalById('text_prompt_segment_modal');
         }});
         buttons.push({ key: 'region', key_html: 'Regional Prompt', title: "Supply a different prompt for a sub-region of an image", action: () => {
             this.autoHideMenu();
             this.regionModalClear();
             this.regionModalProcessChanges();
-            $('#text_prompt_region_modal').modal('show');
+showModalById('text_prompt_region_modal');
         }});
         buttons.push({ key: 'image', key_html: 'Upload Prompt Image', title: "Upload an image to use as an image-prompt", action: () => {
             this.autoHideMenu();
@@ -574,7 +574,7 @@ class PromptPlusButton {
                 modelText += `:${classIds}:`;
             }
         }
-        $('#text_prompt_segment_modal').modal('hide');
+hideModalById('text_prompt_segment_modal');
         this.applyNewSyntax(`<segment:${modelText},${this.segmentModalCreativity.value},${this.segmentModalInvertMask.checked ? '-' : ''}${this.segmentModalThreshold.value}> ${this.segmentModalMainText.value.trim()}`);
     }
 
@@ -735,7 +735,7 @@ class PromptPlusButton {
     }
 
     regionModalSubmit() {
-        $('#text_prompt_region_modal').modal('hide');
+hideModalById('text_prompt_region_modal');
         let key = this.regionModalInpaint.checked ? 'object' : 'region';
         let inpaint = this.regionModalInpaint.checked ? `,${this.regionModalInpaintStrength.value}` : '';
         let x = parseFloat(this.regionModalX.value), y = parseFloat(this.regionModalY.value), w = parseFloat(this.regionModalWidth.value), h = parseFloat(this.regionModalHeight.value);

@@ -34,13 +34,13 @@ class WildcardHelpers {
             button.disabled = true;
             genericRequest('TestPromptFill', {'prompt': val}, data => {
                 button.disabled = false;
-                getRequiredElementById('test_wildcard_result').value = data.result;
-                $('#test_wildcard_modal').modal('show');
+getRequiredElementById('test_wildcard_result').value = data.result;
+                showModalById('test_wildcard_modal');
             });
         }
         else {
-            button.disabled = false;
-            $('#test_wildcard_modal').modal('show');
+button.disabled = false;
+            showModalById('test_wildcard_modal');
         }
     }
 
@@ -93,8 +93,8 @@ class WildcardHelpers {
             enableImage.disabled = false;
         }
         getRequiredElementById('edit_wildcard_name').value = card.name;
-        getRequiredElementById('edit_wildcard_contents').value = card.raw;
-        $('#edit_wildcard_modal').modal('show');
+getRequiredElementById('edit_wildcard_contents').value = card.raw;
+        showModalById('edit_wildcard_modal');
     }
 
     /** Saves the edits to a wildcard from the modal created by {@link WildcardHelpers#editWildcard}. */
@@ -114,13 +114,13 @@ class WildcardHelpers {
             if (card.name != data.card && !data['preview_image'] && card.image && card.image != 'imgs/model_placeholder.jpg') {
                 data['preview_image'] = card.image;
             }
-            genericRequest('EditWildcard', data, resData => {
+genericRequest('EditWildcard', data, resData => {
                 wildcardsBrowser.browser.refresh();
                 if (card.name && card.name != data.card) {
                     genericRequest('DeleteWildcard', { card: card.name }, data => {});
                 }
             });
-            $('#edit_wildcard_modal').modal('hide');
+            hideModalById('edit_wildcard_modal');
         }
         if (getRequiredElementById('edit_wildcard_enable_image').checked) {
             data['preview_image_metadata'] = currentMetadataVal;

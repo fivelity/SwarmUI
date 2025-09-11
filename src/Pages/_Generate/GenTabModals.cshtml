@@ -18,7 +18,7 @@
         <div id="text_prompt_segment_other_inputs"></div>
     </div>
     <div class="modal-footer">
-        <button type="button" class="btn btn-secondary basic-button translate" onclick="$('#text_prompt_segment_modal').modal('hide')">Cancel</button>
+        <button type=\"button\" class=\"btn btn-secondary basic-button translate\" data-bs-dismiss=\"modal\">Cancel</button>
         <button type="button" class="btn btn-primary basic-button translate" onclick="promptPlusButton.segmentModalSubmit()">Add</button>
     </div>
 @WebUtil.ModalFooter()
@@ -40,7 +40,7 @@
         <div id="text_prompt_region_other_inputs"></div>
     </div>
     <div class="modal-footer">
-        <button type="button" class="btn btn-secondary basic-button translate" onclick="$('#text_prompt_region_modal').modal('hide')">Cancel</button>
+        <button type=\"button\" class=\"btn btn-secondary basic-button translate\" data-bs-dismiss=\"modal\">Cancel</button>
         <button type="button" class="btn btn-primary basic-button translate" onclick="promptPlusButton.regionModalSubmit()">Add</button>
     </div>
 @WebUtil.ModalFooter()
@@ -55,7 +55,7 @@
         <br><div id="gen_previews_autobutton"></div>
     </div>
     <div class="modal-footer">
-        <button type="button" class="btn btn-primary basic-button translate" onclick="toggleGeneratePreviews(true);$('#gen_previews_missing_preset_modal').modal('hide')">Start Anyway</button>
+        <button type=\"button\" class=\"btn btn-primary basic-button translate\" data-bs-dismiss=\"modal\" onclick=\"toggleGeneratePreviews(true)\">Start Anyway</button>\n        <button type=\"button\" class=\"btn btn-secondary basic-button translate\" data-bs-dismiss=\"modal\">Cancel</button>
         <button type="button" class="btn btn-secondary basic-button translate" onclick="$('#gen_previews_missing_preset_modal').modal('hide')">Cancel</button>
     </div>
 @WebUtil.ModalFooter()
@@ -68,7 +68,7 @@
     </div>
     <div class="modal-footer" id="install_sam2_button">
         <button type="button" class="btn btn-primary basic-button translate" onclick="installFeatureById('sam2', 'install_sam2_button', 'sam2_installer')">Install</button>
-        <button type="button" class="btn btn-secondary basic-button translate" onclick="$('#sam2_installer').modal('hide')">Cancel</button>
+        <button type=\"button\" class=\"btn btn-secondary basic-button translate\" data-bs-dismiss=\"modal\">Cancel</button>
     </div>
 @WebUtil.ModalFooter()
 @WebUtil.ModalHeader("bnb_nf4_installer", "Install BnB NF4 Support")
@@ -79,7 +79,7 @@
     </div>
     <div class="modal-footer" id="install_bnbnf4_button">
         <button type="button" class="btn btn-primary basic-button translate" onclick="installFeatureById('bnb_nf4', 'install_bnbnf4_button', 'bnb_nf4_installer')">Install</button>
-        <button type="button" class="btn btn-secondary basic-button translate" onclick="$('#bnb_nf4_installer').modal('hide');localStorage.setItem('hide_bnb_nf4_check', 'true')">No and don't show again</button>
+        <button type=\"button\" class=\"btn btn-secondary basic-button translate\" data-bs-dismiss=\"modal\" onclick=\"localStorage.setItem('hide_bnb_nf4_check', 'true')\">No and don't show again</button>\n        <button type=\"button\" class=\"btn btn-secondary basic-button translate\" data-bs-dismiss=\"modal\">Cancel</button>
         <button type="button" class="btn btn-secondary basic-button translate" onclick="$('#bnb_nf4_installer').modal('hide')">Cancel</button>
     </div>
 @WebUtil.ModalFooter()
@@ -91,7 +91,7 @@
     </div>
     <div class="modal-footer" id="install_nunchaku_button">
         <button type="button" class="btn btn-primary basic-button translate" onclick="installFeatureById('nunchaku', 'install_nunchaku_button', 'nunchaku_installer')">Install</button>
-        <button type="button" class="btn btn-secondary basic-button translate" onclick="$('#nunchaku_installer').modal('hide');localStorage.setItem('hide_nunchaku_check', 'true')">No and don't show again</button>
+        <button type=\"button\" class=\"btn btn-secondary basic-button translate\" data-bs-dismiss=\"modal\" onclick=\"localStorage.setItem('hide_nunchaku_check', 'true')\">No and don't show again</button>\n        <button type=\"button\" class=\"btn btn-secondary basic-button translate\" data-bs-dismiss=\"modal\">Cancel</button>
         <button type="button" class="btn btn-secondary basic-button translate" onclick="$('#nunchaku_installer').modal('hide')">Cancel</button>
     </div>
 @WebUtil.ModalFooter()
@@ -103,7 +103,7 @@
     </div>
     <div class="modal-footer" id="install_gguf_button">
         <button type="button" class="btn btn-primary basic-button translate" onclick="installFeatureById('gguf', 'install_gguf_button', 'gguf_installer')">Install</button>
-        <button type="button" class="btn btn-secondary basic-button translate" onclick="$('#gguf_installer').modal('hide');localStorage.setItem('hide_gguf_check', 'true')">No and don't show again</button>
+        <button type=\"button\" class=\"btn btn-secondary basic-button translate\" data-bs-dismiss=\"modal\" onclick=\"localStorage.setItem('hide_gguf_check', 'true')\">No and don't show again</button>\n        <button type=\"button\" class=\"btn btn-secondary basic-button translate\" data-bs-dismiss=\"modal\">Cancel</button>
         <button type="button" class="btn btn-secondary basic-button translate" onclick="$('#gguf_installer').modal('hide')">Cancel</button>
     </div>
 @WebUtil.ModalFooter()
@@ -115,7 +115,7 @@
     </div>
     <div class="modal-footer" id="install_extramodels_button">
         <button type="button" class="btn btn-primary basic-button translate" onclick="installFeatureById('extramodels', 'install_extramodels_button', 'extramodels_installer')">Install</button>
-        <button type="button" class="btn btn-secondary basic-button translate" onclick="$('#extramodels_installer').modal('hide');localStorage.setItem('hide_extramodels_check', 'true')">No and don't show again</button>
+        <button type=\"button\" class=\"btn btn-secondary basic-button translate\" data-bs-dismiss=\"modal\" onclick=\"localStorage.setItem('hide_extramodels_check', 'true')\">No and don't show again</button>\n        <button type=\"button\" class=\"btn btn-secondary basic-button translate\" data-bs-dismiss=\"modal\">Cancel</button>
         <button type="button" class="btn btn-secondary basic-button translate" onclick="$('#extramodels_installer').modal('hide')">Cancel</button>
     </div>
 @WebUtil.ModalFooter()
@@ -162,7 +162,7 @@
     </div>
     <div class="modal-footer">
         <button type="button" class="btn btn-primary basic-button translate" onclick="save_edit_model()">Save</button>
-        <button type="button" class="btn btn-secondary basic-button translate" onclick="$('#edit_model_modal').modal('hide')">Cancel</button>
+        <button type=\"button\" class=\"btn btn-secondary basic-button translate\" data-bs-dismiss=\"modal\">Cancel</button>
     </div>
 @WebUtil.ModalFooter()
 @WebUtil.ModalHeader("edit_wildcard_modal", """Edit Wildcard: <input type="text" class="modal_text_extra" id="edit_wildcard_name" placeholder="Wildcard Name" />""")
@@ -177,7 +177,7 @@
     </div>
     <div class="modal-footer">
         <button type="button" class="btn btn-primary basic-button translate" onclick="wildcardHelpers.saveEditWildcard()">Save</button>
-        <button type="button" class="btn btn-secondary basic-button translate" onclick="$('#edit_wildcard_modal').modal('hide')">Cancel</button>
+        <button type=\"button\" class=\"btn btn-secondary basic-button translate\" data-bs-dismiss=\"modal\">Cancel</button>
     </div>
 @WebUtil.ModalFooter()
 @WebUtil.ModalHeader("test_wildcard_modal", """Test Wildcard: <span id="test_wildcard_name"></span>""")
@@ -186,7 +186,7 @@
     </div>
     <div class="modal-footer">
         <button type="button" id="test_wildcard_again_button" class="btn btn-primary basic-button translate" onclick="wildcardHelpers.testWildcardAgain()">Test Again</button>
-        <button type="button" class="btn btn-secondary basic-button translate" onclick="$('#test_wildcard_modal').modal('hide')">Cancel</button>
+        <button type=\"button\" class=\"btn btn-secondary basic-button translate\" data-bs-dismiss=\"modal\">Cancel</button>
     </div>
 @WebUtil.ModalFooter()
 @WebUtil.ModalHeader("delete_model_modal", """Delete Model: <span id="delete_model_name"></span>""")
@@ -196,7 +196,7 @@
     </div>
     <div class="modal-footer">
         <button type="button" class="btn btn-primary basic-button translate" onclick="doDeleteModelNow()">Delete Now</button>
-        <button type="button" class="btn btn-secondary basic-button translate" onclick="$('#delete_model_modal').modal('hide')">Cancel</button>
+        <button type=\"button\" class=\"btn btn-secondary basic-button translate\" data-bs-dismiss=\"modal\">Cancel</button>
     </div>
 @WebUtil.ModalFooter()
 @WebUtil.ModalHeader("rename_model_modal", """Rename Model: <span id="rename_model_name"></span>""")
@@ -210,7 +210,7 @@
     </div>
     <div class="modal-footer">
         <button type="button" class="btn btn-primary basic-button translate" onclick="doRenameModelNow()">Rename Now</button>
-        <button type="button" class="btn btn-secondary basic-button translate" onclick="$('#rename_model_modal').modal('hide')">Cancel</button>
+        <button type=\"button\" class=\"btn btn-secondary basic-button translate\" data-bs-dismiss=\"modal\">Cancel</button>
     </div>
 @WebUtil.ModalFooter()
 @WebUtil.ModalHeader("create_tensorrt_modal", """Create TensorRT Engine""")
@@ -246,7 +246,7 @@
         </div>
         <div class="modal-footer">
             <button type="button" id="trt_create_button" class="btn btn-primary basic-button translate" onclick="trt_modal_create()">Create</button>
-            <button type="button" class="btn btn-secondary basic-button translate" onclick="$('#create_tensorrt_modal').modal('hide')">Cancel</button>
+        <button type=\"button\" class=\"btn btn-secondary basic-button translate\" data-bs-dismiss=\"modal\">Cancel</button>
         </div>
     </div>
 @WebUtil.ModalFooter()

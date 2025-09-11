@@ -5,7 +5,7 @@ class ImageFullViewHelper {
         this.zoomRate = 1.1;
         this.modal = getRequiredElementById('image_fullview_modal');
         this.content = getRequiredElementById('image_fullview_modal_content');
-        this.modalJq = $('#image_fullview_modal');
+this.modalJq = null; // jQuery removed; use element and helpers
         this.noClose = false;
         document.addEventListener('click', (e) => {
             if (e.target.tagName == 'BODY') {
@@ -211,7 +211,7 @@ class ImageFullViewHelper {
                 quickAppendButton(subDiv, added.label, (e, button) => added.onclick(button), '', added.title);
             }
         }
-        this.modalJq.modal('show');
+showModalById('image_fullview_modal');
         if (this.fixButtonDelay) {
             clearTimeout(this.fixButtonDelay);
         }
@@ -239,12 +239,12 @@ class ImageFullViewHelper {
         }
         this.isDragging = false;
         this.didDrag = false;
-        this.modalJq.modal('hide');
+hideModalById('image_fullview_modal');
         this.lastClosed = Date.now();
     }
 
     isOpen() {
-        return this.modalJq.is(':visible');
+return this.modal.classList.contains('show') || this.modal.style.display === 'block';
     }
 }
 
@@ -377,8 +377,8 @@ function copy_current_image_params() {
     if ('loras' in metadata && 'loraweights' in metadata && document.getElementById('input_loras') && metadata.loras.length == metadata.loraweights.length) {
         let loraElem = getRequiredElementById('input_loras');
         for (let val of metadata.loras) {
-            if (val && !$(loraElem).find(`option[value="${val}"]`).length) {
-                $(loraElem).append(new Option(val, val, false, false));
+if (val && ![...loraElem.options].some(o => o.value === val)) {
+                loraElem.add(new Option(val, val, false, false));
             }
         }
         let valSet = [...loraElem.options].map(option => option.value);
@@ -482,8 +482,8 @@ window.addEventListener('keydown', function(kbevent) {
         (findParentOfClass(document.activeElement, 'current_image')
         || findParentOfClass(document.activeElement, 'current_image_batch')
         || document.activeElement.tagName == 'BODY');
-    if (isFullView && kbevent.key == 'Escape') {
-        $('#image_fullview_modal').modal('toggle');
+if (isFullView && kbevent.key == 'Escape') {
+        hideModalById('image_fullview_modal');
     }
     else if ((kbevent.key == 'ArrowLeft' || kbevent.key == 'ArrowUp') && (isFullView || isCurImgFocused)) {
         shiftToNextImagePreview(false, isFullView);

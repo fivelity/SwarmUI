@@ -197,12 +197,8 @@ class LoraHelper {
         let loraVals = this.selected.map(l => l.name);
         this.dedup = true;
         let oldLoraVals = this.getLoraParamSelections();
-        if (!arraysEqual(oldLoraVals, loraVals)) {
-            $(loraInput).val(null);
-            if (loraVals.length > 0) {
-                $(loraInput).val(loraVals);
-            }
-            $(loraInput).trigger('change');
+if (!arraysEqual(oldLoraVals, loraVals)) {
+            setSelectValues(loraInput, loraVals);
             triggerChangeFor(loraInput);
             let toggler = document.getElementById('input_loras_toggle');
             if (loraVals.length == 0 && toggler) {

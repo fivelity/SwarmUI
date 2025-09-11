@@ -404,7 +404,7 @@ public class Settings : AutoConfiguration
 
         [ConfigComment("What theme to use. Default is 'modern_dark'.")]
         [SettingsOptions(Impl = typeof(ThemesImpl))]
-        public string Theme = "modern_dark"; // TODO: UserUI
+        public string Theme = "custom-theme"; // TODO: UserUI
 
         [ConfigComment("If true, images in the main center area will always grow to better fill the screen.")]
         public bool CenterImageAlwaysGrow = false; // TODO: UserUI

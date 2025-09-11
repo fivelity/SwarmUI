@@ -41,10 +41,9 @@ function clearPresetView() {
             else if (type.type == "text") {
                 presetElem.value = "{value} " + elem.value;
             }
-            else if (type.type == "list" && presetElem.tagName == "SELECT") {
+else if (type.type == "list" && presetElem.tagName == "SELECT") {
                 let selected = [...elem.selectedOptions].map(o => o.value);
-                $(presetElem).val(selected);
-                $(presetElem).trigger('change');
+                setSelectValues(presetElem, selected);
             }
             else {
                 presetElem.value = elem.value;
@@ -66,7 +65,7 @@ let editPresetTitle = translatable('Edit Preset');
 function create_new_preset_button() {
     clearPresetView();
     getRequiredElementById('new_preset_modal_title').innerText = createNewPresetTitle.get();
-    $('#add_preset_modal').modal('show');
+showModalById('add_preset_modal');
     let curImg = document.getElementById('current_image_img');
     if (curImg && curImg.tagName == 'IMG') {
         let newImg = curImg.cloneNode(true);
@@ -82,7 +81,7 @@ function create_new_preset_button() {
 }
 
 function close_create_new_preset() {
-    $('#add_preset_modal').modal('hide');
+hideModalById('add_preset_modal');
 }
 
 function save_new_preset() {
@@ -129,7 +128,7 @@ function save_new_preset() {
             return;
         }
         loadUserData();
-        $('#add_preset_modal').modal('hide');
+hideModalById('add_preset_modal');
     });
 }
 
@@ -279,8 +278,8 @@ function editPreset(preset) {
         enableImage.checked = false;
         enableImage.disabled = false;
     }
-    getRequiredElementById('new_preset_modal_title').innerText = editPresetTitle.get();
-    $('#add_preset_modal').modal('show');
+getRequiredElementById('new_preset_modal_title').innerText = editPresetTitle.get();
+    showModalById('add_preset_modal');
     for (let key of Object.keys(preset.param_map)) {
         let type = gen_param_types.filter(p => p.id == key)[0];
         if (type) {
@@ -453,7 +452,7 @@ let presetBrowser = new GenPageBrowserClass('preset_list', listPresetFolderAndFi
 function importPresetsButton() {
     getRequiredElementById('import_presets_textarea').value = '';
     getRequiredElementById('import_presets_activate_button').disabled = true;
-    $('#import_presets_modal').modal('show');
+showModalById('import_presets_modal');
 }
 
 function importPresetsToData(text) {
@@ -725,7 +724,7 @@ function exportPresetsButton(reuse = false) {
         }
     }
     getRequiredElementById('export_presets_textarea').value = text;
-    $('#export_presets_modal').modal('show');
+showModalById('export_presets_modal');
 }
 
 function exportPresetsDownload() {
@@ -740,9 +739,9 @@ function exportPresetsDownload() {
 }
 
 function closeExportPresetViewer() {
-    $('#export_presets_modal').modal('hide');
+hideModalById('export_presets_modal');
 }
 
 function closeImportPresetViewer() {
-    $('#import_presets_modal').modal('hide');
+hideModalById('import_presets_modal');
 }

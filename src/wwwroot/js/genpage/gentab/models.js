@@ -63,7 +63,7 @@ function deleteModel(model, browser) {
     curModelMenuModel = model;
     curModelMenuBrowser = browser;
     getRequiredElementById('delete_model_name').innerText = model.name;
-    $('#delete_model_modal').modal('show');
+showModalById('delete_model_modal');
 }
 
 function doDeleteModelNow() {
@@ -74,7 +74,7 @@ function doDeleteModelNow() {
     genericRequest('DeleteModel', { 'modelName': model.name, 'subtype': curModelMenuBrowser.subType }, data => {
         curModelMenuBrowser.browser.update();
     });
-    $('#delete_model_modal').modal('hide');
+hideModalById('delete_model_modal');
 }
 
 function renameModel(model, browser) {
@@ -90,7 +90,7 @@ function renameModel(model, browser) {
     selector.value = lastSlash != -1 ? model.name.substring(0, lastSlash) : '(None)';
     getRequiredElementById('rename_model_name').innerText = model.name;
     getRequiredElementById('model_rename_downloader_name').value = name;
-    $('#rename_model_modal').modal('show');
+showModalById('rename_model_modal');
 }
 
 function doRenameModelNow() {
@@ -107,7 +107,7 @@ function doRenameModelNow() {
     genericRequest('RenameModel', { 'oldName': model.name, 'newName': newName, 'subtype': curModelMenuBrowser.subType }, data => {
         curModelMenuBrowser.browser.refresh();
     });
-    $('#rename_model_modal').modal('hide');
+hideModalById('rename_model_modal');
 }
 
 function modelRenameNameInput() {
@@ -175,7 +175,7 @@ function editModel(model, browser) {
     getRequiredElementById('edit_model_lora_default_weight_div').style.display = model.architecture && model.architecture.endsWith('/lora') ? 'block' : 'none';
     getRequiredElementById('edit_model_lora_default_confinement').value = model.lora_default_confinement || '';
     getRequiredElementById('edit_model_lora_default_confinement_div').style.display = model.architecture && model.architecture.endsWith('/lora') ? 'block' : 'none';
-    $('#edit_model_modal').modal('show');
+showModalById('edit_model_modal');
 }
 
 function edit_model_load_civitai() {
@@ -263,7 +263,7 @@ function save_edit_model() {
         genericRequest('EditModelMetadata', data, data => {
             curModelMenuBrowser.browser.update();
         });
-        $('#edit_model_modal').modal('hide');
+hideModalById('edit_model_modal');
     }
     if (getRequiredElementById('edit_model_enable_image').checked) {
         imageToData(getRequiredElementById('edit_model_image').getElementsByTagName('img')[0].src, (dataURL) => {
@@ -918,7 +918,7 @@ function showTrtMenu(model) {
         modelSelect.appendChild(option);
     }
     modelSelect.value = cleanModelName(model.name);
-    $('#create_tensorrt_modal').modal('show');
+showModalById('create_tensorrt_modal');
 }
 
 function trt_modal_create() {
@@ -943,7 +943,7 @@ function trt_modal_create() {
         if (data.complete) {
             setTimeout(() => {
                 createButton.disabled = false;
-                $('#create_tensorrt_modal').modal('hide');
+hideModalById('create_tensorrt_modal');
             }, 2000);
         }
     }, 0, err => {
@@ -971,26 +971,26 @@ function currentModelChanged() {
 
 function doModelInstallRequiredCheck() {
     if ((curModelSpecialFormat == 'bnb_nf4' || curModelSpecialFormat == 'bnb_fp4') && !currentBackendFeatureSet.includes('bnb_nf4') && !localStorage.getItem('hide_bnb_nf4_check')) {
-        $('#bnb_nf4_installer').modal('show');
+showModalById('bnb_nf4_installer');
         return true;
     }
     if ((curModelSpecialFormat == 'nunchaku' || curModelSpecialFormat == 'nunchaku-fp4') && !currentBackendFeatureSet.includes('nunchaku') && !localStorage.getItem('hide_nunchaku_check')) {
-        $('#nunchaku_installer').modal('show');
+showModalById('nunchaku_installer');
         return true;
     }
     let imageVidToggler = document.getElementById('input_group_content_imagetovideo_toggle');
     let isImageVidToggled = imageVidToggler && imageVidToggler.checked;
     let videoModel = isImageVidToggled ? document.getElementById('input_videomodel')?.value : '';
     if ((curModelSpecialFormat == 'gguf' || videoModel.endsWith('.gguf')) && !currentBackendFeatureSet.includes('gguf') && !localStorage.getItem('hide_gguf_check')) {
-        $('#gguf_installer').modal('show');
+showModalById('gguf_installer');
         return true;
     }
     if (curModelCompatClass == 'pixart-ms-sigma-xl-2' && !currentBackendFeatureSet.includes('extramodelspixart') && !localStorage.getItem('hide_extramodels_check')) {
-        $('#extramodels_installer').modal('show');
+showModalById('extramodels_installer');
         return true;
     }
     if (curModelCompatClass == 'nvidia-sana-1600' && !currentBackendFeatureSet.includes('extramodelssana') && !localStorage.getItem('hide_extramodels_check')) {
-        $('#extramodels_installer').modal('show');
+showModalById('extramodels_installer');
         return true;
     }
     return false;

@@ -458,9 +458,9 @@ function installFeatureById(ids, buttonId = null, modalId = null) {
         }
         notice += feature.notice + '\n';
     }
-    doFeatureInstaller(ids, buttonId, notice.trim(), () => {
+doFeatureInstaller(ids, buttonId, notice.trim(), () => {
         if (modalId) {
-            $(`#${modalId}`).modal('hide');
+            hideModalById(modalId);
         }
     });
 }
@@ -683,7 +683,7 @@ function clearParamFilterInput() {
 }
 
 function genpageLoad() {
-    $('#toptablist').on('shown.bs.tab', function (e) {
+    getRequiredElementById('toptablist').addEventListener('shown.bs.tab', function (e) {
         let versionDisp = getRequiredElementById('version_display');
         if (e.target.id == 'maintab_comfyworkflow') {
             versionDisp.style.display = 'none';
@@ -712,7 +712,7 @@ function genpageLoad() {
         }},
         { key: 'Auto Segment Image (SAM2)', action: () => {
             if (!currentBackendFeatureSet.includes('sam2')) {
-                $('#sam2_installer').modal('show');
+                let modal = new bootstrap.Modal(getRequiredElementById('sam2_installer'));\n                modal.show();
             }
             else {
                 let img = window.imageEditor.getFinalImageData();

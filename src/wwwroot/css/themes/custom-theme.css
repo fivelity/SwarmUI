@@ -1,0 +1,147 @@
+/* Synthwave Theme for SwarmUI */
+@font-face {
+    font-family: 'Inter';
+    src: url('../../fonts/Inter.woff2') format('woff2');
+}
+
+:root {
+    /* Color Palette */
+    --background: #1A1A2E; /* Deep Indigo */
+    --background-panel: #162447; /* Darker Blue */
+    --background-panel-subtle: #1F4068; /* Even Darker Blue */
+    --emphasis: #E040FB; /* Vibrant Magenta */
+    --emphasis-soft: #7C4DFF; /* Bright Purple */
+    --emphasis-text: #FFFFFF;
+    --accent-cyan: #00E5FF; /* Bright Cyan */
+    --text-color: #EAEAEA;
+    --text-soft: #B0B0B0;
+    --border-color: #3B5998; /* Faded Blue */
+    --danger-button-background: #D32F2F;
+    --danger-button-background-hover: #F44336;
+
+    /* UI Elements */
+    --button-shadow: 0 0 5px var(--emphasis-soft), 0 0 10px var(--emphasis-soft);
+    --button-background: var(--emphasis-soft);
+    --button-text: var(--emphasis-text);
+    --button-background-hover: var(--emphasis);
+    --scrollbar: rgba(0, 229, 255, 0.5); /* Cyan scrollbar */
+    --noise-image: url('../../imgs/noise.png');
+    --panel-gap: 5px;
+}
+
+body {
+    background-color: var(--background);
+    color: var(--text-color);
+    font-family: 'Inter', sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: var(--accent-cyan);
+    text-shadow: 0 0 3px var(--accent-cyan);
+}
+
+/* --- Buttons --- */
+.basic-button, .btn {
+    background-color: var(--button-background);
+    color: var(--button-text);
+    border: 1px solid var(--emphasis);
+    box-shadow: var(--button-shadow);
+    transition: all 0.3s ease;
+    border-radius: 5px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.basic-button:hover, .btn:hover {
+    background-color: var(--button-background-hover);
+    color: var(--emphasis-text);
+    box-shadow: 0 0 8px var(--emphasis), 0 0 15px var(--emphasis);
+    transform: translateY(-2px);
+}
+
+.btn-danger {
+    background-color: var(--danger-button-background);
+    border-color: var(--danger-button-background);
+}
+.btn-danger:hover {
+    background-color: var(--danger-button-background-hover);
+    border-color: var(--danger-button-background-hover);
+}
+
+
+/* --- Panels and Layout --- */
+.nav-tabs, #currentimagecontent, #inputsidebartab_content, #rightsidebarcontent, #t2i_bottom_bar, .browser-folder-tree-container, .browser-fullcontent-container {
+    background-color: var(--background-panel);
+    background-image: var(--noise-image);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: inset 0 0 10px #00000080;
+}
+
+.splitter-bar {
+    background-color: var(--emphasis) !important;
+    box-shadow: var(--button-shadow);
+}
+
+/* --- Navigation / Tabs --- */
+.nav-tabs .nav-link {
+    color: var(--text-soft);
+    border: none;
+    border-radius: 0;
+    font-size: 18px;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+}
+
+.nav-tabs .nav-link.active,
+.nav-tabs .nav-link:hover {
+    color: var(--accent-cyan);
+    background-color: transparent;
+    border-bottom: 2px solid var(--accent-cyan);
+    text-shadow: 0 0 2px var(--accent-cyan);
+}
+
+/* --- Inputs and Forms --- */
+.auto-input, .form-control, .form-select, .auto-text, textarea {
+    background-color: var(--background-panel-subtle);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.auto-input:focus, .form-control:focus, .form-select:focus, .auto-text:focus, textarea:focus {
+    background-color: var(--background-panel);
+    color: var(--text-color);
+    border-color: var(--accent-cyan);
+    box-shadow: 0 0 5px var(--accent-cyan);
+    outline: none;
+}
+
+/* --- Image and Model Blocks --- */
+.image-block, .model-block {
+    border: 1px solid transparent;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    background: rgba(0,0,0,0.2);
+}
+
+.image-block:hover,
+.model-selected {
+    border-color: var(--emphasis);
+    background: var(--background-panel-subtle) !important;
+    box-shadow: 0 0 10px var(--emphasis);
+    transform: scale(1.02);
+}
+
+/* --- Specific UI Groups --- */
+.input-group.input-group-open .input-group-content {
+    background-color: var(--background-panel-subtle);
+    border: 1px solid var(--border-color);
+    border-radius: 10px !important;
+}
+
+.input-group .input-group-header-shrinkable:hover {
+     color: var(--accent-cyan);
+}
+
