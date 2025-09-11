@@ -63,7 +63,7 @@ body {
 
 /* Consistent select styling (native and Choices.js) */
 :root {
-  --select-height: 2.5rem;
+--select-height: 2.25rem;
   --select-radius: 0.375rem;
   --select-border: 1px solid rgba(0,0,0,0.15);
   --select-border-focus: 1px solid rgba(13,110,253,0.7);

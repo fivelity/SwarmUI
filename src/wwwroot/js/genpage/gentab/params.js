@@ -143,12 +143,13 @@ function getHtmlForParam(param, prefix) {
                         runnable: () => {
                             const sel = getRequiredElementById(`${prefix}${param.id}`);
                             if (!sel.choices) {
+const enableSearch = sel.options && sel.options.length > 12;
                                 sel.choices = new Choices(sel, {
                                     removeItemButton: true,
                                     allowHTML: true,
                                     placeholder: true,
                                     placeholderValue: sel.getAttribute('data-placeholder') || 'Select...',
-                                    searchEnabled: true,
+                                    searchEnabled: enableSearch,
                                     shouldSort: false
                                 });
                             }

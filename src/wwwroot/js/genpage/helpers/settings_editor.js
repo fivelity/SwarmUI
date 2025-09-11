@@ -141,7 +141,7 @@ function applyThemeSetting(theme_info) {
                 return;
             }
             let siteHeader = getRequiredElementById('sitecssheader');
-            getRequiredElementById('bs_theme_header').href = theme.is_dark ? '/css/bootstrap.min.css' : '/css/bootstrap_light.min.css';
+getRequiredElementById('bs_theme_header').href = '/css/bootstrap.min.css';
             themeCss.forEach(x => x.remove());
             let newTheme = theme.css_paths.map(path => `<link class="theme_sheet_header" rel="stylesheet" href="${path}?${siteHeader.href.split('?')[1]}" />`).join('\n');
             document.head.insertAdjacentHTML('beforeend', newTheme);
