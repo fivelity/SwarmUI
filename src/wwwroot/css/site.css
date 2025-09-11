@@ -69,8 +69,9 @@ body {
   --select-border-focus: 1px solid rgba(13,110,253,0.7);
   --select-shadow-focus: 0 0 0 0.2rem rgba(13,110,253,0.25);
   --select-padding-x: 0.75rem;
-  --select-bg: #fff;
-  --select-color: inherit;
+  /* Theme-aware fallbacks using existing theme tokens if available */
+  --select-bg: var(--background, #fff);
+  --select-color: var(--text, inherit);
 }
 
 select,
@@ -112,6 +113,24 @@ select:focus,
   outline: none;
   border: var(--select-border-focus);
   box-shadow: var(--select-shadow-focus);
+}
+
+/* Theme token integrations */
+.choices__list--multiple .choices__item {
+  background: color-mix(in srgb, var(--background-gray, #2a2a2a) 30%, #ffffff 0%);
+  color: var(--text, inherit);
+}
+.choices__input {
+  background: transparent;
+  color: var(--text, inherit);
+}
+.choices__list {
+  background: var(--background, #111);
+  color: var(--text, inherit);
+}
+.choices__list .choices__item--selectable.is-highlighted,
+.choices__list .choices__item--selectable.is-focused {
+  background: var(--background-gray, #222);
 }
 
 /* Disabled */
