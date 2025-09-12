@@ -36,13 +36,16 @@ public static class WebUtil
         string translate = title.Contains('<') ? "" : " translate";
         return new($"""
             <div class="modal" tabindex="-1" role="dialog" id="{id}">
-                <div class="modal-dialog" role="document">
+                <div class="modal-dialog modal-dialog-centered" role="document">
                     <div class="modal-content">
-                        <div class="modal-header"><h5 class="modal-title{translate}">{title}</h5></div>
+                        <div class="modal-header">
+                            <h5 class="modal-title{translate}">{title}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
             """);
     }
 
-    public static HtmlString ModalFooter() => new("</div></div></div>");
+    public static HtmlString ModalFooter() => new("</div></div></div></div>");
 
     /// <summary>Escapes a string for safe usage inside HTML blocks.</summary>
     public static string EscapeHtmlNoBr(string str)

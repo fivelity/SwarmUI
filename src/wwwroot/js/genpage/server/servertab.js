@@ -146,7 +146,6 @@ class UserAdminManager {
 
     clickUser(name) {
         this.setRightboxLoading();
-        // TODO
         this.setNothingDisplayed();
         this.displayedUser = name;
         this.curUserSettingsEditTracker = {
@@ -154,14 +153,17 @@ class UserAdminManager {
             altered: {}
         };
         let prefix = `admin_edit_user_${escapeHtml(name)}_settings_`;
-        this.rightBox.innerHTML = `<div class="admin-user-right-titlebar">User: <span class="admin-user-right-titlebar-name">${escapeHtml(name)}</span></div>`
-            + (name == user_id ? `<div class="admin-user-manage-notice translate">This is you! You shouldn't admin-edit yourself.</div>` : `<button type="button" class="basic-button translate" onclick="userAdminManager.deleteUser(unescapeHtml('${escapeHtml(name)}'))">Delete User</button>`)
-            + `<br><br><button type="button" class="basic-button translate" onclick="userAdminManager.editUserPw(unescapeHtml('${escapeHtml(name)}'))">Change User Password</button>`
-            + `<br><br><div class="admin_edit_user_settings_container" id="admin_edit_user_settings_container"></div>
+        this.rightBox.innerHTML = `<div class="d-flex justify-content-between align-items-center mb-3">
+                                       <h4 class="mb-0">User: <span class="fw-bold">${escapeHtml(name)}</span></h4>
+                                       ${name == user_id ? '' : `<button type="button" class="btn btn-sm btn-danger" onclick="userAdminManager.deleteUser(unescapeHtml('${escapeHtml(name)}'))">Delete User</button>`}
+                                   </div>`
+            + (name == user_id ? `<div class="alert alert-warning">This is you! You shouldn't admin-edit yourself.</div>` : '')
+            + `<button type="button" class="btn btn-secondary mb-3" onclick="userAdminManager.editUserPw(unescapeHtml('${escapeHtml(name)}'))">Change User Password</button>`
+            + `<div id="admin_edit_user_settings_container"></div>
             <div class="settings_submit_confirmer" id="${prefix}confirmer">
                 <span class="settings_submit_confirmer_text">Save <span id="${prefix}edit_count">0</span> edited setting(s)?</span>
-                <button type="button" class="btn btn-primary basic-button translate" onclick="userAdminManager.saveUserSettings()">Save</button>
-                <button type="button" class="btn btn-secondary basic-button translate" onclick="userAdminManager.cancelUserSettings()">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="userAdminManager.saveUserSettings()">Save</button>
+                <button type="button" class="btn btn-secondary" onclick="userAdminManager.cancelUserSettings()">Cancel</button>
             </div>`;
         let userSettingsContainer = getRequiredElementById('admin_edit_user_settings_container');
         genericRequest('AdminGetUserInfo', {'name': name}, data => {
@@ -185,7 +187,7 @@ class UserAdminManager {
 
     editUserPw(name) {
         this.displayedUser = name;
-showModalById('server_change_user_password_modal');
+        showModalById('server_change_user_password_modal');
     }
 
     async changeUserPwSubmit() {
@@ -211,7 +213,7 @@ showModalById('server_change_user_password_modal');
                 newPassword.value = '';
                 newPassword2.value = '';
                 submitButton.disabled = false;
-hideModalById('server_change_user_password_modal');
+                hideModalById('server_change_user_password_modal');
             }, 1000);
         }, 0, e => {
             resultArea.innerText = 'Error: ' + e;
@@ -242,31 +244,23 @@ hideModalById('server_change_user_password_modal');
         this.setRightboxLoading();
         genericRequest('AdminListRoles', {}, data => {
             if (!(roleId in data.roles)) {
-                this.setStaticRightBox(`<span class="translate">Role not found, something went wrong</span>`);
+                this.setStaticRightBox(`<div class="alert alert-danger">Role not found, something went wrong.</div>`);
                 return;
             }
             let role = data.roles[roleId];
-            let html = `<div class="admin-user-right-titlebar">Role: <span class="admin-user-right-titlebar-name">${escapeHtml(role.name)}</span></div>`
-                + (role.is_auto_generated ? `<div class="admin-user-manage-notice translate">This is an auto-generated role. It may not be deleted, and some automations may apply to it (such as new permissions automatically enabling when first loaded).</div>` : `<button type="button" class="basic-button translate" onclick="userAdminManager.deleteRole('${escapeHtml(roleId)}')">Delete Role</button>`)
-                + '<br><br>'
-                + makeGenericPopover('adminrolemenu_description', 'Description', 'text', "Human-readable description text about this role.\nThis is for admin reference when picking roles.\nProbably describe here when/why a user should receive this role, and a short bit about what it unlocks.", '')
-                + makeTextInput(null, 'adminrolemenu_description', '', 'Description', '', '', 'big', "Role description...", false, false, true)
-                + makeGenericPopover('adminrolemenu_maxoutpathdepth', 'Max OutPath Depth', 'number', "How many directories deep a user's custom OutPath can be.\nDefault is 5.\nThis is just a minor protection to avoid filesystem corruption. Higher values are perfectly fine in most cases.\nThe actual limit applied to a user is whatever the highest value of all their roles is.", '')
-                + makeNumberInput(null, 'adminrolemenu_maxoutpathdepth', '', 'Max OutPath Depth', '', 5, 1, 100, 1, 'normal', false, true)
-                + makeGenericPopover('adminrolemenu_maxt2isimultaneous', 'Max T2I Simultaneous', 'number', "How many images this user can have actively generating at once.\nDefault is 32.\nThis is naturally sub-limited by the number of available backends.\nThis is a protection for many-backend servers, to guarantee one user cannot steal all backends at once.\nYou can set this to a very low value if you have few backends but many users.\nSet this to a very high value if you have many backends and no concern for their distribution.\nThe actual limit applied to a user is whatever the highest value of all their roles is.", '')
-                + makeNumberInput(null, 'adminrolemenu_maxt2isimultaneous', '', 'Max T2I Simultaneous', '', 32, 1, 10000, 1, 'normal', false, true)
-                + makeGenericPopover('adminrolemenu_allowunsafeoutpaths', 'Allow Unsafe OutPaths', 'checkbox', "Whether the '.' symbol can be used in OutPath - if enabled, users may cause file system issues or perform folder escapes.", '')
-                + makeCheckboxInput(null, 'adminrolemenu_allowunsafeoutpaths', '', 'Allow Unsafe OutPaths', '', false, false, true)
-                + makeGenericPopover('adminrolemenu_modelwhitelist', 'Model Whitelist', 'text', "What models are allowed, as a list of prefixes.\nFor example 'sdxl/' allows only models in the SDXL folder.\nOr, 'sdxl/,flux/' allows models in the SDXL or Flux folders.\nIf empty, no whitelist logic is applied.\nNote that blacklist is 'more powerful' than whitelist and overrides it.\nThis stacks between roles, roles can add whitelist entries together.", '')
-                + makeTextInput(null, 'adminrolemenu_modelwhitelist', '', 'Model Whitelist', '', '', 'normal', "Model Whitelist...", false, false, true)
-                + makeGenericPopover('adminrolemenu_modelblacklist', 'Model Blacklist', 'text', "What models are forbidden, as a list of prefixes.\nFor example 'sdxl/' forbids models in the SDXL folder.\nOr, 'sdxl/,flux/' forbids models in the SDXL or Flux folders.\nIf empty, no blacklist logic is applied.\nNote that blacklist is 'more powerful' than whitelist and overrides it.\nThis stacks between roles, roles can add blacklist entries together.", '')
-                + makeTextInput(null, 'adminrolemenu_modelblacklist', '', 'Model Blacklist', '', '', 'normal', "Model Blacklist...", false, false, true)
-                + '\n<br><hr><br>\n<h4 class="translate">Permissions</h4><br>\n'
+            let html = `<div class="d-flex justify-content-between align-items-center mb-3">
+                            <h4 class="mb-0">Role: <span class="fw-bold">${escapeHtml(role.name)}</span></h4>
+                            ${role.is_auto_generated ? '' : `<button type="button" class="btn btn-sm btn-danger" onclick="userAdminManager.deleteRole('${escapeHtml(roleId)}')">Delete Role</button>`}
+                        </div>`
+                + (role.is_auto_generated ? `<div class="alert alert-info">This is an auto-generated role. It may not be deleted, and some automations may apply to it (such as new permissions automatically enabling when first loaded).</div>` : '')
+                + '<div id="admin_role_settings_form"></div>'
+                + '<hr><h4 class="mt-3">Permissions</h4>'
                 + `<div class="settings_submit_confirmer" id="adminrolemenu_confirmer">
                     <span class="settings_submit_confirmer_text">Save <span id="adminrolemenu_edit_count">0</span> edited setting(s)?</span>
-                    <button type="button" class="btn btn-primary basic-button translate" onclick="userAdminManager.saveRoleSettings()">Save</button>
-                    <button type="button" class="btn btn-secondary basic-button translate" onclick="userAdminManager.cancelRoleSettings()">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="userAdminManager.saveRoleSettings()">Save</button>
+                    <button type="button" class="btn btn-secondary" onclick="userAdminManager.cancelRoleSettings()">Cancel</button>
                 </div>`;
+            let permHtml = '';
             let lastGroupName = null;
             let isFirst = true;
             for (let perm of this.permissions_ordered) {
@@ -276,34 +270,48 @@ hideModalById('server_change_user_password_modal');
                     let groupId = `adminrolemenu_permgroup_${lastGroupName}`;
                     let [groupPopover, _] = getPopoverElemsFor(groupId, true);
                     if (!isFirst) {
-                        html += '</table></div>';
+                        permHtml += '</tbody></table></div>';
                     }
                     isFirst = false;
-                    html += `<div class="admin_perm_group">
-                            ${makeGenericPopover(groupId, permInfo.group.name, 'checkbox', permInfo.group.description, '')}
-                            <h5 class="translate">
-                                ${translateableHtml(permInfo.group.name)}${groupPopover}
-                            </h5>
-                        <table class="simple-table">`;
+                    permHtml += `<div class="card mb-3">
+                            <div class="card-header">
+                                ${makeGenericPopover(groupId, permInfo.group.name, 'checkbox', permInfo.group.description, '')}
+                                <h5 class="mb-0">${translateableHtml(permInfo.group.name)}${groupPopover}</h5>
+                            </div>
+                        <table class="table table-sm table-striped mb-0"><tbody>`;
                 }
                 let id = `adminrolemenu_perm_${perm}`;
                 let [popover, _] = getPopoverElemsFor(id, true);
-                html +=
+                permHtml +=
                     `<tr>
                         <td>
-                        ${makeGenericPopover(id, permInfo.name, 'checkbox', permInfo.description, '')}
-                        <span class="translate" title="${perm}">${translateableHtml(permInfo.name)}</span>${popover}
+                            ${makeGenericPopover(id, permInfo.name, 'checkbox', permInfo.description, '')}
+                            <label for="${id}_toggle" class="form-check-label" title="${perm}">${translateableHtml(permInfo.name)}</label>${popover}
                         </td>
-                        <td>
-                            <span class="form-check form-switch toggle-switch display-inline-block"><input class="auto-slider-toggle form-check-input" type="checkbox" id="${id}_toggle" title="Enable/disable ${perm}" autocomplete="off"${(role.permissions.includes(perm) ? ' checked' : '')} onchange="userAdminManager.checkShowRoleEditConfirm()"><div class="auto-slider-toggle-content"></div></span>
+                        <td class="text-end">
+                            <div class="form-check form-switch d-inline-block"><input class="form-check-input" type="checkbox" id="${id}_toggle" title="Enable/disable ${perm}" autocomplete="off"${(role.permissions.includes(perm) ? ' checked' : '')} onchange="userAdminManager.checkShowRoleEditConfirm()"></div>
                         </td>
                     </tr>`;
             }
-            html += '</table></div>';
+            permHtml += '</tbody></table></div>';
             this.setNothingDisplayed();
             this.roles = data.roles;
             this.displayedRole = roleId;
             this.rightBox.innerHTML = html;
+            let form_area = getRequiredElementById('admin_role_settings_form');
+            form_area.innerHTML = makeGenericPopover('adminrolemenu_description', 'Description', 'text', "Human-readable description text about this role.\nThis is for admin reference when picking roles.\nProbably describe here when/why a user should receive this role, and a short bit about what it unlocks.", '')
+                + makeTextInput(null, 'adminrolemenu_description', 'Description', 'Description', '', '', 'big', "Role description...", false, false, true)
+                + makeGenericPopover('adminrolemenu_maxoutpathdepth', 'Max OutPath Depth', 'number', "How many directories deep a user's custom OutPath can be.\nDefault is 5.\nThis is just a minor protection to avoid filesystem corruption. Higher values are perfectly fine in most cases.\nThe actual limit applied to a user is whatever the highest value of all their roles is.", '')
+                + makeNumberInput(null, 'adminrolemenu_maxoutpathdepth', 'Max OutPath Depth', 'Max OutPath Depth', '', 5, 1, 100, 1, 'normal', false, true)
+                + makeGenericPopover('adminrolemenu_maxt2isimultaneous', 'Max T2I Simultaneous', 'number', "How many images this user can have actively generating at once.\nDefault is 32.\nThis is naturally sub-limited by the number of available backends.\nThis is a protection for many-backend servers, to guarantee one user cannot steal all backends at once.\nYou can set this to a very low value if you have few backends but many users.\nSet this to a very high value if you have many backends and no concern for their distribution.\nThe actual limit applied to a user is whatever the highest value of all their roles is.", '')
+                + makeNumberInput(null, 'adminrolemenu_maxt2isimultaneous', 'Max T2I Simultaneous', 'Max T2I Simultaneous', '', 32, 1, 10000, 1, 'normal', false, true)
+                + makeGenericPopover('adminrolemenu_allowunsafeoutpaths', 'Allow Unsafe OutPaths', 'checkbox', "Whether the '.' symbol can be used in OutPath - if enabled, users may cause file system issues or perform folder escapes.", '')
+                + makeCheckboxInput(null, 'adminrolemenu_allowunsafeoutpaths', 'Allow Unsafe OutPaths', 'Allow Unsafe OutPaths', '', false, false, true)
+                + makeGenericPopover('adminrolemenu_modelwhitelist', 'Model Whitelist', 'text', "What models are allowed, as a list of prefixes.\nFor example 'sdxl/' allows only models in the SDXL folder.\nOr, 'sdxl/,flux/' allows models in the SDXL or Flux folders.\nIf empty, no whitelist logic is applied.\nNote that blacklist is 'more powerful' than whitelist and overrides it.\nThis stacks between roles, roles can add whitelist entries together.", '')
+                + makeTextInput(null, 'adminrolemenu_modelwhitelist', 'Model Whitelist', 'Model Whitelist', '', '', 'normal', "Model Whitelist...", false, false, true)
+                + makeGenericPopover('adminrolemenu_modelblacklist', 'Model Blacklist', 'text', "What models are forbidden, as a list of prefixes.\nFor example 'sdxl/' forbids models in the SDXL folder.\nOr, 'sdxl/,flux/' forbids models in the SDXL or Flux folders.\nIf empty, no blacklist logic is applied.\nNote that blacklist is 'more powerful' than whitelist and overrides it.\nThis stacks between roles, roles can add blacklist entries together.", '')
+                + makeTextInput(null, 'adminrolemenu_modelblacklist', 'Model Blacklist', 'Model Blacklist', '', '', 'normal', "Model Blacklist...", false, false, true);
+            form_area.innerHTML += permHtml;
             let descriptionBox = getRequiredElementById('adminrolemenu_description');
             descriptionBox.value = role.description;
             dynamicSizeTextBox(descriptionBox);
@@ -461,7 +469,7 @@ hideModalById('server_change_user_password_modal');
         this.addUserPassInput.value = '';
         this.addUserRoleInput.value = 'user';
         this.rebuildRoleList();
-showModalById('server_add_user_menu');
+        showModalById('server_add_user_menu');
     }
 
     async addUserMenuSubmit() {
@@ -480,7 +488,7 @@ showModalById('server_add_user_menu');
             alert('New password must be at least 8 characters long');
             return;
         }
-hideModalById('server_add_user_menu');
+        hideModalById('server_add_user_menu');
         let password = await doPasswordClientPrehash(name, pass);
         genericRequest('AdminAddUser', {'name': name, 'password': password, 'role': role}, data => {
             this.onTabButtonClick();
@@ -490,7 +498,7 @@ hideModalById('server_add_user_menu');
     showAddRoleMenu() {
         this.addRoleNameInput.value = '';
         this.rebuildRoleList();
-showModalById('server_add_role_menu');
+        showModalById('server_add_role_menu');
     }
 
     addRoleMenuSubmit() {
@@ -499,7 +507,7 @@ showModalById('server_add_role_menu');
             alert('Please fill in the name field, or cancel');
             return;
         }
-hideModalById('server_add_role_menu');
+        hideModalById('server_add_role_menu');
         genericRequest('AdminAddRole', {'name': name}, data => {
             this.rebuildRoleList();
         });
@@ -604,12 +612,12 @@ function serverResourceLoop() {
             }
             target.style.minWidth = `${Math.max(priorWidth, target.offsetWidth)}px`;
             if (data.gpus) {
-                let html = '<table class="simple-table"><tr><th>Resource</th><th>ID</th><th>Temp</th><th>Usage</th><th>Mem Usage</th><th>Used Mem</th><th>Free Mem</th><th>Total Mem</th></tr>';
+                let html = '<table class="table table-sm"><thead><tr><th>Resource</th><th>ID</th><th>Temp</th><th>Usage</th><th>Mem Usage</th><th>Used Mem</th><th>Free Mem</th><th>Total Mem</th></tr></thead><tbody>';
                 html += `<tr><td>CPU</td><td>...</td><td>...</td><td>${Math.round(data.cpu.usage * 100)}% (${data.cpu.cores} cores)</td><td>${Math.round(data.system_ram.used / data.system_ram.total * 100)}%</td><td>${fileSizeStringify(data.system_ram.used)}</td><td>${fileSizeStringify(data.system_ram.free)}</td><td>${fileSizeStringify(data.system_ram.total)}</td></tr>`;
                 for (let gpu of Object.values(data.gpus)) {
                     html += `<tr><td>${gpu.name}</td><td>${gpu.id}</td><td>${gpu.temperature}&deg;C</td><td>${gpu.utilization_gpu}% Core, ${gpu.utilization_memory}% Mem</td><td>${Math.round(gpu.used_memory / gpu.total_memory * 100)}%</td><td>${fileSizeStringify(gpu.used_memory)}</td><td>${fileSizeStringify(gpu.free_memory)}</td><td>${fileSizeStringify(gpu.total_memory)}</td></tr>`;
                 }
-                html += '</table>';
+                html += '</tbody></table>';
                 target.innerHTML = html;
             }
         });
@@ -620,11 +628,11 @@ function serverResourceLoop() {
                 priorWidth = parseFloat(target.style.minWidth.replaceAll('px', ''));
             }
             target.style.minWidth = `${Math.max(priorWidth, target.offsetWidth)}px`;
-            let html = '<table class="simple-table"><tr><th>Name</th><th>Last Active</th><th>Active Sessions</th></tr>';
+            let html = '<table class="table table-sm"><thead><tr><th>Name</th><th>Last Active</th><th>Active Sessions</th></tr></thead><tbody>';
             for (let user of data.users) {
                 html += `<tr><td>${user.id}</td><td>${user.last_active}</td><td>${user.active_sessions.map(sess => `${sess.count}x from ${sess.address}`).join(', ')}</td></tr>`;
             }
-            html += '</table>';
+            html += '</tbody></table>';
             target.innerHTML = html;
         });
     }
