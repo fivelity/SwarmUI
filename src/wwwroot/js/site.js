@@ -1,4 +1,3 @@
-
 let session_id = getCookie('session_id') || null;
 let user_id = null;
 let outputAppendUser = null;
@@ -68,16 +67,11 @@ function enableSliderForBox(div) {
     autoNumberWidth(number);
 }
 
-function showError(message) {
-    let container = getRequiredElementById('center_toast');
-    let box = getRequiredElementById('error_toast_box');
+function showError(message, time = 5000) {
+    let container = getRequiredElementById('error_toast_box');
     getRequiredElementById('error_toast_content').innerText = message;
-    if (!box.classList.contains('show')) {
-        box.classList.add('show');
-        box.classList.remove('hide');
-    }
-    var new_container = container.cloneNode(true);
-    container.parentNode.replaceChild(new_container, container);
+    let toast = new bootstrap.Toast(container, { delay: time });
+    toast.show();
 }
 
 let genericServerErrorMsg = translatable(`Failed to send request to server. Did the server crash?`);
@@ -240,11 +234,11 @@ function doGlobalErrorDebug() {
 }
 
 function triggerChangeFor(elem) {
-    elem.dispatchEvent(new Event('input'));
+    elem.dispatchEvent(new Event('input', { bubbles: true }));
     if (elem.oninput) {
         elem.oninput(elem);
     }
-    elem.dispatchEvent(new Event('change'));
+    elem.dispatchEvent(new Event('change', { bubbles: true }));
     if (elem.onchange) {
         elem.onchange(elem);
     }
@@ -254,9 +248,7 @@ function triggerChangeFor(elem) {
 function showModalById(id) {
     let el = document.getElementById(id);
     if (!el) { return; }
-    let Modal = window.bootstrap && window.bootstrap.Modal ? window.bootstrap.Modal : null;
-    if (!Modal) { el.style.display = 'block'; el.classList.add('show'); return; }
-    let instance = Modal.getOrCreateInstance(el);
+    let instance = bootstrap.Modal.getOrCreateInstance(el);
     instance.show();
 }
 
@@ -264,9 +256,7 @@ function showModalById(id) {
 function hideModalById(id) {
     let el = document.getElementById(id);
     if (!el) { return; }
-    let Modal = window.bootstrap && window.bootstrap.Modal ? window.bootstrap.Modal : null;
-    if (!Modal) { el.classList.remove('show'); el.style.display = 'none'; return; }
-    let instance = Modal.getOrCreateInstance(el);
+    let instance = bootstrap.Modal.getOrCreateInstance(el);
     instance.hide();
 }
 
@@ -984,11 +974,13 @@ function quickAppendButton(div, name, func, classes = '', title = '') {
 }
 
 function modalHeader(id, title) {
-    return `
-    <div class="modal" tabindex="-1" role="dialog" id="${id}">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header"><h5 class="modal-title translate">${title}</h5></div>`;
+    return `<div class="modal" tabindex="-1" id="${id}">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">${title}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>`;
 }
 
 function modalFooter() {

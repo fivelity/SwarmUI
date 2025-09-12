@@ -11,46 +11,58 @@ class LoginHandler {
         this.errorLoginFailedRatelimit = translatable("Login failed (ratelimit reached), please wait a minute before trying again.");
         this.messageLoggingIn = translatable("Logging in, please wait...");
         this.messageLoginSuccess = translatable("Login successful! Redirecting...");
+
+        this.loginButton.addEventListener('click', () => this.doLogin());
+        this.passwordInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                this.doLogin();
+            }
+        });
     }
 
     showError(message) {
-        this.loginErrorBlock.classList.add('login-error-block');
+        this.loginErrorBlock.style.display = 'block';
         this.loginErrorBlock.textContent = message;
+    }
+
+    hideError() {
+        this.loginErrorBlock.style.display = 'none';
     }
 
     showMessage(message) {
-        this.loginErrorBlock.classList.remove('login-error-block');
-        this.loginErrorBlock.textContent = message;
+        this.hideError();
+        // Could show a success message elsewhere if desired
     }
 
     async doLogin() {
+        this.hideError();
         let username = this.usernameInput.value;
         let password = this.passwordInput.value;
-        if (username.length < 3) {
+        if (username.length < 1) {
             this.showError(this.errorNoUsername.get());
             return;
         }
-        if (password.length < 8) {
+        if (password.length < 1) {
             this.showError(this.errorNoPassword.get());
             return;
         }
-        this.showMessage(this.messageLoggingIn.get());
+        this.loginButton.disabled = true;
+        this.loginButton.textContent = this.messageLoggingIn.get();
         let inData = {
             username: username,
             password: await doPasswordClientPrehash(username, password)
         };
-        this.loginButton.disabled = true;
         sendJsonToServer(`API/Login`, inData, (status, data) => {
             data ??= {};
             if (data.success) {
-                this.showMessage(this.messageLoginSuccess.get());
+                this.loginButton.textContent = this.messageLoginSuccess.get();
                 setTimeout(() => {
-                    this.loginErrorBlock.innerHTML = `<a href="./">(Click here if you haven't already been redirected)</a>`;
-                    window.location.href = './';
-                }, 1000);
+                    window.location.href = './Text2Image';
+                }, 500);
                 return;
             }
             this.loginButton.disabled = false;
+            this.loginButton.textContent = 'Login';
             if (data.error_id == 'invalid_login') {
                 this.showError(this.errorLoginFailedGeneral.get());
             }

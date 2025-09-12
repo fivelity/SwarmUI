@@ -1,3 +1,22 @@
+/*
+This file is part of SwarmUI, a WebUI for Stable Diffusion.
+
+Copyright 2022-2024 Stability AI and the SwarmUI project authors.
+All rights reserved.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 body {
     top: 0px;
     left: 0px;
@@ -14,11 +33,11 @@ body {
     border-radius: 0.5rem;
 }
 .generate-button {
+    font-size: 150%;
+    font-weight: bold;
     background-color: var(--button-background);
     color: var(--button-text);
     border: 1px solid var(--button-border);
-    font-size: 150%;
-    font-weight: bold;
     padding-top: 0.2rem;
     padding-bottom: 0.2rem;
     text-align: center;
@@ -57,11 +76,6 @@ body {
 .interrupt-button:hover {
     background-color: var(--danger-button-background-hover);
     color: var(--danger-button-foreground-hover);
-}
-.splitter-bar {
-    display: inline-block;
-    background-color: var(--light-border);
-    margin: 0px;
 }
 .large-window .splitter-bar:hover {
     background-color: var(--emphasis);
@@ -133,6 +147,7 @@ body {
     vertical-align: top;
 }
 .advanced_input_checkbox {
+    cursor: pointer;
     width: calc(100% - 2rem);
     margin-left: 1rem;
     margin-right: 1rem;
@@ -140,7 +155,6 @@ body {
     background-color: var(--background-soft);
     margin-top: 1rem;
     margin-bottom: 1.5rem;
-    cursor: pointer;
     position: relative;
     bottom: 2.25rem;
 }
@@ -151,9 +165,6 @@ body {
     overflow-x: hidden;
     overflow-y: auto;
     white-space: normal;
-    padding: 0.5rem;
-    padding-right: 1rem;
-    width: 100%;
     height: 100%;
 }
 .main_inputs_area_hidden {
@@ -186,15 +197,10 @@ body {
     overflow-y: auto;
 }
 .current_image {
-    display: inline-block;
-    padding: 0.5rem;
-    padding-right: 0;
-    border: 1px solid var(--light-border);
+    border: 1px solid var(--bs-border-color);
     width: 100%;
     height: 100%;
-    vertical-align: top;
-    overflow-x: hidden;
-    overflow-y: auto;
+    overflow: auto;
     object-fit: contain;
 }
 .current-image-data {
@@ -207,13 +213,10 @@ body {
     object-fit: contain;
     object-position: top left;
 }
-.current_image_batch {
-    display: inline-block;
+.current_image_batch_core {
     overflow-x: hidden;
     overflow-y: auto;
-    width: 21rem;
-    height: 50vh;
-    vertical-align: top;
+    height: 100%;
     white-space: normal;
 }
 .current-image-extras-wrapper {
@@ -230,21 +233,10 @@ body {
     width: calc(100% - 10px);
 }
 .batch-gear-button {
-    height: 1.6rem;
     position: absolute;
-    top: -0.2rem;
-    left: 0;
-    width: fit-content;
-    padding: 0.1rem;
-    color: color-mix(in srgb, var(--text) 70%, var(--background));
-    background-color: color-mix(in srgb, transparent 50%, var(--background));
-    border-radius: 0.4rem;
-    transition: all 0.5s ease-out;
-    cursor: pointer;
-}
-.batch-gear-button:hover {
-    color: var(--text);
-    background-color: var(--emphasis);
+    top: 0.5rem;
+    right: 0.5rem;
+    z-index: 10;
 }
 .image-block {
     display: inline-block;
@@ -306,7 +298,7 @@ body {
     width: 100%;
 }
 .image-block:hover {
-    background-color: var(--emphasis);
+    background-color: var(--bs-secondary-bg);
 }
 .image-block-starred {
     box-shadow: 0 0 1px 1px var(--star);
@@ -335,7 +327,7 @@ body {
     content: '';
     width: 10rem;
     height: 1rem;
-    background-color: var(--emphasis);
+    background-color: var(--bs-secondary-bg);
 }
 .image-block-failed::before {
     transform: rotate(45deg);
@@ -366,17 +358,12 @@ body {
     font-size: 90%;
 }
 .image-preview-text {
-    font-family: var(--font-monospace);
+    font-family: var(--bs-font-monospace);
     min-width: 100%;
     max-width: 0;
 }
 .current_model_view {
     display: inline-block;
-    border: 1px dotted var(--light-border);
-    background-color: var(--background-soft);
-    border-radius: 0.3rem;
-    padding-left: 0.2rem;
-    padding-right: 0.2rem;
 }
 .model-block {
     height: 10rem;
@@ -387,7 +374,7 @@ body {
     white-space: nowrap;
     vertical-align: top;
     position: relative;
-    border: 1px solid var(--light-border);
+    border: 1px solid var(--bs-border-color);
 }
 .model-block img {
     max-height: 9rem;
@@ -399,13 +386,12 @@ body {
     vertical-align: top;
     cursor: pointer;
     object-fit: contain;
-    background-color: var(--background-soft);
+    background-color: var(--bs-tertiary-bg);
 }
 .model-descblock {
     width: 19.5rem;
     height: 10rem;
     overflow: hidden;
-    scrollbar-gutter: stable;
     display: inline-block;
     white-space: normal;
     word-break: normal;
@@ -416,7 +402,7 @@ body {
     overflow: auto;
 }
 .model-block img:hover {
-    border: 2px solid var(--model-img-border-color-hover);
+    border: 2px solid var(--bs-primary);
 }
 .model-block-small {
     height: 8rem;
@@ -457,36 +443,36 @@ body {
     padding-right: 0.2rem;
     border-radius: 0.2rem;
     opacity: 0.7;
-    background-color: color-mix(in srgb, transparent 80%, var(--background));
+    background-color: rgba(var(--bs-body-bg-rgb), 0.2);
     transition: background-color 0.2s ease-out;
 }
 .image-block:hover .model-block-menu-button {
     opacity: 1.0;
-    background-color: color-mix(in srgb, transparent 50%, var(--background));
+    background-color: rgba(var(--bs-body-bg-rgb), 0.5);
 }
 .model-block-menu-button:hover {
     opacity: 1.0;
-    background-color: var(--emphasis) !important;
+    background-color: var(--bs-primary) !important;
     cursor: pointer;
-    border: 1px solid var(--button-border);
-    color: var(--text-strong);
+    border: 1px solid var(--bs-border-color);
+    color: var(--bs-emphasis-color);
 }
 .model-selected {
-    border: 1px solid var(--box-selected-border-stronger);
-    background-color: var(--box-selected-background-stronger);
+    border: 1px solid var(--bs-primary);
+    background-color: var(--bs-secondary-bg);
 }
 .model-loaded {
-    border: 1px solid color-mix(in srgb, var(--background) 50%, var(--box-selected-border));
-    background-color: color-mix(in srgb, var(--background) 50%, var(--box-selected-background));
+    border: 1px solid rgba(var(--bs-primary-rgb), 0.5);
+    background-color: rgba(var(--bs-secondary-bg-rgb), 0.5);
 }
 .model-unavailable {
     opacity: 0.3;
 }
 .model-remote {
-    background-color: var(--background-gray);
+    background-color: var(--bs-tertiary-bg);
 }
 .model-starred img {
-    box-shadow: 0 0 3px 1px color-mix(in srgb, var(--star) 50%, transparent);
+    box-shadow: 0 0 3px 1px rgba(var(--star-rgb), 0.5);
 }
 .sui_popover_model {
     white-space: normal;
@@ -497,7 +483,7 @@ body {
     cursor: pointer;
     padding-left: 3px;
     padding-right: 3px;
-    color: var(--text);
+    color: var(--bs-body-color);
     text-decoration: none;
     min-height: 1.3rem;
     line-height: 1.3rem;
@@ -511,23 +497,23 @@ body {
     width: 100%;
     padding-left: 3px;
     padding-right: 3px;
-    color: var(--text);
+    color: var(--bs-body-color);
     text-decoration: none;
     margin-bottom: 0.5rem;
     margin-top: 0.5rem;
-    border-bottom: 1px solid var(--light-border);
+    border-bottom: 1px solid var(--bs-border-color);
     height: 1.3rem;
 }
 .sui_popover_model_button_selected {
-    background-color: color-mix(in srgb, var(--emphasis) 50%, var(--background));
+    background-color: rgba(var(--bs-primary-rgb), 0.5);
 }
 .sui_popover_model_button_add_all {
     padding-bottom: 0.1rem;
-    border-bottom: 1px solid var(--light-border);
+    border-bottom: 1px solid var(--bs-border-color);
     margin-bottom: 0.1rem;
 }
 .sui_popover_model_button:hover {
-    background-color: var(--emphasis);
+    background-color: var(--bs-primary);
 }
 .sui-popover-inline-block {
     white-space: nowrap;
@@ -553,7 +539,7 @@ body {
 }
 .model_filename {
     font-size: 80%;
-    color: var(--text-soft);
+    color: var(--bs-secondary-color);
 }
 .refresh-button {
     margin: 0.5rem;
@@ -583,7 +569,7 @@ body {
     width: 95%;
     margin-left: 2.5%;
     padding: 0.5rem;
-    border: 1px solid var(--light-border);
+    border: 1px solid var(--bs-border-color);
 }
 .tool-selector {
     margin-top: 0.5rem;
@@ -591,10 +577,10 @@ body {
     margin-left: 5%;
 }
 .modal_error_bottom {
-    color: var(--red);
+    color: var(--bs-danger);
 }
 .modal_success_bottom {
-    color: var(--green);
+    color: var(--bs-success);
 }
 #add_preset_modal {
     max-height: calc(95vh - var(--bs-modal-margin));
@@ -612,8 +598,8 @@ body {
     overflow-y: auto;
 }
 .preset-block-selected {
-    border: 1px solid var(--box-selected-border);
-    background-color: var(--box-selected-background);
+    border: 1px solid var(--bs-primary);
+    background-color: var(--bs-secondary-bg);
 }
 .preset-descblock {
     width: 20rem;
@@ -623,7 +609,7 @@ body {
 }
 .preset-in-list {
     display: inline-block;
-    border: 1px solid var(--light-border);
+    border: 1px solid var(--bs-border-color);
     padding-left: 0.5rem;
     border-radius: 1rem;
     border-right: none;
@@ -633,9 +619,9 @@ body {
 }
 .preset-remove-button {
     display: inline-block;
-    color: var(--text);
+    color: var(--bs-body-color);
     font-weight: bold;
-    border: 1px solid var(--red);
+    border: 1px solid var(--bs-danger);
     border-radius: 0.5rem;
     margin-left: 0.2rem;
     padding-left: 0.2rem;
@@ -643,7 +629,7 @@ body {
     cursor: pointer;
 }
 .preset-remove-button:hover {
-    background-color: color-mix(in srgb, var(--red) 70%, black);
+    background-color: rgba(var(--bs-danger-rgb), 0.7);
 }
 .new_preset_image {
     align-items: center;
@@ -672,18 +658,18 @@ body {
 }
 .param_view_block {
     border-radius: 0.3rem;
-    border: 1px solid var(--light-border);
+    border: 1px solid var(--bs-border-color);
     display: inline-block;
-    color: var(--text-soft);
+    color: var(--bs-secondary-color);
     overflow: clip;
     text-overflow: ellipsis;
 }
 .param_view_block_model {
-    background-color: color-mix(in srgb, transparent 99%, var(--tag-color));
+    background-color: rgba(var(--tag-color-rgb), 0.01);
 }
 .param_view {
     border-radius: 0.3rem;
-    color: var(--text);
+    color: var(--bs-body-color);
 }
 .bottom-info-bar-container {
     display: flex;
@@ -701,7 +687,7 @@ body {
     vertical-align: middle;
 }
 .path-list-part {
-    border-bottom: 1px dotted var(--text);
+    border-bottom: 1px dotted var(--bs-body-color);
     cursor: pointer;
     margin-left: 0.2rem;
     margin-right: 0.2rem;
@@ -721,8 +707,8 @@ body {
     padding-left: 2rem;
 }
 .setting-looks-wrong {
-    border: 1px  solid var(--red) !important;
-    box-shadow: 0px 0px 1px 1px var(--red) !important;
+    border: 1px  solid var(--bs-danger) !important;
+    box-shadow: 0px 0px 1px 1px var(--bs-danger) !important;
 }
 .group-label {
     position: relative;
@@ -730,16 +716,16 @@ body {
     margin-bottom: 0.7rem;
 }
 .input-group-closed .input-group-header-activated {
-    background-color: color-mix(in srgb, var(--background) 90%, var(--emphasis));
+    background-color: rgba(var(--bs-primary-rgb), 0.1);
     border-radius: 0.5rem;
 }
 .input-group-open .input-group-header-activated {
-    background-image: linear-gradient(color-mix(in srgb, var(--background) 90%, var(--emphasis)), transparent);
+    background-image: linear-gradient(rgba(var(--bs-primary-rgb), 0.1), transparent);
     border-radius: 0.5rem;
 }
 .imageview_popup_modal_background {
-    font-family: var(--font-monospace);
-    background-color: rgb(50, 50, 50, 0.7);
+    font-family: var(--bs-font-monospace);
+    background-color: rgba(50, 50, 50, 0.7);
 }
 .imageview_modal_imagewrap {
     height: calc(min(100vw, 100vh - 7rem));
@@ -752,7 +738,7 @@ body {
     margin: auto;
 }
 .imageview_popup_modal_undertext {
-    background-color: var(--background);
+    background-color: var(--bs-body-bg);
     overflow-wrap: break-word;
     height: 7rem;
     overflow-y: auto;
@@ -784,7 +770,7 @@ body {
     margin-left: 0.5rem;
 }
 .browser-header-count {
-    color: var(--text-soft);
+    color: var(--bs-secondary-color);
     font-size: 80%;
     margin-left: 0.5rem;
     opacity: 0.8;
@@ -812,7 +798,7 @@ body {
     height: 100%;
     overflow: hidden;
     white-space: nowrap;
-    background-color: var(--background-panel);
+    background-color: var(--bs-tertiary-bg);
 }
 .browser-folder-tree-part {
     display: block;
@@ -821,11 +807,11 @@ body {
     cursor: pointer;
 }
 .browser-folder-tree-part:hover {
-    color: var(--emphasis);
+    color: var(--bs-primary);
     text-decoration: underline;
 }
 .browser-folder-tree-part-selected {
-    color: color-mix(in srgb, var(--emphasis) 50%, var(--text));
+    color: rgba(var(--bs-primary-rgb), 0.7);
 }
 .browser-folder-tree-part-symbol {
     position: relative;
@@ -854,7 +840,7 @@ body {
     cursor: pointer;
 }
 .browser-details-list-entry:hover {
-    color: var(--emphasis);
+    color: var(--bs-primary);
     text-decoration: underline;
 }
 .browser-details-list-entry-text {
@@ -895,7 +881,7 @@ body {
     vertical-align: top;
 }
 .browser-list-entry-text:hover {
-    color: var(--emphasis);
+    color: var(--bs-primary);
     text-decoration: underline;
 }
 .browser-list-entry img {
@@ -930,11 +916,11 @@ body {
     margin-top: 6px;
 }
 .alt-negativeprompt-textbox-invalid {
-    background-color: var(--background);
-    border-color: var(--background);
+    background-color: var(--bs-body-bg);
+    border-color: var(--bs-body-bg);
 }
 .alt-negativeprompt-textbox-invalid::placeholder {
-    color: color-mix(in srgb, var(--text) 50%, var(--background));
+    color: rgba(var(--bs-body-color-rgb), 0.5);
 }
 .alt_prompt_textboxes {
     margin-left: 1rem;
@@ -1033,23 +1019,18 @@ body {
 
 .alt-prompt-image-container-remove-button {
     position: absolute;
-    top: 2px;
-    right: 2px;
-    z-index: 100;
-    opacity: 0.7;
-    background-color: color-mix(in srgb, transparent 80%, var(--background));
+    top: 0;
+    right: 0;
+    background: rgba(var(--bs-danger-rgb), 0.7);
+    color: white;
     border: none;
-    border-radius: 0.5rem;
-    padding-left: 0.2rem;
-    padding-right: 0.25rem;
-    padding-bottom: 0.25rem;
-    line-height: 0.8rem;
-    font-weight: bold;
-    color: var(--text);
-    transition: background-color 0.2s ease-out;
-    cursor: pointer;
-    border: 1px solid transparent;
+    border-radius: 50%;
+    width: 1.5rem;
+    height: 1.5rem;
+    line-height: 1.5rem;
     text-align: center;
+    cursor: pointer;
+    font-weight: bold;
 }
 
 .alt-prompt-image-container:hover .alt-prompt-image-container-remove-button {
