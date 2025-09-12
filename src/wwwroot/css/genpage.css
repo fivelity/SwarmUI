@@ -66,7 +66,7 @@ body {
     object-fit: contain;
 }
 .current-image-data {
-    white-space: wrap;
+    white-space: normal;
     font-size: 80%;
 }
 .current-image-img {
@@ -850,7 +850,7 @@ body {
 
 .alt-prompt-image-container-remove-button:hover {
     opacity: 1.0;
-    background-color: rgba(var(--red), 0.7) !important;
+    background-color: rgba(var(--red-rgb), 0.7) !important;
     border: 1px solid black;
     cursor: pointer;
 }
@@ -1014,7 +1014,7 @@ body {
 }
 .image-editor-info-bubble-description {
     max-width: 400px;
-    white-space: wrap;
+    white-space: normal;
 }
 .image-editor-tool-bottombar {
     padding-left: 52px;
@@ -1631,4 +1631,228 @@ body {
 }
 .backend-log-auto-scroll-button:hover {
     background-color: var(--bs-primary);
+}
+.image-history-jumper {
+    width: 100%;
+    height: 20px;
+    border: 1px solid rgba(var(--light-border-rgb), 0.7);
+    background-color: rgba(var(--background-rgb), 0.7);
+    color: var(--text);
+    border-radius: 5px;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+.wildcard-list-item {
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    margin-bottom: 0.2rem;
+}
+.wildcard-list-item:hover {
+    cursor: pointer;
+    background-color: rgba(var(--yellow-rgb), 0.7);
+}
+.wildcard-list-item.selected {
+    background-color: rgba(var(--green-rgb), 0.7);
+}
+
+#modal_presets_list {
+    max-height: calc(90vh - 10rem);
+    overflow-y: auto;
+    padding-right: 0.5rem;
+    padding-left: 0.5rem;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--light-border);
+    background-color: var(--background);
+}
+.modal-preset-item {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    margin-bottom: 0.2rem;
+    cursor: pointer;
+}
+.modal-preset-item:hover {
+    background-color: rgba(var(--bs-primary-rgb), 0.1);
+}
+.modal-preset-item.selected {
+    background-color: rgba(var(--green-rgb), 0.7);
+}
+.modal-preset-item .preset-name {
+    flex-grow: 1;
+    margin-right: 0.5rem;
+    font-weight: bold;
+}
+.modal-preset-item .preset-description {
+    flex-grow: 2;
+    margin-right: 0.5rem;
+    color: var(--bs-secondary-color);
+    font-size: 90%;
+}
+.modal-preset-item .preset-params {
+    flex-grow: 1;
+    margin-right: 0.5rem;
+    color: var(--bs-secondary-color);
+    font-size: 90%;
+    text-align: right;
+}
+.modal-preset-item .preset-remove-button {
+    color: var(--bs-danger);
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+.modal-preset-item .preset-remove-button:hover {
+    color: rgba(var(--bs-danger-rgb), 0.7);
+}
+.modal-preset-item .preset-add-button {
+    background-color: var(--bs-primary);
+    color: white;
+    padding: 0.2rem 0.5rem;
+    border-radius: 0.3rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+.modal-preset-item .preset-add-button:hover {
+    background-color: rgba(var(--bs-primary-rgb), 0.8);
+}
+.modal-preset-item .preset-add-button.selected {
+    background-color: rgba(var(--green-rgb), 0.7);
+}
+.modal-preset-item .preset-add-button.disabled {
+    background-color: var(--bs-secondary-bg);
+    color: var(--bs-secondary-color);
+    cursor: not-allowed;
+}
+.modal-preset-item .preset-add-button.disabled:hover {
+    background-color: var(--bs-secondary-bg);
+}
+.modal-preset-item .preset-duplicate-button {
+    color: var(--bs-info);
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+.modal-preset-item .preset-duplicate-button:hover {
+    color: rgba(var(--bs-info-rgb), 0.7);
+}
+.modal-preset-item .preset-export-button {
+    color: var(--bs-success);
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+.modal-preset-item .preset-export-button:hover {
+    color: rgba(var(--bs-success-rgb), 0.7);
+}
+.modal-preset-item .preset-import-button {
+    color: var(--bs-warning);
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+.modal-preset-item .preset-import-button:hover {
+    color: rgba(var(--bs-warning-rgb), 0.7);
+}
+.modal-preset-item .preset-download-button {
+    color: var(--bs-danger);
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+.modal-preset-item .preset-download-button:hover {
+    color: rgba(var(--bs-danger-rgb), 0.7);
+}
+.modal-preset-item .preset-upload-button {
+    color: var(--bs-primary);
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+.modal-preset-item .preset-upload-button:hover {
+    color: rgba(var(--bs-primary-rgb), 0.8);
+}
+.modal-preset-item .preset-info-button {
+    color: var(--bs-secondary-color);
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+.modal-preset-item .preset-info-button:hover {
+    color: rgba(var(--bs-secondary-color-rgb), 0.7);
+}
+.modal-preset-item .preset-params-button {
+    color: var(--bs-secondary-color);
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+.modal-preset-item .preset-params-button:hover {
+    color: rgba(var(--bs-secondary-color-rgb), 0.7);
+}
+.modal-preset-item .preset-advanced-button {
+    color: var(--bs-secondary-color);
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+.modal-preset-item .preset-advanced-button:hover {
+    color: rgba(var(--bs-secondary-color-rgb), 0.7);
+}
+.modal-preset-item .preset-label {
+    display: inline-block;
+    padding: 0.1rem 0.3rem;
+    border-radius: 0.3rem;
+    margin-right: 0.5rem;
+    font-size: 80%;
+    font-weight: normal;
+    color: white;
+}
+.modal-preset-item .preset-label.tag-success {
+    background-color: var(--bs-success);
+}
+.modal-preset-item .preset-label.tag-info {
+    background-color: var(--bs-info);
+}
+.modal-preset-item .preset-label.tag-warning {
+    background-color: var(--bs-warning);
+}
+.modal-preset-item .preset-label.tag-danger {
+    background-color: var(--bs-danger);
+}
+.modal-preset-item .preset-label.tag-primary {
+    background-color: var(--bs-primary);
+}
+.modal-preset-item .preset-label.tag-secondary {
+    background-color: var(--bs-secondary);
+}
+.modal-preset-item .preset-label.tag-light {
+    background-color: var(--light-border);
+}
+.modal-preset-item .preset-label.tag-dark {
+    background-color: rgba(0, 0, 0, 0.7);
+}
+.modal-preset-item .preset-label.tag-pending {
+    background-color: rgba(255, 255, 0, 0.7);
+}
+.modal-preset-item .preset-label.tag-processing {
+    background-color: rgba(0, 255, 255, 0.7);
+}
+.modal-preset-item .preset-label.tag-completed {
+    background-color: rgba(0, 255, 0, 0.7);
+}
+.modal-preset-item .preset-label.tag-failed {
+    background-color: rgba(255, 0, 0, 0.7);
+}
+.modal-preset-item .preset-label.tag-canceled {
+    background-color: rgba(128, 128, 128, 0.7);
+}
+.modal-preset-item .preset-label.tag-unknown {
+    background-color: rgba(255, 255, 255, 0.7);
+}
+.modal-preset-item .preset-label.tag-default {
+    background-color: rgba(0, 0, 0, 0.1);
 }

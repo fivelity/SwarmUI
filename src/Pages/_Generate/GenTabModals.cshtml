@@ -17,7 +17,8 @@
         <hr>
         <div id="text_prompt_segment_other_inputs"></div>
     </div>
-@WebUtil.ModalFooter("""<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button type="button" class="btn btn-primary" onclick="promptPlusButton.segmentModalSubmit()">Add</button>""")
+<div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button type="button" class="btn btn-primary" onclick="promptPlusButton.segmentModalSubmit()">Add</button></div>
+@WebUtil.ModalFooter()
 @WebUtil.ModalHeader("text_prompt_region_modal", "Add Prompt Syntax: Regional Prompt")
     <div class="modal-body">
         <span class="translate">
@@ -35,7 +36,8 @@
         </div>
         <div id="text_prompt_region_other_inputs"></div>
     </div>
-@WebUtil.ModalFooter("""<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button type="button" class="btn btn-primary" onclick="promptPlusButton.regionModalSubmit()">Add</button>""")
+<div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button type="button" class="btn btn-primary" onclick="promptPlusButton.regionModalSubmit()">Add</button></div>
+@WebUtil.ModalFooter()
 
 <!-- =================================== Installer Modals =================================== -->
 
@@ -46,7 +48,8 @@
         <br>Your preset named exactly "Preview" will automatically be used when generating previews, and ignored when you click Generate to generate a full image.
         <br><div id="gen_previews_autobutton"></div>
     </div>
-@WebUtil.ModalFooter("""<button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="toggleGeneratePreviews(true)">Start Anyway</button><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>""")
+<div class="modal-footer"><button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="toggleGeneratePreviews(true)">Start Anyway</button><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button></div>
+@WebUtil.ModalFooter()
 @WebUtil.ModalHeader("sam2_installer", "Install SAM2")
     <div class="modal-body">
         Full image auto-segmentation is made available via Segment-Anything-2 created by Meta AI (Apache 2 License), and ComfyUI nodepack for it created by kijai (Apache 2 License).
@@ -54,39 +57,44 @@
         <br>When used, it will generate an autosegmentation of the current image and provide the result as a layer in the image editor.
         <br>You can then use the paintbucket tool to fill mask with sections you want, then delete or hide the segment layer.
     </div>
-@WebUtil.ModalFooter("""<div id="install_sam2_button"><button type="button" class="btn btn-primary" onclick="installFeatureById('sam2', 'install_sam2_button', 'sam2_installer')">Install</button><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button></div>""")
+<div class="modal-footer"><div id="install_sam2_button"><button type="button" class="btn btn-primary" onclick="installFeatureById('sam2', 'install_sam2_button', 'sam2_installer')">Install</button><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button></div></div>
+@WebUtil.ModalFooter()
 @WebUtil.ModalHeader("bnb_nf4_installer", "Install BnB NF4 Support")
     <div class="modal-body">
         The model you're trying to use appears to be a Bits-and-Bytes NF4 format model.
         <br>
         <br>This requires an extension released by silveroxides, comfyanonymous, and lllyasviel (AGPL license) to run. Would you like to install it?
     </div>
-@WebUtil.ModalFooter("""<div id="install_bnbnf4_button"><button type="button" class="btn btn-primary" onclick="installFeatureById('bnb_nf4', 'install_bnbnf4_button', 'bnb_nf4_installer')">Install</button><button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="localStorage.setItem('hide_bnb_nf4_check', 'true')">No and don't show again</button><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button></div>""")
+<div class="modal-footer"><div id="install_bnbnf4_button"><button type="button" class="btn btn-primary" onclick="installFeatureById('bnb_nf4', 'install_bnbnf4_button', 'bnb_nf4_installer')">Install</button><button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="localStorage.setItem('hide_bnb_nf4_check', 'true')">No and don't show again</button><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button></div></div>
+@WebUtil.ModalFooter()
 @WebUtil.ModalHeader("nunchaku_installer", "Install Nunchaku Support")
     <div class="modal-body">
         The model you're trying to use appears to be a Nunchaku SVDQuant format model.
         <br>
         <br>This requires an extension released by MIT Han Lab (Apache2 license) to run. Would you like to install it?
     </div>
-@WebUtil.ModalFooter("""<div id="install_nunchaku_button"><button type="button" class="btn btn-primary" onclick="installFeatureById('nunchaku', 'install_nunchaku_button', 'nunchaku_installer')">Install</button><button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="localStorage.setItem('hide_nunchaku_check', 'true')">No and don't show again</button><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button></div>""")
+<div class="modal-footer"><div id="install_nunchaku_button"><button type="button" class="btn btn-primary" onclick="installFeatureById('nunchaku', 'install_nunchaku_button', 'nunchaku_installer')">Install</button><button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="localStorage.setItem('hide_nunchaku_check', 'true')">No and don't show again</button><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button></div></div>
+@WebUtil.ModalFooter()
 @WebUtil.ModalHeader("gguf_installer", "Install GGUF Support")
     <div class="modal-body">
         The model you're trying to use appears to be a GGUF format model.
         <br>
         <br>This requires an extension released by city96 to run. Would you like to install it?
     </div>
-@WebUtil.ModalFooter("""<div id="install_gguf_button"><button type="button" class="btn btn-primary" onclick="installFeatureById('gguf', 'install_gguf_button', 'gguf_installer')">Install</button><button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="localStorage.setItem('hide_gguf_check', 'true')">No and don't show again</button><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button></div>""")
+<div class="modal-footer"><div id="install_gguf_button"><button type="button" class="btn btn-primary" onclick="installFeatureById('gguf', 'install_gguf_button', 'gguf_installer')">Install</button><button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="localStorage.setItem('hide_gguf_check', 'true')">No and don't show again</button><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button></div></div>
+@WebUtil.ModalFooter()
 @WebUtil.ModalHeader("extramodels_installer", "Install City96-ExtraModels Support")
     <div class="modal-body">
         The model you're trying to use appears to be a model class that requires the Comfy extension City96-ExtraModels to work.
         <br>
         <br>Would you like to install it?
     </div>
-@WebUtil.ModalFooter("""<div id="install_extramodels_button"><button type="button" class="btn btn-primary" onclick="installFeatureById('extramodels', 'install_extramodels_button', 'extramodels_installer')">Install</button><button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="localStorage.setItem('hide_extramodels_check', 'true')">No and don't show again</button><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button></div>""")
+<div class="modal-footer"><div id="install_extramodels_button"><button type="button" class="btn btn-primary" onclick="installFeatureById('extramodels', 'install_extramodels_button', 'extramodels_installer')">Install</button><button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="localStorage.setItem('hide_extramodels_check', 'true')">No and don't show again</button><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button></div></div>
+@WebUtil.ModalFooter()
 
 <!-- =================================== Model Modals =================================== -->
 
-@WebUtil.ModalHeader("edit_model_modal", """Edit Model Metadata: <input type="text" class="modal_text_extra" id="edit_model_name" placeholder="Model Name" />""")
+@WebUtil.ModalHeader("edit_model_modal", "Edit Model Metadata: <input type=\"text\" class=\"modal_text_extra\" id=\"edit_model_name\" placeholder=\"Model Name\" />")
     <div class="modal-body">
         <div><span id="edit_model_technical_data"></span></div>
         <hr>
@@ -124,8 +132,9 @@
         </span>
         <div id="edit_model_image" class="new_preset_image"></div>
     </div>
-@WebUtil.ModalFooter("""<button type="button" class="btn btn-primary" onclick="save_edit_model()">Save</button><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>""")
-@WebUtil.ModalHeader("edit_wildcard_modal", """Edit Wildcard: <input type="text" class="modal_text_extra" id="edit_wildcard_name" placeholder="Wildcard Name" />""")
+<div class="modal-footer"><button type="button" class="btn btn-primary" onclick="save_edit_model()">Save</button><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button></div>
+@WebUtil.ModalFooter()
+@WebUtil.ModalHeader("edit_wildcard_modal", "Edit Wildcard: <input type=\"text\" class=\"modal_text_extra\" id=\"edit_wildcard_name\" placeholder=\"Wildcard Name\" />")
     <div class="modal-body">
         <p class="translate">Wildcards are lists of random prompt segments. One entry per line. Prompt sub-syntax is allowed (eg you can link another wildcard, or use <code>&lt;random:...&gt;</code>, or <code>&lt;preset:...&gt;</code> or anything else you want).</p>
         <p class="translate">Prefix a line with <code>#</code> to make it a comment (ie won't be counted as an option).</p>
@@ -135,19 +144,22 @@
         </span>
         <div id="edit_wildcard_image" class="new_preset_image"></div>
     </div>
-@WebUtil.ModalFooter("""<button type="button" class="btn btn-primary" onclick="wildcardHelpers.saveEditWildcard()">Save</button><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>""")
-@WebUtil.ModalHeader("test_wildcard_modal", """Test Wildcard: <span id="test_wildcard_name"></span>""")
+<div class="modal-footer"><button type="button" class="btn btn-primary" onclick="wildcardHelpers.saveEditWildcard()">Save</button><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button></div>
+@WebUtil.ModalFooter()
+@WebUtil.ModalHeader("test_wildcard_modal", "Test Wildcard: <span id=\"test_wildcard_name\"></span>")
     <div class="modal-body">
         Result: <textarea class="auto-text auto-text-block" id="test_wildcard_result" rows="3" placeholder="Result here..."></textarea>
     </div>
-@WebUtil.ModalFooter("""<button type="button" id="test_wildcard_again_button" class="btn btn-primary" onclick="wildcardHelpers.testWildcardAgain()">Test Again</button><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>""")
-@WebUtil.ModalHeader("delete_model_modal", """Delete Model: <span id="delete_model_name"></span>""")
+<div class="modal-footer"><button type="button" id="test_wildcard_again_button" class="btn btn-primary" onclick="wildcardHelpers.testWildcardAgain()">Test Again</button><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button></div>
+@WebUtil.ModalFooter()
+@WebUtil.ModalHeader("delete_model_modal", "Delete Model: <span id=\"delete_model_name\"></span>")
     <div class="modal-body">
         <span class="translate">Are you sure you want to delete this model?</span>
         <br><i class="translate">This cannot be undone. The whole model will be gone until you re-download it.</i>
     </div>
-@WebUtil.ModalFooter("""<button type="button" class="btn btn-danger" onclick="doDeleteModelNow()">Delete Now</button><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>""")
-@WebUtil.ModalHeader("rename_model_modal", """Rename Model: <span id="rename_model_name"></span>""")
+<div class="modal-footer"><button type="button" class="btn btn-danger" onclick="doDeleteModelNow()">Delete Now</button><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button></div>
+@WebUtil.ModalFooter()
+@WebUtil.ModalHeader("rename_model_modal", "Rename Model: <span id=\"rename_model_name\"></span>")
     <div class="modal-body">
         <span class="translate">Rename the model:</span>
         <br><i class="translate">This will move the model file and any attached files to a different sub-folder, within the same models path.</i>
@@ -156,8 +168,9 @@
         <br>@WebUtil.TextPopoverButton("modelrenamedownloadersaveas", "File name to save as. Don't include the '.safetensors' file extension, just the name.\nYou can use a folder path with the '/' symbol.") <b>New name</b>: <input type="text" id="model_rename_downloader_name" class="auto-text auto-text-wide" placeholder="Model Name" autocomplete="off" oninput="modelRenameNameInput()" />
         <br>
     </div>
-@WebUtil.ModalFooter("""<button type="button" class="btn btn-primary" onclick="doRenameModelNow()">Rename Now</button><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>""")
-@WebUtil.ModalHeader("create_tensorrt_modal", """Create TensorRT Engine""")
+<div class="modal-footer"><button type="button" class="btn btn-primary" onclick="doRenameModelNow()">Rename Now</button><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button></div>
+@WebUtil.ModalFooter()
+@WebUtil.ModalHeader("create_tensorrt_modal", "Create TensorRT Engine")
     <div id="tensorrt_mustinstall" style="display:none;">
         <div class="modal-body">
             <p class="translate">TensorRT support is not yet installed. You must install it to continue.</p>
@@ -209,7 +222,8 @@
         <br><br>
         <textarea id="export_presets_textarea" style="width: calc(max(500px, 50vw));" rows="10" disabled autocomplete="off"></textarea>
     </div>
-@WebUtil.ModalFooter("""<button type="button" class="btn btn-primary" onclick="exportPresetsDownload()">Download</button><button type="button" class="btn btn-secondary" onclick="closeExportPresetViewer()">Close</button>""")
+<div class="modal-footer"><button type="button" class="btn btn-primary" onclick="exportPresetsDownload()">Download</button><button type="button" class="btn btn-secondary" onclick="closeExportPresetViewer()">Close</button></div>
+@WebUtil.ModalFooter()
 @WebUtil.ModalHeader("import_presets_modal", "Import Presets")
     <div class="modal-body">
         <div id="import_preset_upload_container">
@@ -220,8 +234,9 @@
             <input type="checkbox" class="form-check-input" id="import_presets_overwrite" onchange="importPresetsCheck()"> <label class="form-check-label translate" for="import_presets_overwrite">Overwrite existing presets</label>
         </span>
     </div>
-@WebUtil.ModalFooter("""<span id="import_preset_modal_error" class="modal_error_bottom"></span><button type="button" class="btn btn-primary" id="import_presets_activate_button" onclick="importPresetsActivate()" disabled autocomplete="off">Import</button><button type="button" class="btn btn-secondary" onclick="closeImportPresetViewer()">Cancel</button>""")
-@WebUtil.ModalHeader("add_preset_modal", """<span id="new_preset_modal_title">Create New Preset</span>: <input type="text" id="new_preset_name" placeholder="Preset Name" />""")
+<div class="modal-footer"><span id="import_preset_modal_error" class="modal_error_bottom"></span><button type="button" class="btn btn-primary" id="import_presets_activate_button" onclick="importPresetsActivate()" disabled autocomplete="off">Import</button><button type="button" class="btn btn-secondary" onclick="closeImportPresetViewer()">Cancel</button></div>
+@WebUtil.ModalFooter()
+@WebUtil.ModalHeader("add_preset_modal", "<span id=\"new_preset_modal_title\">Create New Preset</span>: <input type=\"text\" id=\"new_preset_name\" placeholder=\"Preset Name\" />")
     <div class="modal-body">
         <textarea class="auto-text auto-text-block translate" id="preset_description" rows="3" placeholder="Preset description text..."></textarea>
         <span class="form-check form-switch display-inline-block">
@@ -243,4 +258,157 @@
         </div>
         <div id="new_preset_modal_hidden_inputs" style="display:none;"></div>
     </div>
-@WebUtil.ModalFooter("""<span id="new_preset_modal_error" class="modal_error_bottom"></span><button type="button" class="btn btn-primary" onclick="save_new_preset()">Save</button><button type="button" class="btn btn-secondary" onclick="close_create_new_preset()">Cancel</button>""")
+<div class="modal-footer"><span id="new_preset_modal_error" class="modal_error_bottom"></span><button type="button" class="btn btn-primary" onclick="save_new_preset()">Save</button><button type="button" class="btn btn-secondary" onclick="close_create_new_preset()">Cancel</button></div>
+@WebUtil.ModalFooter()
+
+<!-- =================================== Misc Modals =================================== -->
+
+@WebUtil.ModalHeader("modal_lora_weights", "LoRA Weights")
+    <div class="modal-body">
+        <div id="modal_lora_weights_content">
+            <p class="translate">These are the LoRA weights currently in use by the model.</p>
+            <div class="modal-body" id="modal_lora_weights_body">
+            </div>
+        <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div>
+        @WebUtil.ModalFooter()
+    </div>
+</div>
+@WebUtil.ModalHeader("modal_wildcards", "Wildcards")
+    <div class="modal-body">
+        <div id="modal_wildcards_content">
+            <p class="translate">Wildcards are lists of random prompt segments. One entry per line. Prompt sub-syntax is allowed (eg you can link another wildcard, or use <code>&lt;random:...&gt;</code>, or <code>&lt;preset:...&gt;</code> or anything else you want).</p>
+            <p class="translate">Prefix a line with <code>#</code> to make it a comment (ie won't be counted as an option).</p>
+            <div class="modal-body" id="modal_wildcards_body">
+            </div>
+        <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div>
+        @WebUtil.ModalFooter()
+    </div>
+</div>
+@WebUtil.ModalHeader("modal_whatisthis", "What Is This?")
+    <div class="modal-body">
+        <div id="modal_whatisthis_content">
+            <p class="translate">This is a detailed description of the functionality of the various components of the UI, and how to use them.</p>
+            <div class="modal-body" id="modal_whatisthis_body">
+            </div>
+        <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div>
+        @WebUtil.ModalFooter()
+    </div>
+</div>
+@WebUtil.ModalHeader("modal_model_info", "Model Info")
+    <div class="modal-body">
+        <div id="modal_model_info_content">
+            <p class="translate">This shows the current metadata and file information for the selected model.</p>
+            <div class="modal-body" id="modal_model_info_body">
+            </div>
+        <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div>
+        @WebUtil.ModalFooter()
+    </div>
+</div>
+@WebUtil.ModalHeader("modal_preview_image", "Preview Image")
+    <div class="modal-body">
+        <div id="modal_preview_image_content">
+            <p class="translate">This is a preview of the image generated with the current settings.</p>
+            <div class="modal-body" id="modal_preview_image_body">
+            </div>
+        <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div>
+        @WebUtil.ModalFooter()
+    </div>
+</div>
+@WebUtil.ModalHeader("modal_edit_image", "Edit Image")
+    <div class="modal-body">
+        <div id="modal_edit_image_content">
+            <p class="translate">Here you can manually edit the image, using various tools and options.</p>
+            <div class="modal-body" id="modal_edit_image_body">
+            </div>
+        <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div>
+        @WebUtil.ModalFooter()
+    </div>
+</div>
+@WebUtil.ModalHeader("modal_image_history", "Image History")
+    <div class="modal-body">
+        <div id="modal_image_history_content">
+            <p class="translate">This shows the history of images generated in this session, with the most recent at the top.</p>
+            <div class="modal-body" id="modal_image_history_body">
+            </div>
+        <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div>
+        @WebUtil.ModalFooter()
+    </div>
+</div>
+@WebUtil.ModalHeader("modal_image_history_folder", "Image History Folder")
+    <div class="modal-body">
+        <div id="modal_image_history_folder_content">
+            <p class="translate">This shows the history of images generated in this session, with the most recent at the top.</p>
+            <div class="modal-body" id="modal_image_history_folder_body">
+            </div>
+        <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div>
+        @WebUtil.ModalFooter()
+    </div>
+</div>
+@WebUtil.ModalHeader("modal_backend_picker", "Backend Options")
+    <div class="modal-body">
+        <div id="modal_backend_picker_content">
+            <p class="translate">Here you can select the backend options for processing the images. If you aren't sure what this is, just leave it as-is.</p>
+            <div id="modal_backend_picker_body"></div>
+        </div>
+        <div class="modal-footer"><button type="button" class="btn btn-primary" id="modal_backend_picker_save">Save</button><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button></div>
+    </div>
+</div>
+@WebUtil.ModalHeader("modal_presets_menu", "Presets")
+    <div class="modal-body">
+        <div id="modal_presets_list">
+        </div>
+        <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div>
+        @WebUtil.ModalFooter()
+    </div>
+</div>
+@WebUtil.ModalHeader("modal_save_preset", "Save Preset")
+    <div class="modal-body">
+        <div class="mb-3">
+                <label for="modal_save_preset_name" class="form-label">Preset Name</label>
+                <input type="text" class="auto-focus form-control" id="modal_save_preset_name_input" placeholder="Preset Name" />
+            </div>
+        <div class="modal-footer"><button type="button" class="btn btn-primary" id="modal_save_preset_button">Save</button></div>
+        @WebUtil.ModalFooter()
+    </div>
+</div>
+@WebUtil.ModalHeader("modal_delete_preset", "Delete Preset")
+    <div class="modal-body">
+        <div class="mb-3">
+                <p>Are you sure you want to delete preset '<span id="modal_delete_preset_name"></span>'?</p>
+            </div>
+        <div class="modal-footer"><button type="button" class="btn btn-danger" id="modal_delete_preset_button">Delete</button><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button></div>
+        @WebUtil.ModalFooter()
+    </div>
+</div>
+@WebUtil.ModalHeader("modal_confirm_discard_parameter_changes", "Discard Changes?")
+    <div class="modal-body">
+        <div class="mb-3">
+                <p>You have unsaved parameter changes. Are you sure you want to discard them?</p>
+            </div>
+        <div class="modal-footer"><button type="button" class="btn btn-danger" id="modal_confirm_discard_parameter_changes_button">Discard</button><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button></div>
+        @WebUtil.ModalFooter()
+    </div>
+</div>
+@WebUtil.ModalHeader("modal_view_workflow", "View Workflow")
+    <div class="modal-body">
+        <a class="btn btn-sm btn-primary" id="modal_view_workflow_save_button" href="#">Save As File</a>
+        <textarea class="form-control" id="modal_view_workflow_textarea" rows="20" readonly></textarea>
+    </div>
+    <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div>
+    @WebUtil.ModalFooter()
+</div>
+@WebUtil.ModalHeader("modal_workflow_editor", "Workflow Editor")
+    <div class="modal-body">
+        <div id="workflow_editor_main_area"></div>
+    </div>
+    <div class="modal-footer"><button type="button" class="btn btn-primary" id="workflow_editor_save">Save</button><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button></div>
+    @WebUtil.ModalFooter()
+</div>
+@WebUtil.ModalHeader("modal_error_box", "Error")
+    <div class="modal-body">
+        <p>Something went wrong. An error message should be visible below.</p>
+        <div id="modal_error_box_content" class="alert alert-danger"></div>
+    </div>
+    <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div>
+    @WebUtil.ModalFooter()
+</div>
