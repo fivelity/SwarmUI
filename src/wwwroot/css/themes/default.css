@@ -1,0 +1,324 @@
+/*
+ * SwarmUI Default Theme
+ * Showcases proper implementation of light and dark modes using the design token system
+ * This serves as a reference implementation for other themes
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* ========================================
+   THEME CONFIGURATION
+   Base configuration for both modes
+   ======================================== */
+
+:root {
+    /* Font system */
+    --theme-font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    --theme-font-mono: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+    
+    /* Animation preferences */
+    --theme-transitions: var(--duration-200) var(--ease-out);
+    --theme-transitions-fast: var(--duration-150) var(--ease-out);
+    
+    /* Theme-specific spacing adjustments */
+    --theme-border-width: 1px;
+    --theme-focus-ring-width: 2px;
+    
+    /* Apply font system */
+    --bs-font-sans-serif: var(--theme-font-sans);
+    --bs-font-monospace: var(--theme-font-mono);
+    --bs-body-font-family: var(--theme-font-sans);
+}
+
+/* ========================================
+   DARK MODE (DEFAULT)
+   Modern dark theme with excellent contrast
+   ======================================== */
+
+[data-bs-theme="dark"], :root {
+    /* Surface colors - carefully tuned for readability */
+    --bs-body-bg: #0f1115;                    /* Deep background */
+    --bs-tertiary-bg: #1a1d23;                /* Elevated panels */
+    --bs-secondary-bg: #21252b;               /* Cards and modals */
+    --bs-body-color: #e8eaed;                 /* Primary text */
+    --bs-secondary-color: #9aa0a6;            /* Secondary text */
+    --bs-emphasis-color: #ffffff;             /* High emphasis text */
+    
+    /* Border and outline colors */
+    --bs-border-color: #343841;               /* Subtle borders */
+    --bs-border-color-translucent: rgba(52, 56, 65, 0.5);
+    
+    /* Brand and accent colors */
+    --bs-primary: #4285f4;                    /* Primary blue */
+    --bs-primary-rgb: 66, 133, 244;
+    --bs-link-color: #4285f4;
+    --bs-link-hover-color: #5a95f5;
+    
+    /* Semantic colors - optimized for dark backgrounds */
+    --bs-success: #34a853;                   /* Success green */
+    --bs-success-rgb: 52, 168, 83;
+    --bs-warning: #fbbc05;                   /* Warning amber */
+    --bs-warning-rgb: 251, 188, 5;
+    --bs-danger: #ea4335;                    /* Error red */
+    --bs-danger-rgb: 234, 67, 53;
+    --bs-info: #1a73e8;                      /* Info blue */
+    --bs-info-rgb: 26, 115, 232;
+    
+    /* Component-specific overrides */
+    --nav-link-color: var(--bs-secondary-color);
+    --nav-link-hover-color: var(--bs-body-color);
+    --nav-link-active-color: var(--bs-primary);
+    --nav-link-active-bg: rgba(var(--bs-primary-rgb), 0.1);
+    
+    /* Form controls */
+    --input-bg: #2d3238;
+    --input-border: var(--bs-border-color);
+    --input-border-focus: var(--bs-primary);
+    --input-focus-ring: rgba(var(--bs-primary-rgb), 0.25);
+    
+    /* Cards and surfaces */
+    --card-bg: var(--bs-secondary-bg);
+    --card-border: var(--bs-border-color);
+    --card-header-bg: rgba(255, 255, 255, 0.03);
+    
+    /* Interactive states */
+    --item-hover: rgba(255, 255, 255, 0.05);
+    --item-selected: rgba(var(--bs-primary-rgb), 0.15);
+    --item-selected-border: var(--bs-primary);
+    
+    /* Status colors */
+    --status-success: var(--bs-success);
+    --status-warning: var(--bs-warning);
+    --status-error: var(--bs-danger);
+    --status-info: var(--bs-info);
+    --status-idle: #5f6368;
+    --status-loading: #ff9500;
+    
+    /* Modal and overlay */
+    --modal-backdrop: rgba(0, 0, 0, 0.75);
+    --modal-bg: var(--bs-secondary-bg);
+    --modal-border: var(--bs-border-color);
+    
+    /* Toast notifications */
+    --toast-bg: var(--bs-secondary-bg);
+    --toast-border: var(--bs-border-color);
+    --toast-header-bg: rgba(255, 255, 255, 0.03);
+    
+    /* Validation states */
+    --valid-bg: rgba(var(--bs-success-rgb), 0.1);
+    --valid-border: var(--bs-success);
+    --valid-color: #4caf50;
+    --invalid-bg: rgba(var(--bs-danger-rgb), 0.1);
+    --invalid-border: var(--bs-danger);
+    --invalid-color: #f44336;
+    --warning-bg: rgba(var(--bs-warning-rgb), 0.1);
+    --warning-border: var(--bs-warning);
+    --warning-color: #ff9800;
+}
+
+/* ========================================
+   LIGHT MODE
+   Clean, professional light theme
+   ======================================== */
+
+[data-bs-theme="light"] {
+    /* Surface colors - optimized for light backgrounds */
+    --bs-body-bg: #ffffff;                    /* Pure white background */
+    --bs-tertiary-bg: #f8f9fa;               /* Light gray panels */
+    --bs-secondary-bg: #ffffff;              /* White cards */
+    --bs-body-color: #1f2937;                /* Dark text */
+    --bs-secondary-color: #6b7280;           /* Gray secondary text */
+    --bs-emphasis-color: #111827;            /* Very dark emphasis */
+    
+    /* Border and outline colors */
+    --bs-border-color: #e5e7eb;              /* Light gray borders */
+    --bs-border-color-translucent: rgba(229, 231, 235, 0.5);
+    
+    /* Brand and accent colors - adjusted for light mode */
+    --bs-primary: #2563eb;                   /* Darker blue for better contrast */
+    --bs-primary-rgb: 37, 99, 235;
+    --bs-link-color: #2563eb;
+    --bs-link-hover-color: #1d4ed8;
+    
+    /* Semantic colors - optimized for light backgrounds */
+    --bs-success: #16a34a;                   /* Darker green */
+    --bs-success-rgb: 22, 163, 74;
+    --bs-warning: #d97706;                   /* Darker amber */
+    --bs-warning-rgb: 217, 119, 6;
+    --bs-danger: #dc2626;                    /* Darker red */
+    --bs-danger-rgb: 220, 38, 38;
+    --bs-info: #0284c7;                      /* Darker info blue */
+    --bs-info-rgb: 2, 132, 199;
+    
+    /* Component-specific overrides */
+    --nav-link-color: var(--bs-secondary-color);
+    --nav-link-hover-color: var(--bs-body-color);
+    --nav-link-active-color: var(--bs-primary);
+    --nav-link-active-bg: rgba(var(--bs-primary-rgb), 0.1);
+    
+    /* Form controls */
+    --input-bg: #ffffff;
+    --input-border: #d1d5db;
+    --input-border-focus: var(--bs-primary);
+    --input-focus-ring: rgba(var(--bs-primary-rgb), 0.25);
+    
+    /* Cards and surfaces */
+    --card-bg: var(--bs-secondary-bg);
+    --card-border: var(--bs-border-color);
+    --card-header-bg: #f9fafb;
+    
+    /* Interactive states */
+    --item-hover: rgba(0, 0, 0, 0.04);
+    --item-selected: rgba(var(--bs-primary-rgb), 0.1);
+    --item-selected-border: var(--bs-primary);
+    
+    /* Status colors */
+    --status-success: var(--bs-success);
+    --status-warning: var(--bs-warning);
+    --status-error: var(--bs-danger);
+    --status-info: var(--bs-info);
+    --status-idle: #6b7280;
+    --status-loading: #f59e0b;
+    
+    /* Modal and overlay */
+    --modal-backdrop: rgba(0, 0, 0, 0.5);
+    --modal-bg: var(--bs-secondary-bg);
+    --modal-border: var(--bs-border-color);
+    
+    /* Toast notifications */
+    --toast-bg: var(--bs-secondary-bg);
+    --toast-border: var(--bs-border-color);
+    --toast-header-bg: #f9fafb;
+    
+    /* Validation states */
+    --valid-bg: rgba(var(--bs-success-rgb), 0.1);
+    --valid-border: var(--bs-success);
+    --valid-color: var(--bs-success);
+    --invalid-bg: rgba(var(--bs-danger-rgb), 0.1);
+    --invalid-border: var(--bs-danger);
+    --invalid-color: var(--bs-danger);
+    --warning-bg: rgba(var(--bs-warning-rgb), 0.1);
+    --warning-border: var(--bs-warning);
+    --warning-color: var(--bs-warning);
+}
+
+/* ========================================
+   THEME ENHANCEMENTS
+   Visual improvements that work in both modes
+   ======================================== */
+
+/* Smooth transitions for theme switching */
+* {
+    transition: background-color var(--theme-transitions),
+                border-color var(--theme-transitions),
+                color var(--theme-transitions-fast),
+                box-shadow var(--theme-transitions);
+}
+
+/* Enhanced focus states */
+.focus-ring:focus,
+.form-control:focus,
+.form-select:focus,
+.btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 var(--theme-focus-ring-width) var(--input-focus-ring);
+}
+
+/* Improved button states */
+.btn:not(:disabled):not(.disabled):hover {
+    transform: translateY(-1px);
+}
+
+.btn:not(:disabled):not(.disabled):active {
+    transform: translateY(0);
+}
+
+/* Enhanced card hover effects */
+.card:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-2px);
+}
+
+/* Better navbar styling */
+.navbar {
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+/* Improved tab styling */
+.nav-tabs .nav-link {
+    border: none;
+    border-bottom: 2px solid transparent;
+    transition: all var(--theme-transitions);
+}
+
+.nav-tabs .nav-link:hover {
+    border-bottom-color: var(--nav-link-hover-color);
+}
+
+.nav-tabs .nav-link.active {
+    border-bottom-color: var(--nav-link-active-color);
+    background-color: transparent;
+}
+
+/* Enhanced scrollbar styling */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--bs-border-color) transparent;
+}
+
+*::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+    background-color: var(--bs-border-color);
+    border-radius: var(--radius-full);
+    border: 2px solid transparent;
+    background-clip: padding-box;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+    background-color: var(--bs-secondary-color);
+}
+
+/* ========================================
+   ACCESSIBILITY ENHANCEMENTS
+   Ensure proper contrast and usability
+   ======================================== */
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    :root {
+        --bs-border-color: var(--bs-secondary-color);
+        --input-border: var(--bs-secondary-color);
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* High contrast focus indicators */
+@media (prefers-contrast: high) {
+    .focus-ring:focus,
+    .form-control:focus,
+    .form-select:focus,
+    .btn:focus {
+        outline: 2px solid var(--bs-primary);
+        outline-offset: 2px;
+    }
+}
