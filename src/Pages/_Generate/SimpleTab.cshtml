@@ -1,35 +1,42 @@
 @model GeneratePageModel
 
 <div class="container-fluid mt-3">
-    <div class="row">
-        <div class="col-lg-4 col-md-5">
-            <div class="d-flex flex-column h-100">
-                <div class="flex-grow-1 overflow-auto">
-                    <div id="simple_inputs_area"></div>
-                    <div id="simple_inputs_area_advanced" class="main_inputs_area_advanced" style="display:none;"></div>
-                    <div id="simple_inputs_area_hidden" class="main_inputs_area_hidden" style="display:none;"></div>
-                </div>
-                <div class="mt-auto p-3">
-                    <button class="btn btn-primary w-100" id="simple_generate_button" onclick="simpleTab.generate()">Generate</button>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-8 col-md-7">
-            <div id="simple_image_container" class="position-relative">
-                <div class="image-preview-progress-wrapper simpletab-progress-wrapper" id="simpletab_progress_wrapper">
-                    <div class="image-preview-progress-inner"><div class="image-preview-progress-overall"></div><div class="image-preview-progress-current"></div></div>
-                </div>
-                <img id="simple_image_container_img" src="imgs/model_placeholder.jpg" class="img-fluid rounded" />
-                <div id="simple_loading_spinner" class="loading-spinner" style="display:none">
-                    <div class="loadspin1"></div><div class="loadspin2"></div><div class="loadspin3"></div>
-                </div>
-            </div>
-        </div>
+    <!-- Simple Tab Browser Wrapper (required by simpletab.js) -->
+    <div id="simpletabbrowserwrapper">
+        <div id="simpletabbrowser"></div>
     </div>
-    <div class="row mt-3">
-        <div class="col-12">
-            <div class="simple_current_image_batch" id="simple_current_image_batch_wrapper">
-                <div id="simple_current_image_batch" class="d-flex flex-wrap gap-2"></div>
+    <!-- Main Simple Tab Content (required by simpletab.js as 'simpletabmainview') -->
+    <div id="simpletabmainview">
+        <div class="row">
+            <div class="col-lg-4 col-md-5" id="simple_input_sidebar">
+                <div class="d-flex flex-column h-100">
+                    <div class="flex-grow-1 overflow-auto">
+                        <div id="simple_inputs_area"></div>
+                        <div id="simple_inputs_area_advanced" class="main_inputs_area_advanced" style="display:none;"></div>
+                        <div id="simple_inputs_area_hidden" class="main_inputs_area_hidden" style="display:none;"></div>
+                    </div>
+                    <div class="mt-auto p-3">
+                        <button class="btn btn-primary w-100" id="simple_generate_button" onclick="simpleTab.generate()">Generate</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-8 col-md-7">
+                <div id="simple_image_container" class="position-relative">
+                    <div class="image-preview-progress-wrapper simpletab-progress-wrapper" id="simpletab_progress_wrapper">
+                        <div class="image-preview-progress-inner"><div class="image-preview-progress-overall"></div><div class="image-preview-progress-current"></div></div>
+                    </div>
+                    <img id="simple_image_container_img" src="imgs/model_placeholder.jpg" class="img-fluid rounded" />
+                    <div id="simple_loading_spinner" class="loading-spinner" style="display:none">
+                        <div class="loadspin1"></div><div class="loadspin2"></div><div class="loadspin3"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-12">
+                <div class="simple_current_image_batch" id="simple_current_image_batch_wrapper">
+                    <div id="simple_current_image_batch" class="d-flex flex-wrap gap-2"></div>
+                </div>
             </div>
         </div>
     </div>

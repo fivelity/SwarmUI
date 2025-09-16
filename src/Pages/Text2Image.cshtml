@@ -42,7 +42,7 @@
 </script>
 
 <div class="container-fluid mt-2">
-    <ul class="nav nav-pills" role="tablist" id="toptablist">
+    <ul class="nav nav-pills" role="tablist" id="toptablist" style="display:none">
         <li class="nav-item" role="presentation" data-requiredpermission="comfy_dynamic_custom_workflows">
             <a class="nav-link translate" data-bs-toggle="tab" href="#Simple" id="simpletabbutton" aria-selected="false" tabindex="-1" role="tab">Simple</a>
         </li>
@@ -68,13 +68,13 @@
             @await Html.PartialAsync("_Generate/GenerateTab.cshtml", pageModel)
         </div>
         @WebServer.T2ITabBody
-        <div class="tab-pane tab-pane-vw tab-no-scroll" id="utilities_tab" role="tabpanel">
+        <div class="tab-pane tab-pane-vw" id="utilities_tab" role="tabpanel">
             @await Html.PartialAsync("_Generate/UtilitiesTab.cshtml", pageModel)
         </div>
-        <div class="tab-pane tab-pane-vw tab-no-scroll" id="user_tab" role="tabpanel">
+        <div class="tab-pane tab-pane-vw" id="user_tab" role="tabpanel">
             @await Html.PartialAsync("_Generate/UserTab.cshtml", pageModel)
         </div>
-        <div class="tab-pane tab-pane-vw tab-no-scroll" id="server_tab" role="tabpanel">
+        <div class="tab-pane tab-pane-vw" id="server_tab" role="tabpanel">
             @await Html.PartialAsync("_Generate/ServerTab.cshtml", pageModel)
         </div>
     </div>
@@ -82,6 +82,7 @@
 
 @section Scripts {
     <script src="js/lib/exif-reader.min.js"></script>
+    <script src="js/lib/choices.min.js"></script>
     <script src="js/genpage/gentab/welcomemessages.js?vary=@Utilities.VaryID"></script>
     <script src="js/genpage/helpers/browsers.js?vary=@Utilities.VaryID"></script>
     <script src="js/genpage/server/logs.js?vary=@Utilities.VaryID"></script>
@@ -105,7 +106,6 @@
     <script src="js/genpage/gentab/imagehistory.js?vary=@Utilities.VaryID"></script>
     <script src="js/genpage/main.js?vary=@Utilities.VaryID"></script>
     <script src="js/genpage/helpers/settings_editor.js?vary=@Utilities.VaryID"></script>
-    <script src="js/genpage/server/logs.js?vary=@Utilities.VaryID"></script>
     <script src="js/genpage/helpers/ui_improvements.js?vary=@Utilities.VaryID"></script>
     @WebServer.PageFooterExtra
     <script src="js/genpage/helpers/finalscript.js?vary=@Utilities.VaryID"></script>

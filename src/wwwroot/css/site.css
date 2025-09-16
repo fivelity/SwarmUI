@@ -874,7 +874,7 @@ textarea, input, select {
 }
 .tab-no-scroll {
     overflow-x: hidden;
-    overflow-y: hidden;
+    overflow-y: auto;
 }
 .scroll-within-tab {
     overflow-x: auto;

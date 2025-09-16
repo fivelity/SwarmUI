@@ -261,6 +261,11 @@
 <div class="modal-footer"><span id="new_preset_modal_error" class="modal_error_bottom"></span><button type="button" class="btn btn-primary" onclick="save_new_preset()">Save</button><button type="button" class="btn btn-secondary" onclick="close_create_new_preset()">Cancel</button></div>
 @WebUtil.ModalFooter()
 
+<!-- Image Fullview Modal required by currentimagehandler.js -->
+<div id="image_fullview_modal" class="imageview_popup_modal_background" style="display:none; position: fixed; left:0; top:0; width:100vw; height:100vh; z-index: 2000;">
+    <div id="image_fullview_modal_content" style="width: 100%; height: 100%;"></div>
+</div>
+
 <!-- =================================== Misc Modals =================================== -->
 
 @WebUtil.ModalHeader("modal_lora_weights", "LoRA Weights")

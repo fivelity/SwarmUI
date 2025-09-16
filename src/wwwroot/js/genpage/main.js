@@ -608,27 +608,166 @@ let hashSubTabMapping = {
     'server_tab': 'servertablist',
 };
 
-function updateHash() {
-    let tabList = getRequiredElementById('toptablist');
-    let bottomTabList = getRequiredElementById('bottombartabcollection');
-    let activeTopTab = tabList.querySelector('.active');
-    let activeBottomTab = bottomTabList.querySelector('.active');
-    let activeBottomTabHref = activeBottomTab ? activeBottomTab.href.split('#')[1] : '';
-    let activeTopTabHref = activeTopTab ? activeTopTab.href.split('#')[1] : '';
-    let hash = `#${activeBottomTabHref},${activeTopTabHref}`;
-    let subMapping = hashSubTabMapping[activeTopTabHref];
-    if (subMapping) {
-        let subTabList = getRequiredElementById(subMapping);
-        let activeSubTab = subTabList.querySelector('.active');
-        hash += `,${activeSubTab.href.split('#')[1]}`;
+function clickFirstIn(listId) {
+    const list = document.getElementById(listId);
+    if (!list) return false;
+    const first = list.querySelector('a.nav-link');
+    if (first) { first.click(); return true; }
+    return false;
+}
+function clickAnchorIn(listId, hrefId) {
+    let list = document.getElementById(listId);
+    if (!list) return false;
+    let target = list.querySelector(`a[href='#${hrefId}']`);
+    if (target) { target.click(); return true; }
+    return false;
+}
+
+function applyWorkspaceRoute(hash) {
+    // Supports routes like #Generate, #Simple, #Utilities, #Settings, #Settings/API-Keys, #Server, #Comfy (if present)
+    if (!hash) return false;
+    let parts = hash.replace(/^#/, '').split('/');
+    let top = parts[0].toLowerCase();
+    let sub = parts.length > 1 ? parts.slice(1).join('/') : '';
+    function click(id) { let e = document.getElementById(id); if (e) e.click(); }
+    switch (top) {
+        case 'generate':
+        case 'image':
+        case 'text2image':
+            click('text2imagetabbutton');
+            return true;
+        case 'simple':
+            click('simpletabbutton');
+            return true;
+        case 'utilities':
+            click('utilitiestabbutton');
+            // Allow subroutes like #Utilities/CLIP-Tokenization or #Utilities/LoRA-Extractor
+            setTimeout(() => {
+                let subLower = sub.toLowerCase();
+                let matched = false;
+                if (subLower.includes('clip')) matched = clickAnchorIn('utilitiestablist', 'Utilities-CLIP-Token-Tab');
+                else if (subLower.includes('safetensor') || subLower.includes('pickle')) matched = clickAnchorIn('utilitiestablist', 'Utilities-Pickle2Safetensor-Tab');
+                else if (subLower.includes('lora')) matched = clickAnchorIn('utilitiestablist', 'Utilities-LoraExtractor-Tab');
+                else if (subLower.includes('model') && subLower.includes('down')) matched = clickAnchorIn('utilitiestablist', 'Utilities-ModelDownloader-Tab');
+                if (!matched) clickFirstIn('utilitiestablist');
+            }, 1);
+            return true;
+        case 'settings':
+            click('usersettingstabbutton');
+            // Subroutes like #Settings/API-Keys, #Settings/User, #Settings/Layout
+            setTimeout(() => {
+                let subLower = sub.toLowerCase();
+                let matched = false;
+                if (subLower.includes('api')) matched = clickAnchorIn('usertablist', 'Param-Config-User');
+                else if (subLower.includes('layout')) matched = clickAnchorIn('usertablist', 'Layout-Config-User');
+                else if (subLower.includes('user')) matched = clickAnchorIn('usertablist', 'Settings-User');
+                if (!matched) clickFirstIn('usertablist');
+            }, 1);
+            return true;
+        case 'server':
+            click('servertabbutton');
+            return true;
+        case 'comfy':
+            // Try common comfy anchors injected by @WebServer.T2ITabHeader
+            let comfy = document.querySelector("a[href*='Comfy']");
+            if (comfy) comfy.click();
+            else {
+                // Fallback: click any anchor containing 'comfy' text
+                let anchors = [...document.querySelectorAll('#toptablist a')];
+                let found = anchors.find(a => a.textContent.toLowerCase().includes('comfy'));
+                if (found) found.click();
+            }
+            return true;
+        default:
+            return false;
     }
-    else if (activeTopTabHref == 'Simple') {
-        let target = simpleTab.browser.selected || simpleTab.browser.folder;
-        if (target) {
-            hash += `,${encodeURIComponent(target)}`;
+}
+
+function buildWorkspaceHash() {
+    let tabList = getRequiredElementById('toptablist');
+    let activeTop = tabList.querySelector('.active');
+    let activeTopHref = activeTop ? activeTop.href.split('#')[1] : '';
+    // Default to Generate
+    let route = '#Generate';
+    if (activeTopHref === 'Simple') {
+        route = '#Simple';
+        // Optional: include selected workflow path later if desired
+    }
+    else if (activeTopHref === 'utilities_tab') {
+        route = '#Utilities';
+        let sub = document.querySelector('#utilitiestablist .nav-link.active');
+        if (sub) {
+            let id = sub.getAttribute('href').substring(1);
+            // Map known utilities to human-friendly names
+            const map = {
+                'Utilities-CLIP-Token-Tab': 'CLIP-Tokenization',
+                'Utilities-Pickle2Safetensor-Tab': 'Pickle2Safetensors',
+                'Utilities-LoraExtractor-Tab': 'LoRA-Extractor',
+                'Utilities-ModelDownloader-Tab': 'Model-Downloader'
+            };
+            if (map[id]) route += `/${map[id]}`;
         }
     }
-    history.pushState(null, null, hash);
+    else if (activeTopHref === 'user_tab') {
+        route = '#Settings';
+        let sub = document.querySelector('#usertablist .nav-link.active');
+        if (sub) {
+            let id = sub.getAttribute('href').substring(1);
+            const map = {
+                'Param-Config-User': 'API-Keys',
+                'Settings-User': 'User',
+                'Layout-Config-User': 'Layout'
+            };
+            if (map[id]) route += `/${map[id]}`;
+        }
+    }
+    else if (activeTopHref === 'server_tab') {
+        route = '#Server';
+    }
+    else if (activeTopHref === 'Text2Image') {
+        route = '#Generate';
+    }
+    return route;
+}
+
+function normalizeLegacyHash() {
+    if (!location.hash || !location.hash.includes(',')) return false;
+    let split = location.hash.substring(1).split(',');
+    // split[1] is the top tab id in legacy format
+    let top = split[1] || '';
+    let route = '#Generate';
+    switch (top) {
+        case 'Simple': route = '#Simple'; break;
+        case 'utilities_tab': route = '#Utilities'; break;
+        case 'user_tab': route = '#Settings'; break;
+        case 'server_tab': route = '#Server'; break;
+        case 'Text2Image': route = '#Generate'; break;
+    }
+    // Optionally map third part for sub-tabs if coming from legacy
+    if (split.length > 2) {
+        const sub = split[2];
+        const utilMap = {
+            'Utilities-CLIP-Token-Tab': 'CLIP-Tokenization',
+            'Utilities-Pickle2Safetensor-Tab': 'Pickle2Safetensors',
+            'Utilities-LoraExtractor-Tab': 'LoRA-Extractor',
+            'Utilities-ModelDownloader-Tab': 'Model-Downloader'
+        };
+        const settingsMap = {
+            'Param-Config-User': 'API-Keys',
+            'Settings-User': 'User',
+            'Layout-Config-User': 'Layout'
+        };
+        if (route === '#Utilities' && utilMap[sub]) route += `/${utilMap[sub]}`;
+        if (route === '#Settings' && settingsMap[sub]) route += `/${settingsMap[sub]}`;
+    }
+    history.replaceState(null, null, route);
+    return true;
+}
+
+function updateHash() {
+    // Always push simplified workspace route
+    const route = buildWorkspaceHash();
+    history.pushState(null, null, route);
     autoTitle();
 }
 
@@ -641,6 +780,26 @@ function loadHashHelper() {
         tabs = tabs.concat([... getRequiredElementById(subMapping).getElementsByTagName('a')]);
     }
     if (location.hash) {
+        if (normalizeLegacyHash()) {
+            // replaced with workspace route; fall through to apply
+        }
+        if (applyWorkspaceRoute(location.hash)) {
+            // handled as workspace route; also allow legacy triplet after a pipe (#Generate|Image-History,Text2Image,Sub)
+            let pipeIdx = location.hash.indexOf('|');
+            if (pipeIdx >= 0) {
+                let legacy = location.hash.substring(pipeIdx + 1);
+                if (legacy.startsWith('#')) legacy = legacy.substring(1);
+                let split = legacy.split(',');
+                // fall through to legacy handling below using temporary variable
+                // emulate original split variable for next block
+                var __legacy_split = split;
+                split = __legacy_split;
+            } else {
+                // Workspace-only route: skip legacy parsing
+                autoTitle();
+                return;
+            }
+        }
         let split = location.hash.substring(1).split(',');
         let bottomTarget = bottomTabList.querySelector(`a[href='#${split[0]}']`);
         if (bottomTarget && bottomTarget.style.display != 'none') {
@@ -667,8 +826,18 @@ function loadHashHelper() {
     for (let tab of tabs) {
         tab.addEventListener('click', (e) => {
             updateHash();
+            updateWorkspaceButtons();
         });
     }
+    window.addEventListener('hashchange', () => {
+        // Normalize any legacy hash, apply route, and sync visuals
+        if (normalizeLegacyHash()) {
+            // normalized; continue with applied route
+        }
+        applyWorkspaceRoute(location.hash);
+        updateWorkspaceButtons();
+    });
+    updateWorkspaceButtons();
 }
 
 function clearParamFilterInput() {
@@ -682,6 +851,71 @@ function clearParamFilterInput() {
     filterClearer.style.display = 'none';
 }
 
+function updateWorkspaceButtons() {
+    const map = {
+        'Text2Image': 'ws_generate',
+        'Simple': 'ws_simple',
+        'utilities_tab': 'ws_utilities',
+        'user_tab': 'ws_settings',
+        'server_tab': 'ws_server'
+    };
+    // Determine active top tab by visible tab-pane with 'show active'
+    let activePane = document.querySelector('.tab-content > .tab-pane.show.active');
+    let activeId = activePane ? activePane.id : '';
+    // Special case: Generate main content lives under Text2Image pane id
+    if (activeId === 'Text2Image') activeId = 'Text2Image';
+    // Map to workspace button
+    let allBtns = ['ws_generate','ws_simple','ws_comfy','ws_utilities','ws_settings','ws_server'];
+    allBtns.forEach(id => {
+        let b = document.getElementById(id); if (!b) return; b.classList.remove('btn-primary'); b.classList.add('btn-outline-secondary');
+    });
+    let wsId = map[activeId];
+    if (wsId) { let b = document.getElementById(wsId); if (b) { b.classList.add('btn-primary'); b.classList.remove('btn-outline-secondary'); } }
+
+    // Build subnav mirroring current workspace's sub-tabs
+    const subnavBar = document.getElementById('workspace_subnav_bar');
+    const subnavList = document.getElementById('workspace_subnav_list');
+    function copyLinks(fromListId) {
+        let src = document.getElementById(fromListId);
+        if (!src) { subnavBar.style.display = 'none'; return; }
+        let links = [...src.querySelectorAll('.nav-link')];
+        if (links.length === 0) { subnavBar.style.display = 'none'; return; }
+        subnavList.innerHTML = links.map(a => {
+            const href = a.getAttribute('href');
+            const active = a.classList.contains('active') ? 'active' : '';
+            return `<li class="nav-item" role="presentation"><a class="nav-link ${active}" href="${href}">${a.innerHTML}</a></li>`;
+        }).join('');
+        // Ensure clicking cloned link triggers original
+        [...subnavList.querySelectorAll('a.nav-link')].forEach(clone => {
+            clone.addEventListener('click', e => {
+                e.preventDefault();
+                const orig = document.querySelector(`ul#${fromListId} a.nav-link[href='${clone.getAttribute('href')}']`);
+                if (orig) orig.click();
+                // sync active state
+                updateWorkspaceButtons();
+            });
+        });
+        subnavBar.style.display = '';
+    }
+    if (activeId === 'Text2Image') {
+        // Generate workspace: show center area sub-tabs list
+        copyLinks('currentimagecollection');
+    }
+    else if (activeId === 'utilities_tab') {
+        copyLinks('utilitiestablist');
+    }
+    else if (activeId === 'user_tab') {
+        copyLinks('usertablist');
+    }
+    else if (activeId === 'server_tab') {
+        copyLinks('servertablist');
+    }
+    else if (activeId === 'Simple') {
+        // Simple has no sub-tabs; hide bar
+        subnavBar.style.display = 'none';
+    }
+}
+
 function genpageLoad() {
     getRequiredElementById('toptablist').addEventListener('shown.bs.tab', function (e) {
         let versionDisp = getRequiredElementById('version_display');
@@ -691,6 +925,10 @@ function genpageLoad() {
         else {
             versionDisp.style.display = '';
         }
+        // When any top tab changes, ensure route reflects the new workspace
+        const route = buildWorkspaceHash();
+        history.replaceState(null, null, route);
+        updateWorkspaceButtons();
     });
     window.imageEditor = new ImageEditor(getRequiredElementById('image_editor_input'), true, true, () => genTabLayout.reapplyPositions(), () => needsNewPreview());
     let editorSizebar = getRequiredElementById('image_editor_sizebar');
@@ -742,6 +980,10 @@ let modal = new bootstrap.Modal(getRequiredElementById('sam2_installer'));
     genTabLayout.init();
     reviseStatusBar();
     loadHashHelper();
+    // Apply current hash on startup to ensure initial content matches route
+    if (normalizeLegacyHash()) {}
+    applyWorkspaceRoute(location.hash || '#Generate');
+    updateWorkspaceButtons();
     getSession(() => {
         imageHistoryBrowser.navigate('');
         initialModelListLoad();

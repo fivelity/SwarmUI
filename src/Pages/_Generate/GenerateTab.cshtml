@@ -1,9 +1,10 @@
 @model GeneratePageModel
 
 <div class="d-flex flex-column h-100">
+    <div id="t2i_top_bar"></div>
     <div class="row g-0 flex-grow-1">
         <!-- Parameter Sidebar -->
-        <div class="col-md-3 border-end">
+        <div class="col-md-3 border-end" id="input_sidebar">
             <div class="p-3 h-100 d-flex flex-column">
                 <ul class="nav nav-tabs swarm-gen-tab-subnav" data-title="Left Sidebar" data-content="inputsidebartab_content" role="tablist" id="inputsidebartabcollection">
                     <li class="nav-item" role="presentation">
@@ -35,22 +36,25 @@
         <div class="col-md-9 d-flex flex-column">
             <div class="row g-0 flex-grow-1">
                 <!-- Image Result -->
-                <div class="col-md-8 border-end">
+                <div class="col-md-8 border-end" id="main_image_area">
                     <div class="d-flex flex-column h-100">
                         <ul class="nav nav-tabs swarm-gen-tab-subnav" data-title="Center Area" data-content="currentimagecontent" role="tablist" id="currentimagecollection">
                             <li class="nav-item" role="presentation">
                                 <a class="nav-link active translate" data-bs-toggle="tab" href="#Image-Result-Tab" aria-selected="true" role="tab">Image</a>
                             </li>
                         </ul>
-                        <div class="tab-content flex-grow-1" id="currentimagecontent">
-                            <div class="tab-pane show active genpage-bottom-tab h-100" id="Image-Result-Tab" role="tabpanel">
-                                <div class="image_editor_input" id="image_editor_input" style="display:none;"></div>
-                                <div class="current_image drag_image_target" id="current_image">
-                                    <div id="welcome_message" class="welcome_message">@(new HtmlString(Program.VersionUpdateMessage ?? (Program.ServerSettings.ShowExperimentalFeatures ? "Experimental Features are enabled. Issue reports will not be accepted." : Program.ServerSettings.UI.OverrideWelcomeMessage)))</div>
-                                </div>
+                <div class="tab-content flex-grow-1" id="currentimagecontent">
+                    <div class="tab-pane show active genpage-bottom-tab h-100" id="Image-Result-Tab" role="tabpanel">
+                        <div class="image_editor_input" id="image_editor_input" style="display:none;"></div>
+                        <div id="image_editor_sizebar" style="display:none;"></div>
+                        <div id="current_image_wrapbox">
+                            <div class="current_image drag_image_target" id="current_image">
+                                <div id="welcome_message" class="welcome_message">@(new HtmlString(Program.VersionUpdateMessage ?? (Program.ServerSettings.ShowExperimentalFeatures ? "Experimental Features are enabled. Issue reports will not be accepted." : Program.ServerSettings.UI.OverrideWelcomeMessage)))</div>
                             </div>
-                            <div id="extra_welcome_message">@(new HtmlString(Program.ServerSettings.UI.ExtraWelcomeInfo))</div>
                         </div>
+                    </div>
+                    <div id="extra_welcome_message">@(new HtmlString(Program.ServerSettings.UI.ExtraWelcomeInfo))</div>
+                </div>
                         <!-- Prompt Bar -->
                         <div class="alt_prompt_region drag_image_target border-top p-2" id="alt_prompt_region">
                             <div id="alt_prompt_extra_area" class="alt_prompt_extra_area">
@@ -64,6 +68,24 @@
                                 <button class="btn btn-success alt-prompt-generate-button translate" id="alt_generate_button" oncontextmenu="doPopover('generate'); return false;" onclick="mainGenHandler.doGenerateButton(event)">Generate</button>
                                 <button class="btn btn-secondary alt-prompt-center-button" id="alt_center_button" oncontextmenu="doPopover('generate_center'); return false;" onclick="doPopover('generate_center')">&#x2B9F;</button>
                                 <button class="btn btn-danger alt-interrupt" id="alt_interrupt_button" oncontextmenu="doPopover('interrupt'); return false;" onclick="mainGenHandler.doInterrupt()">&times;</button>
+                            </div>
+                            <!-- Token count displays required by layout.js -->
+                            <div class="alt-text-tokencount-wrapper">
+                                <span id="alt_text_tokencount" class="alt-text-tokencount"></span>
+                                <span id="alt_negtext_tokencount" class="alt-text-tokencount" style="display:none"></span>
+                            </div>
+                            <!-- Popovers expected by ui_improvements.js for prompt actions -->
+                            <div class="sui-popover sui-info-popover" id="popover_generate_center" data-visible="false">
+                                <b class="translate">Generate options</b><br>
+                                <span class="translate">This opens generation-related quick actions.</span>
+                            </div>
+                            <div class="sui-popover sui-info-popover" id="popover_generate" data-visible="false">
+                                <b class="translate">Generate</b><br>
+                                <span class="translate">Start generation with the current settings.</span>
+                            </div>
+                            <div class="sui-popover sui-info-popover" id="popover_interrupt" data-visible="false">
+                                <b class="translate">Interrupt</b><br>
+                                <span class="translate">Stop the current generation job(s).</span>
                             </div>
                         </div>
                     </div>
@@ -81,7 +103,9 @@
                                 <div class="position-relative">
                                     <button class="btn btn-sm batch-gear-button" onclick="doPopover('batchgear')">&#9881;</button>
                                 </div>
-                                <div id="current_image_batch" class="current_image_batch_core"></div>
+                                <div id="current_image_batch_wrapper">
+                                    <div id="current_image_batch" class="current_image_batch_core"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -91,9 +115,9 @@
     </div>
 
     <!-- Bottom Bar -->
-    <div class="row g-0">
+    <div class="row g-0" id="t2i_bottom_bar">
         <div class="col-12">
-            <div class="bottom-info-bar-container d-flex flex-wrap p-1 border-bottom">
+            <div class="bottom-info-bar-container d-flex flex-wrap p-1 border-bottom" id="bottom_info_bar">
                 <span class="bottom-info-bar-component p-1 border-start"><span class="other_info_span" id="other_info_span"></span></span>
                 <span class="bottom-info-bar-component p-1 border-start"><b class="translate">Model</b>: <select class="form-select form-select-sm auto-dropdown current_model_view" onchange="autoSelectWidth(this)" id="current_model"></select></span>
                 <span class="bottom-info-bar-component p-1 border-start" style="display:none;" id="current_presets_wrapper"><span><b class="translate">Current presets</b><span id="preset_info_slot"></span>: </span> <span id="current_preset_list_view"></span></span>
@@ -163,6 +187,21 @@
                 </div>
             </div>
         </div>
+    </div>
+    <!-- Split bars expected by layout.js (placeholders) -->
+    <div id="t2i-top-split-bar" style="display:none;"></div>
+    <div id="t2i-top-2nd-split-bar" style="display:none;"></div>
+    <div id="t2i-top-split-quickbutton" style="display:none;"></div>
+    <div id="t2i-mid-split-bar" style="display:none;"></div>
+    <div id="t2i-mid-split-quickbutton" style="display:none;"></div>
+    <button id="quicktools-button" class="d-none" type="button"></button>
+    <!-- Hidden control checkboxes required by currentimagehandler.js -->
+    <div id="batch_controls_hidden" class="d-none">
+        <input type="checkbox" id="auto_clear_batch_checkbox" />
+        <input type="checkbox" id="auto_load_previews_checkbox" />
+        <input type="checkbox" id="auto_load_images_checkbox" />
+        <input type="checkbox" id="show_load_spinners_checkbox" />
+        <input type="checkbox" id="separate_batches_checkbox" />
     </div>
 </div>
 

@@ -6,7 +6,7 @@ All rights reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+you may obtain a copy of the License at
 
     http://www.apache.org/licenses/LICENSE-2.0
 
@@ -16,6 +16,10 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+/* Global structural refinements for consistent, modular UI */
+:root {
+    --sui-subnav-height: 38px;
+}
 
 body {
     top: 0px;
@@ -38,6 +42,10 @@ body {
 }
 .tab-content {
     white-space: normal;
+}
+/* Hide duplicated in-content subnav strips (they are mirrored into header subnav) */
+.swarm-gen-tab-subnav {
+    display: none !important;
 }
 .advanced_input_checkbox {
     cursor: pointer;
@@ -423,6 +431,25 @@ body {
 }
 #add_preset_modal .modal-body {
     overflow-y: auto;
+}
+/* Workspace subnav (second header) */
+#workspace_subnav_bar {
+    position: sticky;
+    top: 0;
+    z-index: 1030; /* above content */
+}
+#workspace_subnav_list {
+    display: block;
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+}
+#workspace_subnav_list .nav-link {
+    padding: 0.25rem 0.5rem;
+}
+/* Ensure popovers layer above content */
+.sui-popover, .sui-popover-notice {
+    z-index: 1055;
 }
 .preset-block-selected {
     border: 1px solid var(--bs-primary);
