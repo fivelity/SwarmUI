@@ -1,0 +1,315 @@
+/*
+ * SwarmUI Color System
+ * Comprehensive color palette extending Bootstrap CSS variables
+ * Includes semantic colors, component colors, and theme variations
+ */
+
+:root {
+  /* ========================================
+     BASE COLOR PALETTE
+     Core color definitions that work for both themes
+   ======================================== */
+
+  /* Neutral grays (light theme base) */
+  --gray-50: #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-300: #d1d5db;
+  --gray-400: #9ca3af;
+  --gray-500: #6b7280;
+  --gray-600: #4b5563;
+  --gray-700: #374151;
+  --gray-800: #1f2937;
+  --gray-900: #111827;
+  --gray-950: #030712;
+
+  /* Brand colors */
+  --blue-50: #eff6ff;
+  --blue-100: #dbeafe;
+  --blue-200: #bfdbfe;
+  --blue-300: #93c5fd;
+  --blue-400: #60a5fa;
+  --blue-500: #3b82f6;
+  --blue-600: #2563eb;
+  --blue-700: #1d4ed8;
+  --blue-800: #1e40af;
+  --blue-900: #1e3a8a;
+  --blue-950: #172554;
+
+  /* Accent variations */
+  --indigo-400: #818cf8;
+  --indigo-500: #6366f1;
+  --indigo-600: #4f46e5;
+
+  --purple-400: #a78bfa;
+  --purple-500: #8b5cf6;
+  --purple-600: #7c3aed;
+
+  /* Status colors */
+  --green-50: #f0fdf4;
+  --green-100: #dcfce7;
+  --green-400: #4ade80;
+  --green-500: #22c55e;
+  --green-600: #16a34a;
+  --green-700: #15803d;
+
+  --yellow-50: #fefce8;
+  --yellow-100: #fef3c7;
+  --yellow-400: #facc15;
+  --yellow-500: #eab308;
+  --yellow-600: #ca8a04;
+
+  --red-50: #fef2f2;
+  --red-100: #fee2e2;
+  --red-400: #f87171;
+  --red-500: #ef4444;
+  --red-600: #dc2626;
+  --red-700: #b91c1c;
+
+  --orange-400: #fb923c;
+  --orange-500: #f97316;
+  --orange-600: #ea580c;
+}
+
+/* ========================================
+   LIGHT THEME COLOR SYSTEM
+   ======================================== */
+
+[data-bs-theme="light"] {
+  /* Surface colors */
+  --bs-body-bg: var(--gray-50);
+  --bs-body-color: var(--gray-900);
+  --bs-tertiary-bg: var(--gray-100);
+  --bs-secondary-bg: #ffffff;
+  --bs-emphasis-color: var(--gray-950);
+  
+  /* Border and muted colors */
+  --bs-border-color: var(--gray-200);
+  --bs-secondary-color: var(--gray-600);
+  --bs-tertiary-color: var(--gray-500);
+  
+  /* Interactive colors */
+  --bs-primary: var(--blue-600);
+  --bs-primary-rgb: 37, 99, 235;
+  --bs-link-color: var(--blue-600);
+  --bs-link-hover-color: var(--blue-700);
+  
+  /* Status colors */
+  --bs-success: var(--green-600);
+  --bs-success-rgb: 22, 163, 74;
+  --bs-warning: var(--yellow-500);
+  --bs-warning-rgb: 234, 179, 8;
+  --bs-danger: var(--red-600);
+  --bs-danger-rgb: 220, 38, 38;
+  --bs-info: var(--blue-500);
+  --bs-info-rgb: 59, 130, 246;
+  
+  /* Component-specific colors */
+  --bs-navbar-color: var(--gray-700);
+  --bs-navbar-hover-color: var(--gray-900);
+  --bs-navbar-active-color: var(--bs-primary);
+  
+  /* Shadows use light theme values */
+  --shadow-current: var(--shadow-sm);
+  --shadow-current-lg: var(--shadow-lg);
+  
+  /* Extended semantic colors */
+  --color-surface: var(--bs-secondary-bg);
+  --color-surface-variant: var(--bs-tertiary-bg);
+  --color-outline: var(--bs-border-color);
+  --color-outline-variant: var(--gray-300);
+  --color-on-surface: var(--bs-body-color);
+  --color-on-surface-variant: var(--bs-secondary-color);
+}
+
+/* ========================================
+   DARK THEME COLOR SYSTEM
+   ======================================== */
+
+[data-bs-theme="dark"] {
+  /* Dark surfaces with better hierarchy */
+  --bs-body-bg: #0a0c10;           /* Deepest background */
+  --bs-tertiary-bg: #131720;       /* Elevated level 1 */
+  --bs-secondary-bg: #1a1f2e;      /* Elevated level 2 */
+  --bs-body-color: #e2e6ec;        /* Primary text */
+  --bs-emphasis-color: #f0f4f8;    /* High emphasis text */
+  
+  /* Border and muted colors optimized for dark */
+  --bs-border-color: #2a3441;      /* Subtle borders */
+  --bs-secondary-color: #9ca6b7;   /* Muted text */
+  --bs-tertiary-color: #6b7785;    /* More muted text */
+  
+  /* Interactive colors - more vibrant for dark theme */
+  --bs-primary: #7c9cff;           /* Brighter blue for contrast */
+  --bs-primary-rgb: 124, 156, 255;
+  --bs-link-color: var(--bs-primary);
+  --bs-link-hover-color: #6a8cff;
+  
+  /* Status colors optimized for dark backgrounds */
+  --bs-success: #34d399;           /* Brighter green */
+  --bs-success-rgb: 52, 211, 153;
+  --bs-warning: #fbbf24;           /* Brighter yellow */
+  --bs-warning-rgb: 251, 191, 36;
+  --bs-danger: #f87171;            /* Softer red */
+  --bs-danger-rgb: 248, 113, 113;
+  --bs-info: #60a5fa;              /* Brighter info blue */
+  --bs-info-rgb: 96, 165, 250;
+  
+  /* Component-specific colors */
+  --bs-navbar-color: rgba(226, 230, 236, 0.7);
+  --bs-navbar-hover-color: rgba(226, 230, 236, 0.9);
+  --bs-navbar-active-color: var(--bs-primary);
+  
+  /* Use darker shadows */
+  --shadow-current: var(--shadow-dark-sm);
+  --shadow-current-lg: var(--shadow-dark-lg);
+  
+  /* Extended semantic colors for dark theme */
+  --color-surface: var(--bs-secondary-bg);
+  --color-surface-variant: var(--bs-tertiary-bg);
+  --color-outline: var(--bs-border-color);
+  --color-outline-variant: #3a4553;
+  --color-on-surface: var(--bs-body-color);
+  --color-on-surface-variant: var(--bs-secondary-color);
+}
+
+/* ========================================
+   COMPONENT-SPECIFIC COLOR TOKENS
+   Colors for specific UI components
+   ======================================== */
+
+:root {
+  /* Button color tokens */
+  --btn-primary-bg: var(--bs-primary);
+  --btn-primary-color: var(--bs-body-bg);
+  --btn-primary-border: var(--bs-primary);
+  --btn-primary-hover-bg: var(--bs-link-hover-color);
+  
+  --btn-secondary-bg: transparent;
+  --btn-secondary-color: var(--bs-secondary-color);
+  --btn-secondary-border: var(--bs-border-color);
+  --btn-secondary-hover-bg: var(--bs-tertiary-bg);
+  --btn-secondary-hover-color: var(--bs-body-color);
+  
+  --btn-success-bg: var(--bs-success);
+  --btn-success-color: var(--bs-body-bg);
+  --btn-danger-bg: var(--bs-danger);
+  --btn-danger-color: var(--bs-body-bg);
+  --btn-warning-bg: var(--bs-warning);
+  --btn-warning-color: var(--bs-body-bg);
+  
+  /* Form control colors */
+  --input-bg: var(--bs-body-bg);
+  --input-color: var(--bs-body-color);
+  --input-border: var(--bs-border-color);
+  --input-border-focus: var(--bs-primary);
+  --input-placeholder: var(--bs-secondary-color);
+  --input-focus-ring: rgba(var(--bs-primary-rgb), var(--input-focus-ring-opacity));
+  
+  /* Card colors */
+  --card-bg: var(--color-surface);
+  --card-border: var(--color-outline);
+  --card-header-bg: var(--color-surface-variant);
+  --card-shadow: var(--shadow-current);
+  
+  /* Navigation colors */
+  --nav-link-color: var(--bs-navbar-color);
+  --nav-link-hover-color: var(--bs-navbar-hover-color);
+  --nav-link-active-color: var(--bs-navbar-active-color);
+  --nav-link-active-bg: rgba(var(--bs-primary-rgb), 0.1);
+  
+  /* Modal colors */
+  --modal-bg: var(--bs-secondary-bg);
+  --modal-backdrop: rgba(0, 0, 0, var(--modal-backdrop-opacity));
+  --modal-border: var(--bs-border-color);
+  --modal-header-border: var(--bs-border-color);
+  
+  /* Toast/notification colors */
+  --toast-bg: var(--bs-secondary-bg);
+  --toast-border: var(--bs-border-color);
+  --toast-header-bg: var(--bs-tertiary-bg);
+  --toast-shadow: var(--shadow-current-lg);
+  
+  /* Browser/explorer colors */
+  --browser-bg: var(--color-surface);
+  --browser-sidebar-bg: var(--color-surface-variant);
+  --browser-border: var(--color-outline);
+  --browser-hover-bg: rgba(var(--bs-primary-rgb), 0.1);
+  --browser-selected-bg: rgba(var(--bs-primary-rgb), 0.2);
+  --browser-selected-color: var(--bs-primary);
+}
+
+/* ========================================
+   STATUS AND STATE COLORS
+   Semantic colors for different states
+   ======================================== */
+
+:root {
+  /* Backend/connection states */
+  --status-success: var(--bs-success);
+  --status-warning: var(--bs-warning);
+  --status-error: var(--bs-danger);
+  --status-info: var(--bs-info);
+  --status-idle: var(--bs-secondary-color);
+  --status-loading: var(--orange-500);
+  --status-disabled: var(--bs-tertiary-color);
+  
+  /* Model/item states */
+  --item-selected: rgba(var(--bs-primary-rgb), 0.15);
+  --item-selected-border: var(--bs-primary);
+  --item-hover: rgba(var(--bs-primary-rgb), 0.08);
+  --item-focus: rgba(var(--bs-primary-rgb), 0.12);
+  --item-active: rgba(var(--bs-primary-rgb), 0.2);
+  
+  /* Progress/loading states */
+  --progress-bg: var(--bs-tertiary-bg);
+  --progress-fill: var(--bs-primary);
+  --loading-spinner: var(--bs-primary);
+  --loading-bg: rgba(var(--bs-body-bg-rgb, 0, 0, 0), 0.8);
+  
+  /* Validation states */
+  --valid-color: var(--bs-success);
+  --valid-bg: rgba(var(--bs-success-rgb), 0.1);
+  --valid-border: var(--bs-success);
+  
+  --invalid-color: var(--bs-danger);
+  --invalid-bg: rgba(var(--bs-danger-rgb), 0.1);
+  --invalid-border: var(--bs-danger);
+  
+  --warning-color: var(--bs-warning);
+  --warning-bg: rgba(var(--bs-warning-rgb), 0.1);
+  --warning-border: var(--bs-warning);
+}
+
+/* ========================================
+   UTILITY COLOR CLASSES
+   Direct color utility classes
+   ======================================== */
+
+/* Text colors */
+.text-primary { color: var(--bs-primary) !important; }
+.text-secondary { color: var(--bs-secondary-color) !important; }
+.text-success { color: var(--bs-success) !important; }
+.text-warning { color: var(--bs-warning) !important; }
+.text-danger { color: var(--bs-danger) !important; }
+.text-info { color: var(--bs-info) !important; }
+.text-muted { color: var(--bs-secondary-color) !important; }
+.text-emphasis { color: var(--bs-emphasis-color) !important; }
+
+/* Background colors */
+.bg-primary { background-color: var(--bs-primary) !important; }
+.bg-secondary { background-color: var(--bs-secondary-bg) !important; }
+.bg-success { background-color: var(--bs-success) !important; }
+.bg-warning { background-color: var(--bs-warning) !important; }
+.bg-danger { background-color: var(--bs-danger) !important; }
+.bg-info { background-color: var(--bs-info) !important; }
+.bg-surface { background-color: var(--color-surface) !important; }
+.bg-surface-variant { background-color: var(--color-surface-variant) !important; }
+
+/* Border colors */
+.border-primary { border-color: var(--bs-primary) !important; }
+.border-secondary { border-color: var(--bs-border-color) !important; }
+.border-success { border-color: var(--bs-success) !important; }
+.border-warning { border-color: var(--bs-warning) !important; }
+.border-danger { border-color: var(--bs-danger) !important; }
+.border-info { border-color: var(--bs-info) !important; }

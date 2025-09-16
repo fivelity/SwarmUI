@@ -1,30 +1,21 @@
+/*
+ * SwarmUI Theme System
+ * Theme-specific overrides for the design system
+ * Works with design-tokens.css and color-system.css
+ */
+
 :root {
-    /* Base font stacks */
+    /* Override font stacks from design tokens if needed */
     --bs-font-sans-serif: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
     --bs-font-monospace: "Fira Code", SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     --bs-body-font-family: var(--bs-font-sans-serif);
-}
-
-/* Dark theme palette using Bootstrap variables (consolidated from overhaul.css) */
-:root {
-    /* shadcn/ui-inspired radii and spacing scale */
-    /* Radii mapping (rounded-lg = 0.5rem baseline) */
-    --bs-border-radius: .5rem;        /* 8px (rounded-lg) */
-    --bs-border-radius-sm: .375rem;   /* 6px (rounded-md) */
-    --bs-border-radius-lg: .75rem;    /* 12px (rounded-xl) */
-    --bs-border-radius-xl: 1rem;      /* 16px (rounded-2xl) */
-    --bs-border-radius-xxl: 1.5rem;   /* 24px (rounded-3xl) */
-
-    /* Spacing tokens (generic names) */
-    --space-1: .25rem;  /* 4px */
-    --space-2: .5rem;   /* 8px */
-    --space-3: .75rem;  /* 12px */
-    --space-4: 1rem;    /* 16px */
-    --space-5: 1.25rem; /* 20px */
-    --space-6: 1.5rem;  /* 24px */
-    --space-8: 2rem;    /* 32px */
-    --space-10: 2.5rem; /* 40px */
-    --space-12: 3rem;   /* 48px */
+    
+    /* Override Bootstrap border radii to match our design tokens */
+    --bs-border-radius: var(--radius-lg);
+    --bs-border-radius-sm: var(--radius-md);
+    --bs-border-radius-lg: var(--radius-xl);
+    --bs-border-radius-xl: var(--radius-2xl);
+    --bs-border-radius-xxl: var(--radius-3xl);
 }
 
 [data-bs-theme="dark"] {
@@ -103,23 +94,35 @@
 /* Density: compact mode overrides */
 [data-density="compact"] {
     /* Slightly smaller text */
-    --bs-body-font-size: 0.9375rem; /* 15px */
-    /* Buttons */
-    --bs-btn-padding-y: .3rem;
-    --bs-btn-padding-x: .5rem;
-    /* Spacing tighten (compact) */
-    --space-1: .25rem;  /* keep */
-    --space-2: .5rem;   /* keep */
-    --space-3: .625rem; /* 10px compact */
-    --space-4: .875rem; /* 14px */
-    --space-5: 1.125rem;/* 18px */
-    --space-6: 1.25rem; /* 20px */
-    --space-8: 1.75rem; /* 28px */
-    --space-10: 2.25rem;/* 36px */
-    --space-12: 2.75rem;/* 44px */
+    --bs-body-font-size: var(--text-base); /* Use design token */
+    
+    /* Tighter spacing for compact mode */
+    --space-1: var(--space-1);     /* 4px - keep */
+    --space-2: var(--space-2);     /* 8px - keep */
+    --space-3: 0.625rem;           /* 10px - tighter */
+    --space-4: 0.875rem;           /* 14px - tighter */
+    --space-5: 1.125rem;           /* 18px - tighter */
+    --space-6: 1.25rem;            /* 20px - tighter */
+    --space-8: 1.75rem;            /* 28px - tighter */
+    --space-10: 2.25rem;           /* 36px - tighter */
+    --space-12: 2.75rem;           /* 44px - tighter */
+    
+    /* Compact button sizing */
+    --bs-btn-padding-y: var(--space-1_5);
+    --bs-btn-padding-x: var(--space-2);
 }
-[data-density="compact"] .btn-sm { --bs-btn-padding-y: .2rem; --bs-btn-padding-x: .4rem; }
+[data-density="compact"] .btn-sm { 
+    --bs-btn-padding-y: var(--space-1); 
+    --bs-btn-padding-x: var(--space-1_5); 
+}
 [data-density="compact"] .form-control,
-[data-density="compact"] .form-select { padding-top: .3rem; padding-bottom: .3rem; }
-[data-density="compact"] .nav-link { padding: .25rem .5rem; }
-[data-density="compact"] .navbar { --bs-navbar-padding-y: .25rem; }
+[data-density="compact"] .form-select { 
+    padding-top: var(--space-1_5); 
+    padding-bottom: var(--space-1_5); 
+}
+[data-density="compact"] .nav-link { 
+    padding: var(--space-1) var(--space-2); 
+}
+[data-density="compact"] .navbar { 
+    --bs-navbar-padding-y: var(--space-1); 
+}

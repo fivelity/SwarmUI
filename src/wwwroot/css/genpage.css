@@ -18,12 +18,12 @@ limitations under the License.
 */
 /* Global structural refinements for consistent, modular UI */
 :root {
-    --sui-subnav-height: 38px;
+    --sui-subnav-height: var(--subnav-height);
 }
 
 body {
-    top: 0px;
-    left: 0px;
+    top: 0;
+    left: 0;
     width: 100vw;
     height: 100vh;
     position: fixed;
@@ -34,7 +34,7 @@ body {
 }
 .prompt-box {
     width: 100%;
-    border-radius: 0.5rem;
+    border-radius: var(--radius-lg);
 }
 .interrupt-button-none {
     background-color: rgba(var(--bs-danger-rgb), 0.2);
@@ -49,15 +49,15 @@ body {
 }
 .advanced_input_checkbox {
     cursor: pointer;
-    width: calc(100% - 2rem);
-    margin-left: 1rem;
-    margin-right: 1rem;
+    width: calc(100% - var(--space-8));
+    margin-left: var(--space-4);
+    margin-right: var(--space-4);
     text-align: center;
-    background-color: var(--background-soft);
-    margin-top: 0.5rem;
-    margin-bottom: 0.5rem;
-    padding: 0.5rem;
-    border-top: 1px solid var(--bs-border-color);
+    background-color: var(--bs-tertiary-bg);
+    margin-top: var(--space-2);
+    margin-bottom: var(--space-2);
+    padding: var(--space-2);
+    border-top: var(--input-border-width) solid var(--bs-border-color);
 }
 .advanced_input_checkbox_presets {
     bottom: 0rem;
@@ -201,27 +201,31 @@ body {
     display: inline-block;
 }
 .model-block {
-    height: 10rem;
+    height: var(--space-40);
     width: 30rem;
-    margin: 0.2rem;
+    margin: var(--space-0_5);
     display: inline-block;
     overflow: hidden;
     white-space: nowrap;
     vertical-align: top;
     position: relative;
-    border: 1px solid var(--bs-border-color);
+    border: var(--input-border-width) solid var(--bs-border-color);
+    border-radius: var(--radius-lg);
+    transition: all var(--duration-200) var(--ease-out);
 }
 .model-block img {
-    max-height: 9rem;
-    width: 9rem;
-    height: 9rem;
+    max-height: var(--space-36);
+    width: var(--space-36);
+    height: var(--space-36);
     display: inline-block;
-    margin: 0.5rem;
-    margin-bottom: 0px;
+    margin: var(--space-2);
+    margin-bottom: 0;
     vertical-align: top;
     cursor: pointer;
     object-fit: contain;
     background-color: var(--bs-tertiary-bg);
+    border-radius: var(--radius-md);
+    transition: all var(--duration-200) var(--ease-out);
 }
 .model-descblock {
     width: 19.5rem;
@@ -769,6 +773,58 @@ body {
 #subnav_hint {
     font-size: 0.875rem;
     opacity: 0.7;
+}
+
+/* Generate Page Layout Structure */
+/* Ensure the 3-column layout is above the bottom bar */
+.d-flex.flex-column.h-100 > .row.g-3.flex-grow-1 {
+    /* This is the 3-column layout row */
+    flex-shrink: 0;
+}
+
+#t2i_bottom_bar {
+    /* Bottom bar should be at the bottom */
+    margin-top: auto;
+    flex-shrink: 0;
+}
+
+/* Bottom bar tabs and content styling */
+#bottombartabcollection {
+    background-color: var(--bs-body-bg);
+    border-bottom: 1px solid var(--bs-border-color);
+    margin-bottom: 0;
+}
+
+#bottombartabcollection .nav-link {
+    border-bottom: 2px solid transparent;
+    transition: all 0.15s ease-in-out;
+}
+
+#bottombartabcollection .nav-link.active {
+    border-bottom-color: var(--bs-primary);
+    background-color: var(--bs-body-bg);
+    font-weight: 500;
+}
+
+#bottombartabcollection .nav-link:hover {
+    border-bottom-color: var(--bs-primary);
+    opacity: 0.8;
+}
+
+/* Bottom bar content area */
+#t2i_bottom_bar_content {
+    min-height: 400px;
+    max-height: calc(50vh);
+}
+
+/* Bottom info bar styling */
+.bottom-info-bar-container {
+    background-color: var(--bs-tertiary-bg);
+    border-bottom: 1px solid var(--bs-border-color);
+}
+
+.bottom-info-bar-component {
+    font-size: 0.875rem;
 }
     width: fit-content;
     cursor: pointer;

@@ -967,7 +967,10 @@ function updateSubNavigation(pageType, subRoute = '') {
     
     switch (pageType) {
         case 'generate':
-            copyLinksFromElement('bottombartabcollection', 'Generate Tools');
+            // Generate page should not have sub-navigation in the header
+            // The bottom bar tabs (Image History, Presets, Models, etc.) should stay at the bottom
+            // We could potentially add other contextual navigation here if needed
+            subnavBar.style.display = 'none';
             break;
         case 'simple':
             // Simple has no sub-tabs

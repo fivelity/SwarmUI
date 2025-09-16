@@ -1,12 +1,13 @@
+/* Legacy CSS variables - most moved to design-tokens.css */
 :root {
-    /* Range and form control tuning – expressed via Bootstrap tokens */
-    --range-height: 26px;
+    /* Legacy range controls - to be refactored */
+    --range-height: var(--space-6_5);
     --range-value-color: var(--bs-primary);
     --range-track-background: var(--bs-tertiary-bg);
     --range-thumb-color-hover: rgba(var(--bs-primary-rgb), .25);
-    --range-thumb-width: 20px;
-    --range-thumb-height: 10px;
-    --range-track-height: 4px;
+    --range-thumb-width: var(--space-5);
+    --range-thumb-height: var(--space-2_5);
+    --range-track-height: var(--space-1);
     --range-padding: calc((var(--range-height) - var(--range-track-height)) / 2);
     --range-track-color: var(--bs-border-color);
     --range-thumb-color: var(--bs-border-color);
@@ -15,16 +16,7 @@
     --toggle-thumb-active-hover: rgba(var(--bs-primary-rgb), .25);
     --font-monospace: var(--bs-font-monospace);
 
-    /* App-specific tokens (prefixed) mapped to Bootstrap semantics */
-    --sui-danger: var(--bs-danger);
-    --sui-warning: var(--bs-warning);
-    --sui-success: var(--bs-success);
-    --sui-muted: var(--bs-secondary-color);
-    --sui-emphasis: var(--bs-emphasis-color);
-    --sui-surface-1: var(--bs-tertiary-bg);
-    --sui-surface-2: var(--bs-secondary-bg);
-
-    /* Status bar and notices */
+    /* Legacy status bar colors - will be moved to design tokens */
     --status-bar-text-color: var(--bs-body-bg);
     --status-bar-warn-color-start-end: #ede68a;
     --status-bar-warn-color-middle: #c4b800;
@@ -32,23 +24,9 @@
     --status-bar-error-color-middle: #c24d4d;
     --status-bar-soft-color: #c4b800;
 
-    /* Backend state colors */
-    --backend-errored: var(--bs-danger);
-    --backend-disabled: var(--bs-warning);
-    --backend-running: var(--bs-success);
-    --backend-idle: #688772;
-    --backend-loading: #335500;
-    --backend-waiting: #335500;
-
-    /* Misc */
-    --notice-pop: #005500;
-    --toast-header: var(--bs-tertiary-bg);
-    --toast-body: var(--bs-secondary-bg);
+    /* Toggle styles */
     --toggle-background: #ccc;
     --toggle-thumb-color: var(--bs-border-color);
-    --model-img-border-color-hover: var(--bs-body-color);
-    --model-block-menu-button-border-color-hover: var(--bs-body-color);
-    --model-block-menu-button-color-hover: var(--bs-body-bg);
 }
 .modal-content {
     background-color: var(--bs-body-bg) !important;
@@ -87,50 +65,14 @@
 body {
     background-color: var(--bs-body-bg);
     color: var(--bs-body-color);
-    font-size: 14px;
+    font-size: var(--text-sm);
     --bs-font-sans-serif: Lato, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", Unifont;
     --bs-body-font-family: var(--bs-font-sans-serif);
 }
 
-/* Consistent select styling (native) */
-:root {
-  --select-height: 2.25rem;
-  --select-radius: 0.375rem;
-  --select-border: 1px solid var(--bs-border-color);
-  --select-border-focus: 1px solid var(--bs-primary);
-  --select-shadow-focus: 0 0 0 0.2rem rgba(13,110,253,0.25);
-  --select-padding-x: 0.75rem;
-  --select-bg: var(--bs-body-bg);
-  --select-color: var(--bs-body-color);
-}
+/* Legacy select styling - replaced by components.css */
 
-select,
-.select {
-  min-height: var(--select-height);
-  border: var(--select-border);
-  border-radius: var(--select-radius);
-  padding-inline: var(--select-padding-x);
-  background: var(--select-bg);
-  color: var(--select-color);
-}
-
-/* Native select alignment */
-select {
-  height: var(--select-height);
-}
-
-/* Focus states */
-select:focus {
-  outline: none;
-  border: var(--select-border-focus);
-  box-shadow: var(--select-shadow-focus);
-}
-
-/* Disabled */
-select:disabled {
-  background: var(--bs-tertiary-bg);
-  opacity: 0.7;
-}
+/* Legacy select styles removed - now handled by components.css */
 @keyframes status_glow-warn {
     0% {background-color: var(--status-bar-warn-color-start-end);}
     50% {background-color: var(--status-bar-warn-color-middle);}
@@ -147,11 +89,11 @@ select:disabled {
 }
 .top-status-bar-wrapper {
     position: absolute;
-    top: 0px;
+    top: 0;
     width: 100vw;
-    height: 2rem;
-    transition: opacity 0.25s;
-    z-index: 0;
+    height: var(--space-8);
+    transition: opacity var(--duration-250) var(--ease-in-out);
+    z-index: var(--z-fixed);
 }
 .top-status-bar-wrapper:hover {
     display: none;
@@ -160,12 +102,12 @@ select:disabled {
 .top-status-bar {
     position: absolute;
     color: var(--status-bar-text-color);
-    top: 0px;
+    top: 0;
     width: 100vw;
-    z-index: 100;
-    animation-duration: 5s;
+    z-index: var(--z-overlay);
+    animation-duration: var(--duration-5000);
     animation-iteration-count: infinite;
-    padding-left: 1rem;
+    padding-left: var(--space-4);
     opacity: 0.8;
 }
 .status-bar-warn {
@@ -225,9 +167,9 @@ select:disabled {
     display: inline-block;
 }
 .backend-card {
-    max-width: 55rem;
-    border-radius: 0.5rem;
-    margin: 0.5rem;
+    max-width: var(--container-sm);
+    border-radius: var(--radius-lg);
+    margin: var(--space-2);
     padding: 1.5px;
 }
 .backend-errored {
