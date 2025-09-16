@@ -339,14 +339,14 @@ class GenTabLayout {
             }
             this.leftBarDrag = true;
             e.preventDefault();
-        }, true);
+        }, { capture: true, passive: false });
         this.rightSplitBar.addEventListener('touchstart', (e) => {
             if (this.isSmallWindow) {
                 return;
             }
             this.rightBarDrag = true;
             e.preventDefault();
-        }, true);
+        }, { capture: true, passive: false });
         this.editorSizebar.addEventListener('mousedown', (e) => {
             this.imageEditorSizeBarDrag = true;
             e.preventDefault();
@@ -354,7 +354,7 @@ class GenTabLayout {
         this.editorSizebar.addEventListener('touchstart', (e) => {
             this.imageEditorSizeBarDrag = true;
             e.preventDefault();
-        }, true);
+        }, { capture: true, passive: false });
         this.bottomSplitBar.addEventListener('mousedown', (e) => {
             if (this.isSmallWindow) {
                 return;
@@ -376,7 +376,7 @@ class GenTabLayout {
             this.bottomBarDrag = true;
             this.setBottomShut(false);
             e.preventDefault();
-        }, true);
+        }, { capture: true, passive: false });
         this.bottomSplitBarButton.addEventListener('click', (e) => {
             e.preventDefault();
             this.bottomBarDrag = false;
@@ -430,7 +430,13 @@ class GenTabLayout {
             }
         };
         document.addEventListener('mousemove', (e) => moveEvt(e, e.pageX, e.pageY));
-        document.addEventListener('touchmove', (e) => moveEvt(e, e.touches.item(0).pageX, e.touches.item(0).pageY));
+        document.addEventListener('touchmove', (e) => {
+            moveEvt(e, e.touches.item(0).pageX, e.touches.item(0).pageY);
+            // Prevent default during drag operations to avoid scroll conflicts
+            if (this.leftBarDrag || this.rightBarDrag || this.bottomBarDrag || this.imageEditorSizeBarDrag) {
+                e.preventDefault();
+            }
+        });
         document.addEventListener('mouseup', (e) => {
             this.leftBarDrag = false;
             this.rightBarDrag = false;
@@ -446,7 +452,7 @@ class GenTabLayout {
                 this.swipeStartX = -1;
                 this.swipeStartY = -1;
             }
-        });
+        }, { passive: true });
         document.addEventListener('touchend', (e) => {
             this.leftBarDrag = false;
             this.rightBarDrag = false;
@@ -505,7 +511,7 @@ class GenTabLayout {
                 this.swipeStartX = -1;
                 this.swipeStartY = -1;
             }
-        });
+        }, { passive: true });
         for (let tab of getRequiredElementById('bottombartabcollection').getElementsByTagName('a')) {
             tab.addEventListener('click', (e) => {
                 if (swarmHasLoaded) {

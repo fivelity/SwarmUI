@@ -30,23 +30,24 @@
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                        <li class="nav-item"><a class="nav-link" href="/Text2Image#Generate">Generate</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/Text2Image#Comfy">Comfy Workflow</a></li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Utilities</a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="/Text2Image#Utilities">Open Utilities</a></li>
-                            </ul>
+                        <li class="nav-item">
+                            <a class="nav-link" id="main_nav_generate" href="/Text2Image#Generate">Generate</a>
                         </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Settings</a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="/Text2Image#Settings/API-Keys">API Keys</a></li>
-                                <li><a class="dropdown-item" href="/Text2Image#Settings/User">User Config</a></li>
-                                <li><a class="dropdown-item" href="/Text2Image#Settings/Layout">Layout Config</a></li>
-                            </ul>
+                        <li class="nav-item">
+                            <a class="nav-link" id="main_nav_simple" href="/Text2Image#Simple">Simple</a>
                         </li>
-                        <li class="nav-item"><a class="nav-link" href="/Text2Image#Server">Server</a></li>
+                        <li class="nav-item" id="main_nav_comfy_item" style="display: none;">
+                            <a class="nav-link" id="main_nav_comfy" href="/Text2Image#Comfy">ComfyUI</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="main_nav_utilities" href="/Text2Image#Utilities">Utilities</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="main_nav_settings" href="/Text2Image#Settings">Settings</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="main_nav_server" href="/Text2Image#Server">Server</a>
+                        </li>
                     </ul>
 <div class="d-flex align-items-center gap-2">
                         <div id="top_status_bar" class="pe-2"></div>
@@ -72,24 +73,13 @@
                 </div>
             </div>
         </nav>
-        <!-- Tier 2: Workspace bar -->
-        <div class="bg-body-tertiary border-bottom">
-            <div class="container-fluid py-1 d-flex flex-wrap align-items-center gap-2">
-                <div class="btn-group" role="group" aria-label="Workspace selector">
-                    <a id="ws_generate" class="btn btn-sm btn-outline-secondary" href="/Text2Image#Generate">Generate</a>
-                    <a id="ws_simple" class="btn btn-sm btn-outline-secondary" href="/Text2Image#Simple">Simple</a>
-                    <a id="ws_comfy" class="btn btn-sm btn-outline-secondary" href="/Text2Image#Comfy">Comfy</a>
-                    <a id="ws_utilities" class="btn btn-sm btn-outline-secondary" href="/Text2Image#Utilities">Utilities</a>
-                    <a id="ws_settings" class="btn btn-sm btn-outline-secondary" href="/Text2Image#Settings">Settings</a>
-                    <a id="ws_server" class="btn btn-sm btn-outline-secondary" href="/Text2Image#Server">Server</a>
-                </div>
-                <div class="ms-auto small text-secondary" id="workspace_hint"></div>
-            </div>
-            <!-- Workspace subnav mirror injected by site.js/updateWorkspaceButtons -->
-            <div class="bg-body-tertiary border-top" id="workspace_subnav_bar" style="display:none;">
-                <div class="container-fluid py-1">
-                    <ul class="nav nav-underline" id="workspace_subnav_list"></ul>
-                </div>
+        <!-- Tier 2: Contextual Sub-Navigation Bar -->
+        <div class="bg-body-tertiary border-bottom" id="subnav_bar">
+            <div class="container-fluid py-1">
+                <ul class="nav nav-underline" id="subnav_list">
+                    <!-- Sub-navigation items dynamically populated based on active main tab -->
+                </ul>
+                <div class="ms-auto small text-secondary" id="subnav_hint"></div>
             </div>
         </div>
     </header>

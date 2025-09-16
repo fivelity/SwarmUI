@@ -23,7 +23,14 @@ this.modalJq = null; // jQuery removed; use element and helpers
         this.lastMouseY = 0;
         this.isDragging = false;
         this.didDrag = false;
-        this.content.addEventListener('wheel', this.onWheel.bind(this));
+        this.content.addEventListener('wheel', (e) => {
+            if (!findParentOfClass(e.target, 'imageview_modal_imagewrap') || e.ctrlKey || e.shiftKey) {
+                return;
+            }
+            // Prevent default scroll behavior when zooming images
+            e.preventDefault();
+            this.onWheel(e);
+        });
         this.content.addEventListener('mousedown', this.onMouseDown.bind(this));
         document.addEventListener('mouseup', this.onGlobalMouseUp.bind(this));
         document.addEventListener('mousemove', this.onGlobalMouseMove.bind(this));

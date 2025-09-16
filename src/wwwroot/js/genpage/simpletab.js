@@ -34,7 +34,9 @@ class SimpleTab {
     }
 
     onFolderSelected() {
-        this.browser.fullContentDiv.style.display = 'inline-block';
+        if (this.browser && this.browser.fullContentDiv) {
+            this.browser.fullContentDiv.style.display = 'inline-block';
+        }
         this.containerDiv.style.display = 'none';
         setTimeout(() => updateHash(), 10);
     }
@@ -67,7 +69,9 @@ class SimpleTab {
     }
 
     onBrowserSizeChanged() {
-        this.containerDiv.style.width = this.browser.fullContentDiv.style.width;
+        if (this.browser && this.browser.fullContentDiv) {
+            this.containerDiv.style.width = this.browser.fullContentDiv.style.width;
+        }
     }
 
     generate() {
@@ -185,7 +189,9 @@ class SimpleTab {
                 areaData[0].innerHTML = html;
             }
             this.setNoImage();
-            this.browser.fullContentDiv.style.display = 'none';
+            if (this.browser && this.browser.fullContentDiv) {
+                this.browser.fullContentDiv.style.display = 'none';
+            }
             this.containerDiv.style.display = 'inline-block';
             for (let group of groupsClose) {
                 let elem = getRequiredElementById(`simpleinput_group_${group}`);

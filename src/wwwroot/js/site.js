@@ -243,23 +243,37 @@ function doGlobalErrorDebug() {
 }
 
 /***** Header/workspace/subnav helpers *****/
-function setActiveWorkspaceByHash(hash) {
+function setActiveMainNavByHash(hash) {
     const map = {
-        '#Generate': 'ws_generate',
-        '#Text2Image': 'ws_generate',
-        '#Simple': 'ws_simple',
-        '#Comfy': 'ws_comfy',
-        '#Utilities': 'ws_utilities',
-        '#Settings': 'ws_settings',
-        '#Server': 'ws_server'
+        '#Generate': 'main_nav_generate',
+        '#Text2Image': 'main_nav_generate',
+        '#Simple': 'main_nav_simple',
+        '#Comfy': 'main_nav_comfy',
+        '#Utilities': 'main_nav_utilities',
+        '#Settings': 'main_nav_settings',
+        '#Server': 'main_nav_server'
     };
-    for (let id of ['ws_generate','ws_simple','ws_comfy','ws_utilities','ws_settings','ws_server']) {
-        let btn = document.getElementById(id);
-        if (btn) btn.classList.remove('active');
-    }
-    let targetId = map[hash] || (hash && map[hash.split('/')[0]]) || 'ws_generate';
+    
+    // Remove active from all main nav links
+    const mainNavLinks = document.querySelectorAll('#navbarNav .nav-link');
+    mainNavLinks.forEach(link => link.classList.remove('active'));
+    
+    let targetId = map[hash] || (hash && map[hash.split('/')[0]]) || 'main_nav_generate';
     let target = document.getElementById(targetId);
     if (target) target.classList.add('active');
+    
+    // Show/hide ComfyUI nav item based on usage
+    const comfyNavItem = document.getElementById('main_nav_comfy_item');
+    if (comfyNavItem) {
+        if (hash && hash.toLowerCase().includes('comfy')) {
+            comfyNavItem.style.display = '';
+        } else {
+            // Keep it visible if already shown, hide only on initial load
+            if (!target || !target.classList.contains('active')) {
+                comfyNavItem.style.display = 'none';
+            }
+        }
+    }
 }
 
 // Mirror the active pane's sub-navigation into the workspace subnav bar
@@ -298,12 +312,26 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!window.location.hash && savedHash) {
             window.location.hash = savedHash;
         }
-        setActiveWorkspaceByHash(window.location.hash || '#Text2Image');
+        setActiveMainNavByHash(window.location.hash || '#Generate');
 
         // Track hash changes and persist
         window.addEventListener('hashchange', () => {
             localStorage.setItem('sui.lastHash', window.location.hash);
-            setActiveWorkspaceByHash(window.location.hash);
+            setActiveMainNavByHash(window.location.hash);
+        });
+        
+        // Add click handlers to main navigation
+        const mainNavLinks = document.querySelectorAll('#navbarNav .nav-link');
+        mainNavLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                // Let the natural navigation happen, then update UI
+                setTimeout(() => {
+                    setActiveMainNavByHash(window.location.hash);
+                    if (typeof updateWorkspaceButtons === 'function') {
+                        updateWorkspaceButtons();
+                    }
+                }, 10);
+            });
         });
 
 // On tab change, just toggle Comfy-only visibility (no header subnav)

@@ -28,26 +28,42 @@ if (-not (Test-Path ".\src\bin\live_release\SwarmUI.exe")) {
 $Env:ASPNETCORE_ENVIRONMENT = "Development"
 $Env:ASPNETCORE_URLS = "http://*:7801"
 
+# Actual runner.
+Start-Process -FilePath "powershell.exe" -ArgumentList "-NoExit", "-Command", ".\src\bin\live_release\SwarmUI.exe --environment dev @args"
+
 # Wait for the server to be ready
 Write-Host "Waiting for SwarmUI to start..."
 Start-Sleep -Seconds 5
 
-# Open Chrome in Incognito mode
-$chrome = "$Env:ProgramFiles(x86)\Google\Chrome\Application\chrome.exe"
-$chromeAlt = "$Env:ProgramFiles\Google\Chrome\Application\chrome.exe"
-Write-Host "Chrome path: $chrome"
+# Open Chrome
+$chrome = "$Env:ProgramFiles\Google\Chrome\Application\chrome.exe"
+$chromeAlt = "${Env:ProgramFiles(x86)}\Google\Chrome\Application\chrome.exe"
+$chromeLcl = "$Env:LOCALAPPDATA\Google\Chrome\Application\chrome.exe"
 if (Test-Path $chrome) {
-    Write-Host "Chrome found, launching..."
-    Start-Process $chrome @('--incognito', "http://localhost:7801")
-} 
+    Start-Process $chrome "http://localhost:7801"
+}
 elseif (Test-Path $chromeAlt) {
-    Write-Host "Chrome found at alternate path, launching..."
-    Start-Process $chromeAlt @('--incognito', "http://localhost:7801")
+    Start-Process $chromeAlt "http://localhost:7801"
+}
+elseif (Test-Path $chromeLcl) {
+    Start-Process $chromeLcl "http://localhost:7801"
 }
 else {
     Write-Host "Google Chrome not found, opening default browser."
     Start-Process "http://localhost:7801"
 }
 
-# Start SwarmUI in a new window
-Start-Process -FilePath "powershell.exe" -ArgumentList "-NoExit -Command `".\src\bin\live_release\SwarmUI.exe --environment dev $args`""
+# Keep this script alive until the server process is closed
+Write-Host "Main script is now waiting for SwarmUI process to close..."
+$process = Get-Process -Name "SwarmUI" -ErrorAction SilentlyContinue
+if ($process) {
+    $exitCode = Wait-Process -Id $process.Id -PassThru
+    Write-Host "SwarmUI exited with code $exitCode"
+    # Exit code 42 means restart, anything else = don't.
+    if ($exitCode -eq 42) {
+        .\launch-windows-chrome-dev.ps1 @args
+    }
+}
+else {
+    Write-Host "Could not find SwarmUI process to monitor."
+}

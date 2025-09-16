@@ -23,7 +23,7 @@
                             <div id="main_inputs_area"></div>
                             <div id="main_inputs_area_hidden" class="main_inputs_area_hidden"></div>
                         </div>
-                        <div class="advanced_input_checkbox form-check text-center mt-auto p-2">
+                        <div class="advanced_input_checkbox form-check text-center mt-auto p-3 border-top bg-body-secondary">
                             <input class="form-check-input" type="checkbox" id="advanced_options_checkbox" onclick="toggle_advanced()"/>
                             <label class="form-check-label" for="advanced_options_checkbox" onclick="toggle_advanced_checkbox_manual()"><span class="translate">Display Advanced Options?</span> <span id="advanced_hidden_count"></span></label>
                         </div>
@@ -56,18 +56,26 @@
                     <div id="extra_welcome_message">@(new HtmlString(Program.ServerSettings.UI.ExtraWelcomeInfo))</div>
                 </div>
                         <!-- Prompt Bar -->
-<div class="alt_prompt_region drag_image_target border-top p-2 rounded-top" id="alt_prompt_region">
-                            <div id="alt_prompt_extra_area" class="alt_prompt_extra_area">
+<div class="alt_prompt_region drag_image_target bg-body-tertiary border-top border-bottom shadow-sm" id="alt_prompt_region">
+                            <div id="alt_prompt_extra_area" class="alt_prompt_extra_area p-2">
                                 <button class="btn btn-sm btn-danger image-clear-button translate" style="display: none;" id="alt_prompt_image_clear_button">Clear Images</button>
                                 <div class="added-image-area alt-prompt-added-image-area" id="alt_prompt_image_area"></div>
                             </div>
-<div class="alt_prompt_main_line input-group gap-2">
-<button class="btn btn-primary alt-text-add-button" id="alt_text_add_button" title="Add prompt helper" aria-label="Add prompt helper">+</button>
-                                <textarea id="alt_prompt_textbox" class="form-control alt_prompt_textbox translate" rows="1" placeholder="Type your prompt here... (or, drag/paste an image in to use Image Prompting)" onpaste="imagePromptImagePaste(arguments[0])"></textarea>
-                                <textarea id="alt_negativeprompt_textbox" class="form-control alt_prompt_textbox translate" rows="1" placeholder="Optionally, type a negative prompt here..."></textarea>
-<button class="btn btn-success alt-prompt-generate-button translate" id="alt_generate_button" title="Generate" aria-label="Generate" oncontextmenu="doPopover('generate'); return false;" onclick="mainGenHandler.doGenerateButton(event)">Generate</button>
-<button class="btn btn-secondary alt-prompt-center-button" id="alt_center_button" title="Generate options" aria-label="Generate options" oncontextmenu="doPopover('generate_center'); return false;" onclick="doPopover('generate_center')">&#x2B9F;</button>
-<button class="btn btn-danger alt-interrupt" id="alt_interrupt_button" title="Interrupt" aria-label="Interrupt" oncontextmenu="doPopover('interrupt'); return false;" onclick="mainGenHandler.doInterrupt()">&times;</button>
+                            <div class="p-3">
+                                <div class="alt_prompt_main_line d-flex gap-2 mb-2">
+                                    <button class="btn btn-outline-primary alt-text-add-button" id="alt_text_add_button" title="Add prompt helper" aria-label="Add prompt helper">+</button>
+                                    <div class="flex-grow-1">
+                                        <textarea id="alt_prompt_textbox" class="form-control alt_prompt_textbox translate mb-2" rows="2" placeholder="Type your prompt here... (or, drag/paste an image in to use Image Prompting)" onpaste="imagePromptImagePaste(arguments[0])"></textarea>
+                                        <textarea id="alt_negativeprompt_textbox" class="form-control alt_prompt_textbox translate" rows="1" placeholder="Optionally, type a negative prompt here..."></textarea>
+                                    </div>
+                                    <div class="d-flex flex-column gap-1">
+                                        <button class="btn btn-success alt-prompt-generate-button translate" id="alt_generate_button" title="Generate" aria-label="Generate" oncontextmenu="doPopover('generate'); return false;" onclick="mainGenHandler.doGenerateButton(event)">Generate</button>
+                                        <div class="d-flex gap-1">
+                                            <button class="btn btn-secondary btn-sm alt-prompt-center-button" id="alt_center_button" title="Generate options" aria-label="Generate options" oncontextmenu="doPopover('generate_center'); return false;" onclick="doPopover('generate_center')">&#x2B9F;</button>
+                                            <button class="btn btn-danger btn-sm alt-interrupt" id="alt_interrupt_button" title="Interrupt" aria-label="Interrupt" oncontextmenu="doPopover('interrupt'); return false;" onclick="mainGenHandler.doInterrupt()">&times;</button>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <!-- Token count displays required by layout.js -->
                             <div class="alt-text-tokencount-wrapper">

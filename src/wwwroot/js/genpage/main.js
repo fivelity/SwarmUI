@@ -641,18 +641,53 @@ function applyWorkspaceRoute(hash) {
     let parts = hash.replace(/^#/, '').split('/');
     let top = parts[0].toLowerCase();
     let sub = parts.length > 1 ? parts.slice(1).join('/') : '';
+    
+    // Hide all tab panes first
+    const allPanes = document.querySelectorAll('.tab-pane');
+    allPanes.forEach(pane => {
+        pane.style.display = 'none';
+        pane.classList.remove('show', 'active');
+    });
+    
+    // Update main navigation active states
+    const mainNavLinks = document.querySelectorAll('#navbarNav .nav-link');
+    mainNavLinks.forEach(link => link.classList.remove('active'));
+    
+    function showPane(paneId) {
+        const pane = document.getElementById(paneId);
+        if (pane) {
+            pane.style.display = 'block';
+            pane.classList.add('show', 'active');
+        }
+    }
+    
+    function setMainNavActive(navId) {
+        const navLink = document.getElementById(navId);
+        if (navLink) navLink.classList.add('active');
+    }
+    
     function click(id) { let e = document.getElementById(id); if (e) e.click(); }
+    
     switch (top) {
         case 'generate':
         case 'image':
         case 'text2image':
+            showPane('Text2Image');
+            setMainNavActive('main_nav_generate');
             click('text2imagetabbutton');
+            updateSubNavigation('generate');
             return true;
         case 'simple':
+            showPane('Simple');
+            setMainNavActive('main_nav_simple');
             click('simpletabbutton');
+            updateSubNavigation('simple');
             return true;
         case 'utilities':
+            showPane('utilities_tab');
+            setMainNavActive('main_nav_utilities');
             click('utilitiestabbutton');
+            updateSubNavigation('utilities', sub);
             // Allow subroutes like #Utilities/CLIP-Tokenization or #Utilities/LoRA-Extractor
             setTimeout(() => {
                 let subLower = sub.toLowerCase();
@@ -665,7 +700,10 @@ function applyWorkspaceRoute(hash) {
             }, 1);
             return true;
         case 'settings':
+            showPane('user_tab');
+            setMainNavActive('main_nav_settings');
             click('usersettingstabbutton');
+            updateSubNavigation('settings', sub);
             // Subroutes like #Settings/API-Keys, #Settings/User, #Settings/Layout
             setTimeout(() => {
                 let subLower = sub.toLowerCase();
@@ -677,17 +715,38 @@ function applyWorkspaceRoute(hash) {
             }, 1);
             return true;
         case 'server':
+            showPane('server_tab');
+            setMainNavActive('main_nav_server');
             click('servertabbutton');
+            updateSubNavigation('server');
             return true;
         case 'comfy':
             // Try common comfy anchors injected by @WebServer.T2ITabHeader
             let comfy = document.querySelector("a[href*='Comfy']");
-            if (comfy) comfy.click();
+            if (comfy) {
+                let paneId = comfy.getAttribute('href').substring(1);
+                showPane(paneId);
+                setMainNavActive('main_nav_comfy');
+                // Make sure ComfyUI nav item is visible
+                const comfyNavItem = document.getElementById('main_nav_comfy_item');
+                if (comfyNavItem) comfyNavItem.style.display = '';
+                comfy.click();
+                updateSubNavigation('comfy');
+            }
             else {
                 // Fallback: click any anchor containing 'comfy' text
                 let anchors = [...document.querySelectorAll('#toptablist a')];
                 let found = anchors.find(a => a.textContent.toLowerCase().includes('comfy'));
-                if (found) found.click();
+                if (found) {
+                    let paneId = found.getAttribute('href').substring(1);
+                    showPane(paneId);
+                    setMainNavActive('main_nav_comfy');
+                    // Make sure ComfyUI nav item is visible
+                    const comfyNavItem = document.getElementById('main_nav_comfy_item');
+                    if (comfyNavItem) comfyNavItem.style.display = '';
+                    found.click();
+                    updateSubNavigation('comfy');
+                }
             }
             return true;
         default:
@@ -863,68 +922,104 @@ function clearParamFilterInput() {
     filterClearer.style.display = 'none';
 }
 
-function updateWorkspaceButtons() {
-    const map = {
-        'Text2Image': 'ws_generate',
-        'Simple': 'ws_simple',
-        'utilities_tab': 'ws_utilities',
-        'user_tab': 'ws_settings',
-        'server_tab': 'ws_server'
-    };
-    // Determine active top tab by visible tab-pane with 'show active'
-    let activePane = document.querySelector('.tab-content > .tab-pane.show.active');
-    let activeId = activePane ? activePane.id : '';
-    // Special case: Generate main content lives under Text2Image pane id
-    if (activeId === 'Text2Image') activeId = 'Text2Image';
-    // Map to workspace button
-    let allBtns = ['ws_generate','ws_simple','ws_comfy','ws_utilities','ws_settings','ws_server'];
-    allBtns.forEach(id => {
-        let b = document.getElementById(id); if (!b) return; b.classList.remove('btn-primary'); b.classList.add('btn-outline-secondary');
-    });
-    let wsId = map[activeId];
-    if (wsId) { let b = document.getElementById(wsId); if (b) { b.classList.add('btn-primary'); b.classList.remove('btn-outline-secondary'); } }
-
-    // Build subnav mirroring current workspace's sub-tabs
-    const subnavBar = document.getElementById('workspace_subnav_bar');
-    const subnavList = document.getElementById('workspace_subnav_list');
-    function copyLinks(fromListId) {
+function updateSubNavigation(pageType, subRoute = '') {
+    const subnavBar = document.getElementById('subnav_bar');
+    const subnavList = document.getElementById('subnav_list');
+    const subnavHint = document.getElementById('subnav_hint');
+    
+    if (!subnavBar || !subnavList) return;
+    
+    // Clear existing sub-navigation
+    subnavList.innerHTML = '';
+    
+    function copyLinksFromElement(fromListId, hintText = '') {
         let src = document.getElementById(fromListId);
-        if (!src) { subnavBar.style.display = 'none'; return; }
+        if (!src) { 
+            subnavBar.style.display = 'none'; 
+            return; 
+        }
         let links = [...src.querySelectorAll('.nav-link')];
-        if (links.length === 0) { subnavBar.style.display = 'none'; return; }
+        if (links.length === 0) { 
+            subnavBar.style.display = 'none'; 
+            return; 
+        }
+        
         subnavList.innerHTML = links.map(a => {
             const href = a.getAttribute('href');
             const active = a.classList.contains('active') ? 'active' : '';
             return `<li class="nav-item" role="presentation"><a class="nav-link ${active}" href="${href}">${a.innerHTML}</a></li>`;
         }).join('');
+        
         // Ensure clicking cloned link triggers original
         [...subnavList.querySelectorAll('a.nav-link')].forEach(clone => {
             clone.addEventListener('click', e => {
                 e.preventDefault();
                 const orig = document.querySelector(`ul#${fromListId} a.nav-link[href='${clone.getAttribute('href')}']`);
                 if (orig) orig.click();
-                // sync active state
-                updateWorkspaceButtons();
+                // Re-sync subnav after click
+                setTimeout(() => updateSubNavigation(pageType, subRoute), 50);
             });
         });
+        
+        if (subnavHint) subnavHint.textContent = hintText;
         subnavBar.style.display = '';
     }
-    if (activeId === 'Text2Image') {
-        // Generate workspace: show center area sub-tabs list
-        copyLinks('currentimagecollection');
+    
+    switch (pageType) {
+        case 'generate':
+            copyLinksFromElement('bottombartabcollection', 'Generate Tools');
+            break;
+        case 'simple':
+            // Simple has no sub-tabs
+            subnavBar.style.display = 'none';
+            break;
+        case 'utilities':
+            copyLinksFromElement('utilitiestablist', 'Utility Tools');
+            break;
+        case 'settings':
+            copyLinksFromElement('usertablist', 'User & System Settings');
+            break;
+        case 'server':
+            copyLinksFromElement('servertablist', 'Server Management');
+            break;
+        case 'comfy':
+            // ComfyUI might have dynamic sub-tabs, let's check for them
+            let comfyTabs = document.querySelector('.tab-pane.show.active .swarm-gen-tab-subnav');
+            if (comfyTabs) {
+                copyLinksFromElement(comfyTabs.id, 'ComfyUI Workflow');
+            } else {
+                subnavBar.style.display = 'none';
+            }
+            break;
+        default:
+            subnavBar.style.display = 'none';
+            break;
     }
-    else if (activeId === 'utilities_tab') {
-        copyLinks('utilitiestablist');
+}
+
+function updateWorkspaceButtons() {
+    // This function is now simplified since we moved the logic to updateSubNavigation
+    // Just update the sub-navigation based on current active pane
+    let activePane = document.querySelector('.tab-content > .tab-pane.show.active');
+    if (!activePane) return;
+    
+    let pageType = '';
+    switch (activePane.id) {
+        case 'Text2Image': pageType = 'generate'; break;
+        case 'Simple': pageType = 'simple'; break;
+        case 'utilities_tab': pageType = 'utilities'; break;
+        case 'user_tab': pageType = 'settings'; break;
+        case 'server_tab': pageType = 'server'; break;
+        default:
+            // Check if it's a ComfyUI pane
+            if (activePane.id.toLowerCase().includes('comfy')) {
+                pageType = 'comfy';
+            }
+            break;
     }
-    else if (activeId === 'user_tab') {
-        copyLinks('usertablist');
-    }
-    else if (activeId === 'server_tab') {
-        copyLinks('servertablist');
-    }
-    else if (activeId === 'Simple') {
-        // Simple has no sub-tabs; hide bar
-        subnavBar.style.display = 'none';
+    
+    if (pageType) {
+        updateSubNavigation(pageType);
     }
 }
 
