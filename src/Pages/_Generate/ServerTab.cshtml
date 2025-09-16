@@ -127,7 +127,7 @@
         </div>
     </div>
     <div class="tab-pane" id="Settings-Backends" role="tabpanel">
-        <div class="container-fluid">
+<div class="container-fluid">
             <div class="d-flex justify-content-between align-items-center my-3">
                 <div>
                     Add new backend of type:
@@ -135,11 +135,11 @@
                         <input class="form-check-input" type="checkbox" id="backends_show_advanced" title="Show Advanced Backend Types" onclick="toggleShowAdvancedBackends()" autocomplete="off">
                         <label class="form-check-label" for="backends_show_advanced">Show Advanced</label>
                     </div>
-                    <div id="backend_add_buttons" class="d-inline-block"></div>
+                    <div id="backend_add_buttons" class="d-inline-flex flex-wrap gap-2 ms-2"></div>
                 </div>
                 <button class="btn btn-primary" onclick="restart_all_backends()">Restart All Backends</button>
             </div>
-            <div class="backends_list" id="backends_list"></div>
+            <div class="backends_list d-flex flex-wrap gap-3" id="backends_list"></div>
         </div>
     </div>
     <div class="tab-pane" id="Settings-Server" role="tabpanel">

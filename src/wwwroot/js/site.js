@@ -954,7 +954,7 @@ function makeDropdownInput(featureid, id, paramid, name, description, values, de
         <label>
             <span class="auto-input-name">${getToggleHtml(toggles, id, name)}${translateableHtml(name)}${popover}</span>
         </label>
-        <select class="auto-dropdown" id="${id}" data-name="${name}" data-param_id="${paramid}" autocomplete="off" onchange="autoSelectWidth(this)">`;
+        <select class="form-select" id="${id}" data-name="${name}" data-param_id="${paramid}" autocomplete="off" onchange="autoSelectWidth(this)">`;
     for (let i = 0; i < values.length; i++) {
         let value = values[i];
         let alt_name = alt_names && alt_names[i] ? alt_names[i] : value;

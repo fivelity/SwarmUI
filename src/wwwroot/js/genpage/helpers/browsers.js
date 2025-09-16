@@ -599,7 +599,7 @@ class GenPageBrowserClass {
             let formatSelector = document.createElement('select');
             formatSelector.id = `${this.id}-format-selector`;
             formatSelector.title = 'Display format';
-            formatSelector.className = 'browser-format-selector';
+            formatSelector.className = 'browser-format-selector form-select';
             for (let format of ['Cards', 'Small Cards', 'Big Cards', 'Thumbnails', 'Small Thumbnails', 'Big Thumbnails', 'Giant Thumbnails', 'List', 'Details List']) {
                 let option = document.createElement('option');
                 option.value = format;

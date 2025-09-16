@@ -163,7 +163,7 @@
     <div class="modal-body">
         <span class="translate">Rename the model:</span>
         <br><i class="translate">This will move the model file and any attached files to a different sub-folder, within the same models path.</i>
-        <br>@WebUtil.TextPopoverButton("modelrenamedownloaderfolder", "What folder to put the model in.\nTo create new folders, simply type paths with '/' in them into the 'Save as:' name box below.") <b>Folder</b>: <select class="auto-dropdown" id="model_rename_downloader_folder" autocomplete="off"></select>
+        <br>@WebUtil.TextPopoverButton("modelrenamedownloaderfolder", "What folder to put the model in.\nTo create new folders, simply type paths with '/' in them into the 'Save as:' name box below.") <b>Folder</b>: <select class="form-select" id="model_rename_downloader_folder" autocomplete="off"></select>
         <br>
         <br>@WebUtil.TextPopoverButton("modelrenamedownloadersaveas", "File name to save as. Don't include the '.safetensors' file extension, just the name.\nYou can use a folder path with the '/' symbol.") <b>New name</b>: <input type="text" id="model_rename_downloader_name" class="auto-text auto-text-wide" placeholder="Model Name" autocomplete="off" oninput="modelRenameNameInput()" />
         <br>
@@ -187,13 +187,13 @@
                 <br>(For example, LoRA will not work, and resolution is constrained to the range you select).
                 <br>Therefore this should only be used for models you want to use frequently, especially for example models exposed as an external API.
             </div>
-            Model: <select class="auto-dropdown" id="tensorrt_model_select"></select>
-            <br>Preferred Aspect Ratio: <select class="auto-dropdown" id="tensorrt_aspect_ratio">
+            Model: <select class="form-select" id="tensorrt_model_select"></select>
+            <br>Preferred Aspect Ratio: <select class="form-select" id="tensorrt_aspect_ratio">
                 <option selected="">1:1</option>
                 <option>4:3</option><option>3:2</option><option>8:5</option><option>16:9</option><option>21:9</option>
                 <option>3:4</option><option>2:3</option><option>5:8</option><option>9:16</option><option>9:21</option>
             </select>
-            <br>Aspect Ratio Range Limit: <select class="auto-dropdown" id="tensorrt_aspect_range">
+            <br>Aspect Ratio Range Limit: <select class="form-select" id="tensorrt_aspect_range">
                 <option>Exact</option><option selected="">2x</option><option>4x</option>
             </select>
             <br>Preferred Batch Size: <input type="number" class="auto-number" id="tensorrt_batch_size" value="1" min="1" max="64" />

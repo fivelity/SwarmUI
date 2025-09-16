@@ -42,7 +42,7 @@
 </script>
 
 <div class="container-fluid mt-2">
-    <ul class="nav nav-pills" role="tablist" id="toptablist" style="display:none">
+<ul class="nav nav-pills gap-2" role="tablist" id="toptablist" style="display:none">
         <li class="nav-item" role="presentation" data-requiredpermission="comfy_dynamic_custom_workflows">
             <a class="nav-link translate" data-bs-toggle="tab" href="#Simple" id="simpletabbutton" aria-selected="false" tabindex="-1" role="tab">Simple</a>
         </li>
@@ -82,7 +82,6 @@
 
 @section Scripts {
     <script src="js/lib/exif-reader.min.js"></script>
-    <script src="js/genpage/gentab/welcomemessages.js?vary=@Utilities.VaryID"></script>
     <script src="js/genpage/helpers/browsers.js?vary=@Utilities.VaryID"></script>
     <script src="js/genpage/server/logs.js?vary=@Utilities.VaryID"></script>
     <script src="js/genpage/server/backends.js?vary=@Utilities.VaryID"></script>
@@ -103,6 +102,7 @@
     <script src="js/genpage/gentab/generatecontrols.js?vary=@Utilities.VaryID"></script>
     <script src="js/genpage/gentab/currentimagehandler.js?vary=@Utilities.VaryID"></script>
     <script src="js/genpage/gentab/imagehistory.js?vary=@Utilities.VaryID"></script>
+    <script src="js/genpage/gentab/welcomemessages.js?vary=@Utilities.VaryID"></script>
     <script src="js/genpage/main.js?vary=@Utilities.VaryID"></script>
     <script src="js/genpage/helpers/settings_editor.js?vary=@Utilities.VaryID"></script>
     <script src="js/genpage/helpers/ui_improvements.js?vary=@Utilities.VaryID"></script>

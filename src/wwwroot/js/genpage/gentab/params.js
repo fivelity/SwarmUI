@@ -142,16 +142,15 @@ function getHtmlForParam(param, prefix) {
                     return {html: makeMultiselectInput(param.feature_flag, `${prefix}${param.id}`, param.id, param.name, param.description, param.values, param.default, "Select...", param.toggleable, !param.no_popover) + pop,
                         runnable: () => {
                             const sel = getRequiredElementById(`${prefix}${param.id}`);
-                            if (!sel.choices) {
-const enableSearch = sel.options && sel.options.length > 12;
-                                sel.choices = new Choices(sel, {
-                                    removeItemButton: true,
-                                    allowHTML: true,
-                                    placeholder: true,
-                                    placeholderValue: sel.getAttribute('data-placeholder') || 'Select...',
-                                    searchEnabled: enableSearch,
-                                    shouldSort: false
-                                });
+                            if (!sel) return;
+                            // Bootstrap-equivalent UX: widen and allow multiple visible rows when many options
+                            const many = sel.options && sel.options.length > 10;
+                            if (many) {
+                                sel.classList.add('form-select');
+                                sel.setAttribute('size', Math.min(8, sel.options.length));
+                                sel.style.minWidth = '16rem';
+                            } else {
+                                sel.classList.add('form-select');
                             }
                         }
                     };
@@ -160,8 +159,11 @@ const enableSearch = sel.options && sel.options.length > 12;
             case 'model':
                 let modelList = param.values && param.values.length > 0 ? param.values : coreModelMap[param.subtype || 'Stable-Diffusion'];
                 modelList = modelList.map(m => cleanModelName(m));
-                return {html: makeDropdownInput(param.feature_flag, `${prefix}${param.id}`, param.id, param.name, param.description, modelList, param.default, param.toggleable, !param.no_popover) + pop,
-                    runnable: () => autoSelectWidth(getRequiredElementById(`${prefix}${param.id}`))};
+return {html: makeDropdownInput(param.feature_flag, `${prefix}${param.id}`, param.id, param.name, param.description, modelList, param.default, param.toggleable, !param.no_popover) + pop,
+                    runnable: () => {
+                        const sel = getRequiredElementById(`${prefix}${param.id}`);
+                        if (sel) { sel.classList.add('form-select'); autoSelectWidth(sel); }
+                    }};
             case 'image':
                 return {html: makeImageInput(param.feature_flag, `${prefix}${param.id}`, param.id, param.name, param.description, param.toggleable, !param.no_popover) + pop};
             case 'image_list':
@@ -788,7 +790,15 @@ function genInputs(delay_final = false) {
         }
         let modelCookie = getCookie('selected_model');
         if (modelCookie) {
-            directSetModel(modelCookie);
+            // Validate that the model exists before setting it
+            let modelName = modelCookie.includes(',') ? modelCookie.split(',')[0] : modelCookie;
+            if (allModels.length > 0 && !allModels.includes(modelName)) {
+                // Model not found, clear the invalid cookie
+                deleteCookie('selected_model');
+                console.log(`Model "${modelName}" not found, cleared invalid model cookie.`);
+            } else {
+                directSetModel(modelCookie);
+            }
         }
         let modelInput = getRequiredElementById('input_model');
         modelInput.addEventListener('change', () => {
@@ -844,6 +854,10 @@ function genInputs(delay_final = false) {
 function toggle_advanced() {
     let toggler = getRequiredElementById('advanced_options_checkbox');
     localStorage.setItem('display_advanced', toggler.checked);
+    if (!Array.isArray(gen_param_types)) {
+        // Safety: params not loaded yet
+        return;
+    }
     for (let param of gen_param_types) {
         if (param.toggleable) {
             doToggleEnable(`input_${param.id}`);

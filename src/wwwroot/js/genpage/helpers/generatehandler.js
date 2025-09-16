@@ -46,7 +46,10 @@ class GenerateHandler {
     }
 
     beforeGenRun() {
-        num_current_gens += parseInt(getRequiredElementById('input_images').value);
+        let imagesElem = document.getElementById('input_images');
+        let count = imagesElem ? parseInt(imagesElem.value) : 1;
+        if (isNaN(count) || count < 1) { count = 1; }
+        num_current_gens += count;
     }
 
     doInterrupt(allSessions = false) {

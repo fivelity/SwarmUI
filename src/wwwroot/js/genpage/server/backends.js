@@ -26,9 +26,9 @@ function addBackendToHtml(backend, disable, spot = null) {
     spot.innerHTML = '';
     let type = backend_types[backend.type];
     let cardBase = createDiv(`backend-card-${backend.id}`, `card backend-${backend.status} backend-card`);
-    let cardHeader = createDiv(null, 'card-header');
+    let cardHeader = createDiv(null, 'card-header d-flex align-items-center justify-content-between gap-2');
     let togglerSpan = document.createElement('span');
-    togglerSpan.className = 'form-check form-switch display-inline-block';
+    togglerSpan.className = 'form-check form-switch d-inline-block me-2';
     let toggleSwitch = document.createElement('input');
     toggleSwitch.type = 'checkbox';
     toggleSwitch.className = 'form-check-input backend-toggle-switch';
@@ -43,6 +43,7 @@ function addBackendToHtml(backend, disable, spot = null) {
     togglerSpan.appendChild(toggleSwitch);
     cardHeader.appendChild(togglerSpan);
     let cardTitleSpan = document.createElement('span');
+    cardTitleSpan.className = 'd-inline-flex align-items-center gap-1 ms-2 me-auto';
     let cardTitleStatus = document.createElement('span');
     cardTitleStatus.className = 'card-title-status';
     cardTitleStatus.innerText = backend.status;
@@ -61,16 +62,16 @@ function addBackendToHtml(backend, disable, spot = null) {
     cardTitleSpan.appendChild(actualCardTitle);
     cardHeader.appendChild(cardTitleSpan);
     let deleteButton = document.createElement('button');
-    deleteButton.className = 'backend-delete-button';
+    deleteButton.className = 'btn btn-sm btn-outline-danger backend-delete-button';
     deleteButton.innerText = '✕';
     deleteButton.title = 'Delete';
     let editButton = document.createElement('button');
-    editButton.className = 'backend-edit-button';
+    editButton.className = 'btn btn-sm btn-outline-success backend-edit-button';
     editButton.innerText = '✎';
     editButton.title = 'Edit';
     editButton.disabled = !disable;
     let saveButton = document.createElement('button');
-    saveButton.className = 'backend-save-button';
+    saveButton.className = 'btn btn-sm btn-primary backend-save-button';
     saveButton.innerText = 'Save';
     saveButton.title = 'Save changes';
     saveButton.style.display = disable ? 'none' : 'inline-block';
@@ -86,8 +87,9 @@ function addBackendToHtml(backend, disable, spot = null) {
     });
     let cardBody = createDiv(null, 'card-body');
     let buttons = document.createElement('div');
+    buttons.className = 'd-flex align-items-center gap-2 mb-2';
     let isLogAvailable = serverLogs.matchIdentifier(`backend-${backend.id}`) != null;
-    buttons.innerHTML = `<button class="basic-button backend-restart-button" disabled onclick="restart_backend('${backend.id}')">Restart</button> <button class="basic-button backend-log-view-button"${isLogAvailable ? '' : ' disabled'} onclick="serverLogs.showLogsForIdentifier('backend-${backend.id}')">View Logs</button> <span class="backend-last-used-time">Last used: <code>${backend.time_since_used}</code></span>`;
+    buttons.innerHTML = `<button class=\"btn btn-sm btn-outline-secondary backend-restart-button\" disabled onclick=\"restart_backend('${backend.id}')\">Restart</button> <button class=\"btn btn-sm btn-outline-secondary backend-log-view-button\"${isLogAvailable ? '' : ' disabled'} onclick=\"serverLogs.showLogsForIdentifier('backend-${backend.id}')\">View Logs</button> <span class=\"backend-last-used-time text-secondary\">Last used: <code>${backend.time_since_used}</code></span>`;
     cardBody.appendChild(buttons);
     for (let setting of type.settings) {
         let input = document.createElement('div');

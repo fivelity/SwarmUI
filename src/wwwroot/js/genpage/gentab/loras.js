@@ -134,6 +134,7 @@ class LoraHelper {
                     this.rebuildParams();
                 });
                 let confinementInput = document.createElement('select');
+                confinementInput.className = 'form-select';
                 confinementInput.add(new Option('@ Global', '0', true, true));
                 confinementInput.add(new Option('Base', '5'));
                 confinementInput.add(new Option('Refiner', '1'));

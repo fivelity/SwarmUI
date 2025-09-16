@@ -279,7 +279,7 @@ public class WebServer
         WebApp.Use(async (context, next) =>
         {
             await next();
-            if (context.Response.StatusCode == 404)
+if (context.Response.StatusCode == 404)
             {
                 if (context.Response.HasStarted)
                 {
@@ -288,16 +288,10 @@ public class WebServer
                 string path = context.Request.Path.Value.ToLowerFast();
                 if (!path.StartsWith("/error/"))
                 {
-                    try
-                    {
-                        context.Response.Redirect("/Error/404");
-                        return;
-                    }
-                    catch (Exception)
-                    {
-                        Logs.Debug($"Connection to {context.Request.Path} failed and cannot be repaired");
-                    }
-                    await next();
+                    // Avoid redirect loops and noisy 404 probes; serve a small inline 404 page
+                    context.Response.StatusCode = 404;
+                    await context.Response.WriteAsync("Not Found");
+                    return;
                 }
             }
         });
