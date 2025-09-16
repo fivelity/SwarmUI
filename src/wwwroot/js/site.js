@@ -353,6 +353,30 @@ document.addEventListener('DOMContentLoaded', () => {
                 applyBsTheme(newTheme);
             });
         }
+
+        // Density toggle (comfortable/compact) persistence
+        const DENSITY_KEY = 'sui.density';
+        function applyDensity(density) {
+            if (density === 'compact') {
+                root.setAttribute('data-density', 'compact');
+            } else {
+                root.removeAttribute('data-density');
+            }
+            localStorage.setItem(DENSITY_KEY, density);
+            const dIcon = document.getElementById('density_toggle_icon');
+            if (dIcon) {
+                dIcon.className = density === 'compact' ? 'bi bi-arrows-collapse' : 'bi bi-arrows-expand';
+            }
+        }
+        const savedDensity = localStorage.getItem(DENSITY_KEY) || 'comfortable';
+        applyDensity(savedDensity);
+        const densityBtn = document.getElementById('density_toggle_button');
+        if (densityBtn) {
+            densityBtn.addEventListener('click', () => {
+                const newDensity = (root.getAttribute('data-density') === 'compact') ? 'comfortable' : 'compact';
+                applyDensity(newDensity);
+            });
+        }
     } catch (err) {
         console.warn('site.js init error', err);
     }

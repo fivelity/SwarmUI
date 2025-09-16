@@ -6,6 +6,27 @@
 }
 
 /* Dark theme palette using Bootstrap variables (consolidated from overhaul.css) */
+:root {
+    /* shadcn/ui-inspired radii and spacing scale */
+    /* Radii mapping (rounded-lg = 0.5rem baseline) */
+    --bs-border-radius: .5rem;        /* 8px (rounded-lg) */
+    --bs-border-radius-sm: .375rem;   /* 6px (rounded-md) */
+    --bs-border-radius-lg: .75rem;    /* 12px (rounded-xl) */
+    --bs-border-radius-xl: 1rem;      /* 16px (rounded-2xl) */
+    --bs-border-radius-xxl: 1.5rem;   /* 24px (rounded-3xl) */
+
+    /* Spacing tokens (generic names) */
+    --space-1: .25rem;  /* 4px */
+    --space-2: .5rem;   /* 8px */
+    --space-3: .75rem;  /* 12px */
+    --space-4: 1rem;    /* 16px */
+    --space-5: 1.25rem; /* 20px */
+    --space-6: 1.5rem;  /* 24px */
+    --space-8: 2rem;    /* 32px */
+    --space-10: 2.5rem; /* 40px */
+    --space-12: 3rem;   /* 48px */
+}
+
 [data-bs-theme="dark"] {
     /* Surfaces */
     --bs-body-bg: #0f1115;            /* page background */
@@ -78,3 +99,27 @@
 /* Tabs */
 .nav.nav-tabs .nav-link.active { border-color: var(--bs-border-color) var(--bs-border-color) transparent; }
 .nav.nav-tabs { border-bottom: 1px solid var(--bs-border-color); }
+
+/* Density: compact mode overrides */
+[data-density="compact"] {
+    /* Slightly smaller text */
+    --bs-body-font-size: 0.9375rem; /* 15px */
+    /* Buttons */
+    --bs-btn-padding-y: .3rem;
+    --bs-btn-padding-x: .5rem;
+    /* Spacing tighten (compact) */
+    --space-1: .25rem;  /* keep */
+    --space-2: .5rem;   /* keep */
+    --space-3: .625rem; /* 10px compact */
+    --space-4: .875rem; /* 14px */
+    --space-5: 1.125rem;/* 18px */
+    --space-6: 1.25rem; /* 20px */
+    --space-8: 1.75rem; /* 28px */
+    --space-10: 2.25rem;/* 36px */
+    --space-12: 2.75rem;/* 44px */
+}
+[data-density="compact"] .btn-sm { --bs-btn-padding-y: .2rem; --bs-btn-padding-x: .4rem; }
+[data-density="compact"] .form-control,
+[data-density="compact"] .form-select { padding-top: .3rem; padding-bottom: .3rem; }
+[data-density="compact"] .nav-link { padding: .25rem .5rem; }
+[data-density="compact"] .navbar { --bs-navbar-padding-y: .25rem; }
