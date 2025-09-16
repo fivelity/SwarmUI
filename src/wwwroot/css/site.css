@@ -1,47 +1,54 @@
 :root {
+    /* Range and form control tuning – expressed via Bootstrap tokens */
     --range-height: 26px;
     --range-value-color: var(--bs-primary);
-    --range-track-background: #161616;
-    --range-thumb-color-hover: var(--bs-primary-bg-subtle);
+    --range-track-background: var(--bs-tertiary-bg);
+    --range-thumb-color-hover: rgba(var(--bs-primary-rgb), .25);
     --range-thumb-width: 20px;
     --range-thumb-height: 10px;
     --range-track-height: 4px;
-    --range-padding: calc((var(--range-height) - var(var(--range-track-height))) / 2);
-    --range-track-color: #1d1d1d;
-    --range-thumb-color: #4b4b4b;
+    --range-padding: calc((var(--range-height) - var(--range-track-height)) / 2);
+    --range-track-color: var(--bs-border-color);
+    --range-thumb-color: var(--bs-border-color);
     --toggle-thumb-active: var(--bs-primary);
-    --toggle-thumb-hover: var(--bs-primary-bg-subtle);
-    --toggle-thumb-active-hover: var(--bs-primary-bg-subtle);
-    --font-monospace: 'Courier New', Courier, monospace;
-    --red: #ff0000;
-    --green: #00ff00;
-    --yellow: #ffff00;
-    --white: #ffffff;
-    --black: #000000;
-    --star: #ffff00;
-    --gray: #808080;
-    --darkgray: #505050;
-    --transparentdarkred: rgba(100, 0, 0, 0.5);
-    --status-bar-text-color: #000000;
-    --status-bar-warn-color-start-end: #dddd55;
-    --status-bar-warn-color-middle: #888800;
-    --status-bar-error-color-start-end: #bb2020;
-    --status-bar-error-color-middle: #880000;
-    --status-bar-soft-color: #888800;
-    --backend-errored: #ff0000;
-    --backend-disabled: #ffaa00;
-    --backend-running: #00aa33;
+    --toggle-thumb-hover: rgba(var(--bs-primary-rgb), .25);
+    --toggle-thumb-active-hover: rgba(var(--bs-primary-rgb), .25);
+    --font-monospace: var(--bs-font-monospace);
+
+    /* App-specific tokens (prefixed) mapped to Bootstrap semantics */
+    --sui-danger: var(--bs-danger);
+    --sui-warning: var(--bs-warning);
+    --sui-success: var(--bs-success);
+    --sui-muted: var(--bs-secondary-color);
+    --sui-emphasis: var(--bs-emphasis-color);
+    --sui-surface-1: var(--bs-tertiary-bg);
+    --sui-surface-2: var(--bs-secondary-bg);
+
+    /* Status bar and notices */
+    --status-bar-text-color: var(--bs-body-bg);
+    --status-bar-warn-color-start-end: #ede68a;
+    --status-bar-warn-color-middle: #c4b800;
+    --status-bar-error-color-start-end: #ef8a8a;
+    --status-bar-error-color-middle: #c24d4d;
+    --status-bar-soft-color: #c4b800;
+
+    /* Backend state colors */
+    --backend-errored: var(--bs-danger);
+    --backend-disabled: var(--bs-warning);
+    --backend-running: var(--bs-success);
     --backend-idle: #688772;
     --backend-loading: #335500;
     --backend-waiting: #335500;
+
+    /* Misc */
     --notice-pop: #005500;
-    --toast-header: #303030;
-    --toast-body: #444;
+    --toast-header: var(--bs-tertiary-bg);
+    --toast-body: var(--bs-secondary-bg);
     --toggle-background: #ccc;
-    --toggle-thumb-color: #4b4b4b;
-    --model-img-border-color-hover: #ffffff;
-    --model-block-menu-button-border-color-hover: black;
-    --model-block-menu-button-color-hover: white;
+    --toggle-thumb-color: var(--bs-border-color);
+    --model-img-border-color-hover: var(--bs-body-color);
+    --model-block-menu-button-border-color-hover: var(--bs-body-color);
+    --model-block-menu-button-color-hover: var(--bs-body-bg);
 }
 .modal-content {
     background-color: var(--bs-body-bg) !important;
@@ -53,6 +60,30 @@
     font-weight: 400;
     font-style: normal;
 }
+/***** Accessibility helpers *****/
+.visually-hidden {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+}
+.visually-hidden-focusable:not(:focus):not(:focus-within) {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+}
+
 body {
     background-color: var(--bs-body-bg);
     color: var(--bs-body-color);
@@ -97,8 +128,8 @@ select:focus {
 
 /* Disabled */
 select:disabled {
-  background: #f3f3f3;
-  opacity: 0.75;
+  background: var(--bs-tertiary-bg);
+  opacity: 0.7;
 }
 @keyframes status_glow-warn {
     0% {background-color: var(--status-bar-warn-color-start-end);}
@@ -224,15 +255,15 @@ select:disabled {
     background-color: var(--bs-tertiary-bg);
 }
 .card-body {
-    background-color: var(--bs-body-bg);
-    border-bottom-left-radius: 5px;
-    border-bottom-right-radius: 5px;
+    background-color: var(--bs-secondary-bg);
+    border-bottom-left-radius: .3125rem;
+    border-bottom-right-radius: .3125rem;
 }
 .backend-errored .card-header {
-    background-color: var(--bs-danger-bg-subtle);
+    background-color: color-mix(in oklab, var(--bs-danger) 20%, transparent);
 }
 .backend-errored .card-body {
-    background-color: var(--bs-danger-bg-subtle);
+    background-color: color-mix(in oklab, var(--bs-danger) 10%, transparent);
 }
 .backend-card .card-header button {
     height: 1.8rem;
@@ -246,32 +277,32 @@ select:disabled {
     float: right;
 }
 .backend-edit-button {
-    color: var(--green);
-    border: 1px solid var(--green);
+    color: var(--bs-success);
+    border: 1px solid var(--bs-success);
 }
 .backend-edit-button:hover {
-    color: var(--black) !important;
-    border: 1px solid var(--black) !important;
-    background-color: var(--green) !important;
+    color: var(--bs-body-bg) !important;
+    border: 1px solid var(--bs-body-bg) !important;
+    background-color: var(--bs-success) !important;
 }
 .backend-edit-button:disabled {
-    color: var(--darkgray) !important;
-    border: 1px solid var(--darkgray) !important;
+    color: var(--sui-muted) !important;
+    border: 1px solid var(--bs-border-color) !important;
     background-color: transparent !important;
 }
 .backend-delete-button {
-    color: var(--red);
-    border: 1px solid var(--red);
+    color: var(--bs-danger);
+    border: 1px solid var(--bs-danger);
 }
 .backend-delete-button:hover {
-    color: var(--black) !important;
-    border: 1px solid var(--black) !important;
-    background-color: var(--red) !important;
+    color: var(--bs-body-bg) !important;
+    border: 1px solid var(--bs-body-bg) !important;
+    background-color: var(--bs-danger) !important;
 }
 .backend-save-button {
     width: 3rem !important;
-    color: var(--green);
-    border: 1px solid var(--green);
+    color: var(--bs-success);
+    border: 1px solid var(--bs-success);
 }
 .backend-save-button:hover {
     color: var(--black) !important;
@@ -434,6 +465,11 @@ input[type="file"] {
 textarea, input, select {
     border-color: var(--bs-border-color);
     background-color: var(--bs-tertiary-bg);
+}
+.settings_submit_confirmer {
+    position: sticky;
+    bottom: 0;
+    z-index: 1020;
 }
 @keyframes toast-flash {
     0% {background-color: transparent;}

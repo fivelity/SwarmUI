@@ -62,12 +62,12 @@
                                 <div class="added-image-area alt-prompt-added-image-area" id="alt_prompt_image_area"></div>
                             </div>
                             <div class="alt_prompt_main_line input-group">
-                                <button class="btn btn-primary alt-text-add-button" id="alt_text_add_button">+</button>
+<button class="btn btn-primary alt-text-add-button" id="alt_text_add_button" title="Add prompt helper" aria-label="Add prompt helper">+</button>
                                 <textarea id="alt_prompt_textbox" class="form-control alt_prompt_textbox translate" rows="1" placeholder="Type your prompt here... (or, drag/paste an image in to use Image Prompting)" onpaste="imagePromptImagePaste(arguments[0])"></textarea>
                                 <textarea id="alt_negativeprompt_textbox" class="form-control alt_prompt_textbox translate" rows="1" placeholder="Optionally, type a negative prompt here..."></textarea>
-                                <button class="btn btn-success alt-prompt-generate-button translate" id="alt_generate_button" oncontextmenu="doPopover('generate'); return false;" onclick="mainGenHandler.doGenerateButton(event)">Generate</button>
-                                <button class="btn btn-secondary alt-prompt-center-button" id="alt_center_button" oncontextmenu="doPopover('generate_center'); return false;" onclick="doPopover('generate_center')">&#x2B9F;</button>
-                                <button class="btn btn-danger alt-interrupt" id="alt_interrupt_button" oncontextmenu="doPopover('interrupt'); return false;" onclick="mainGenHandler.doInterrupt()">&times;</button>
+<button class="btn btn-success alt-prompt-generate-button translate" id="alt_generate_button" title="Generate" aria-label="Generate" oncontextmenu="doPopover('generate'); return false;" onclick="mainGenHandler.doGenerateButton(event)">Generate</button>
+<button class="btn btn-secondary alt-prompt-center-button" id="alt_center_button" title="Generate options" aria-label="Generate options" oncontextmenu="doPopover('generate_center'); return false;" onclick="doPopover('generate_center')">&#x2B9F;</button>
+<button class="btn btn-danger alt-interrupt" id="alt_interrupt_button" title="Interrupt" aria-label="Interrupt" oncontextmenu="doPopover('interrupt'); return false;" onclick="mainGenHandler.doInterrupt()">&times;</button>
                             </div>
                             <!-- Token count displays required by layout.js -->
                             <div class="alt-text-tokencount-wrapper">

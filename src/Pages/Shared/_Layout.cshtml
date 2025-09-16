@@ -1,4 +1,4 @@
-﻿﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" data-bs-theme="dark">
 <head>
     <meta charset="utf-8" />
@@ -15,9 +15,11 @@
     <script src="~/js/translator.js?vary=@Utilities.VaryID"></script>
 </head>
 <body>
+    <a class="visually-hidden-focusable" href="#main">Skip to content</a>
+    <div id="live_status" class="visually-hidden" aria-live="polite" aria-atomic="true"></div>
     <header>
         <!-- Tier 1: Global header -->
-        <nav class="navbar navbar-expand-lg bg-body-tertiary border-bottom">
+        <nav class="navbar navbar-expand-lg bg-body-tertiary border-bottom navbar-dark">
             <div class="container-fluid">
                 <a class="navbar-brand" href="/Text2Image">
                     <img src="/imgs/logo_icon.svg" alt="SwarmUI Logo" width="30" height="24" class="d-inline-block align-text-top">
@@ -46,8 +48,13 @@
                         </li>
                         <li class="nav-item"><a class="nav-link" href="/Text2Image#Server">Server</a></li>
                     </ul>
-                    <div class="d-flex align-items-center gap-2">
+<div class="d-flex align-items-center gap-2">
                         <div id="top_status_bar" class="pe-2"></div>
+                        <div class="btn-group" role="group" aria-label="Theme switcher">
+                            <button id="theme_toggle_button" class="btn btn-outline-secondary btn-sm" type="button" title="Toggle theme">
+                                <i class="bi bi-moon" id="theme_toggle_icon"></i>
+                            </button>
+                        </div>
                         <div class="dropdown">
                             <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="bi bi-person-circle"></i>
@@ -76,14 +83,8 @@
                 <div class="ms-auto small text-secondary" id="workspace_hint"></div>
             </div>
         </div>
-        <!-- Tier 2 Sub-nav: mirrors page sub-tabs for active workspace -->
-        <div class="bg-body-tertiary border-bottom" id="workspace_subnav_bar" style="display:none;">
-            <div class="container-fluid py-1">
-                <ul class="nav nav-pills nav-sm" id="workspace_subnav_list"></ul>
-            </div>
-        </div>
     </header>
-    <main role="main" class="container-fluid mt-3">
+    <main id="main" role="main" class="container-fluid mt-3">
         @RenderBody()
     </main>
     <div class="toast-container position-fixed bottom-0 end-0 p-3">
@@ -94,6 +95,13 @@
             </div>
             <div id="error_toast_content" class="toast-body">
             </div>
+        </div>
+        <div id="success_toast_box" class="toast" role="alert" aria-live="polite" aria-atomic="true">
+            <div class="toast-header">
+                <strong class="me-auto">Success</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div id="success_toast_content" class="toast-body"></div>
         </div>
     </div>
     <footer class="footer mt-auto py-3 bg-light">

@@ -1,0 +1,122 @@
+/* SwarmUI UI Overhaul – CSS-only pass
+   Goal: modern visual hierarchy, improved spacing/contrast, minimal risk.
+   Scope: overrides for Bootstrap + existing SwarmUI classes without changing markup.
+*/
+
+:root, [data-bs-theme="dark"] {
+  /* Base colors tuned for readability on dark backgrounds */
+  --su-bg: #0f1115;               /* page background */
+  --su-surface-1: #151821;        /* panels, bars */
+  --su-surface-2: #1b2030;        /* elevated panels */
+  --su-border: #2a2f3d;           /* subtle borders */
+  --su-muted: #9aa3b2;            /* secondary text */
+  --su-text: #e6e9ef;             /* primary text */
+  --su-accent: #7c9cff;           /* interactive accents */
+  --su-accent-strong: #5c7cff;    /* active/hover accents */
+  --su-danger: #ff6b6b;
+  --su-success: #35d0a3;
+  --su-warning: #ffc857;
+
+  /* Radii & elevation */
+  --su-radius-sm: 8px;
+  --su-radius: 12px;
+  --su-radius-lg: 16px;
+  --su-shadow-1: 0 1px 2px rgba(0,0,0,0.35), 0 6px 16px rgba(0,0,0,0.24);
+  --su-shadow-inset: inset 0 1px 0 rgba(255,255,255,0.03), inset 0 0 0 1px rgba(255,255,255,0.02);
+
+  /* Spacing scale */
+  --su-space-1: 4px;
+  --su-space-2: 8px;
+  --su-space-3: 12px;
+  --su-space-4: 16px;
+  --su-space-5: 20px;
+  --su-space-6: 24px;
+}
+
+/* Global */
+html, body { background: var(--su-bg); color: var(--su-text); }
+
+.container-fluid { padding-left: var(--su-space-4); padding-right: var(--su-space-4); }
+
+/* Header bars */
+.navbar.bg-body-tertiary, .bg-body-tertiary { background: var(--su-surface-1) !important; }
+.navbar, .bg-body-tertiary { border-color: var(--su-border) !important; }
+.navbar .nav-link { color: var(--su-muted); }
+.navbar .nav-link:hover, .navbar .nav-link:focus, .navbar .nav-link.active { color: var(--su-text); }
+.navbar-brand { color: var(--su-text); font-weight: 600; letter-spacing: 0.2px; }
+
+/* Workspace bar buttons */
+#ws_generate, #ws_simple, #ws_comfy, #ws_utilities, #ws_settings, #ws_server {
+  border-color: var(--su-border) !important;
+  color: var(--su-muted) !important;
+  background: var(--su-surface-1) !important;
+}
+#ws_generate:hover, #ws_simple:hover, #ws_comfy:hover, #ws_utilities:hover, #ws_settings:hover, #ws_server:hover,
+#ws_generate:focus, #ws_simple:focus, #ws_comfy:focus, #ws_utilities:focus, #ws_settings:focus, #ws_server:focus {
+  color: var(--su-text) !important; border-color: var(--su-accent) !important;
+}
+
+/* Panels and common containers */
+.card, .tab-content, .genpage-bottom-tab, #input_sidebar .p-3, #rightsidebarcontent, #currentimagecontent, .browser-fullcontent-container {
+  background: var(--su-surface-2) !important;
+  border: 1px solid var(--su-border) !important;
+  border-radius: var(--su-radius) !important;
+  box-shadow: var(--su-shadow-1), var(--su-shadow-inset) !important;
+}
+
+/* Tabs */
+.nav-tabs { border-bottom-color: var(--su-border) !important; }
+.nav-tabs .nav-link { color: var(--su-muted); border: none !important; margin-right: var(--su-space-2); }
+.nav-tabs .nav-link.active { color: var(--su-text); background: transparent; border-bottom: 2px solid var(--su-accent) !important; }
+
+/* Inputs */
+.form-control, .form-select, .input-group-text, .auto-text, .auto-input {
+  background: #151a24 !important; color: var(--su-text) !important;
+  border: 1px solid var(--su-border) !important; border-radius: var(--su-radius-sm) !important;
+}
+.form-control:focus, .form-select:focus, .auto-text:focus, .auto-input:focus {
+  border-color: var(--su-accent-strong) !important; box-shadow: 0 0 0 2px rgba(124,156,255,0.25) !important;
+}
+::placeholder { color: #748097 !important; opacity: 1; }
+
+/* Buttons */
+.btn { border-radius: var(--su-radius-sm) !important; border-color: var(--su-border); }
+.btn-primary { background: var(--su-accent) !important; border-color: var(--su-accent) !important; color: #0b1020 !important; font-weight: 600; }
+.btn-primary:hover { background: var(--su-accent-strong) !important; border-color: var(--su-accent-strong) !important; }
+.btn-outline-secondary { color: var(--su-muted) !important; border-color: var(--su-border) !important; }
+.btn-outline-secondary:hover { color: var(--su-text) !important; border-color: var(--su-accent) !important; }
+.btn-danger { background: var(--su-danger) !important; border-color: var(--su-danger) !important; }
+.btn-success { background: var(--su-success) !important; border-color: var(--su-success) !important; }
+.btn-warning { background: var(--su-warning) !important; border-color: var(--su-warning) !important; color: #20160a !important; }
+
+/* Sidebars & filters */
+#input_sidebar { background: transparent; }
+.input_filter_container { background: transparent; padding: var(--su-space-2) var(--su-space-2); }
+
+/* Prompt area spacing */
+#t2i_top_bar, #t2i_bottom_bar { background: var(--su-surface-1); border: 1px solid var(--su-border); border-radius: var(--su-radius); padding: var(--su-space-3); }
+
+/* Toasts */
+.toast { background: var(--su-surface-2) !important; color: var(--su-text) !important; border-color: var(--su-border) !important; }
+.toast .toast-header { background: var(--su-surface-1) !important; color: var(--su-text) !important; border-bottom-color: var(--su-border) !important; }
+
+/* Footer */
+.footer { background: var(--su-surface-1) !important; border-top: 1px solid var(--su-border); }
+.footer .text-muted { color: var(--su-muted) !important; }
+
+/* Image/model blocks hover polish */
+.image-block, .model-block { transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease; }
+.image-block:hover, .model-selected { border-color: var(--su-accent) !important; box-shadow: 0 0 0 1px var(--su-accent) inset, 0 0 24px rgba(124,156,255,0.15); transform: translateY(-1px);
+}
+
+/* Scrollbars */
+* { scrollbar-color: var(--su-border) transparent; }
+*::-webkit-scrollbar { height: 10px; width: 10px; }
+*::-webkit-scrollbar-track { background: transparent; }
+*::-webkit-scrollbar-thumb { background: linear-gradient(180deg, var(--su-border), #39435a); border-radius: 999px; }
+*::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, #39435a, var(--su-accent-strong)); }
+
+/* Density tweaks on large screens */
+@media (min-width: 1400px) {
+  .container-fluid { padding-left: var(--su-space-6); padding-right: var(--su-space-6); }
+}

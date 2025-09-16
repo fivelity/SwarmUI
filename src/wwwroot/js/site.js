@@ -74,6 +74,15 @@ function showError(message, time = 5000) {
     toast.show();
 }
 
+function showSuccess(message, time = 3000) {
+    let container = document.getElementById('success_toast_box');
+    if (!container) { console.warn('Missing success toast container'); return; }
+    let body = getRequiredElementById('success_toast_content');
+    body.innerText = message;
+    let toast = new bootstrap.Toast(container, { delay: time });
+    toast.show();
+}
+
 let genericServerErrorMsg = translatable(`Failed to send request to server. Did the server crash?`);
 function genericServerError() {
     showError(genericServerErrorMsg.get());
@@ -232,6 +241,122 @@ function doGlobalErrorDebug() {
         sendServerDebugMessage("Error: " + msg + "\nurl: " + url + "\nline: " + line + extra);
      };
 }
+
+/***** Header/workspace/subnav helpers *****/
+function setActiveWorkspaceByHash(hash) {
+    const map = {
+        '#Generate': 'ws_generate',
+        '#Text2Image': 'ws_generate',
+        '#Simple': 'ws_simple',
+        '#Comfy': 'ws_comfy',
+        '#Utilities': 'ws_utilities',
+        '#Settings': 'ws_settings',
+        '#Server': 'ws_server'
+    };
+    for (let id of ['ws_generate','ws_simple','ws_comfy','ws_utilities','ws_settings','ws_server']) {
+        let btn = document.getElementById(id);
+        if (btn) btn.classList.remove('active');
+    }
+    let targetId = map[hash] || (hash && map[hash.split('/')[0]]) || 'ws_generate';
+    let target = document.getElementById(targetId);
+    if (target) target.classList.add('active');
+}
+
+// Mirror the active pane's sub-navigation into the workspace subnav bar
+function mirrorSubnavFromContent() {
+    const bar = document.getElementById('workspace_subnav_bar');
+    const list = document.getElementById('workspace_subnav_list');
+    if (!bar || !list) { return; }
+    list.innerHTML = '';
+    let activePane = document.querySelector('.tab-pane.show.active');
+    if (!activePane) { bar.style.display = 'none'; return; }
+    // Prefer Bottom Bar subnav in Generate for faster navigation
+    let subnav = activePane.querySelector('#bottombartabcollection') || activePane.querySelector('.swarm-gen-tab-subnav');
+    if (!subnav) { bar.style.display = 'none'; return; }
+    let links = subnav.querySelectorAll('a.nav-link');
+    if (!links || links.length === 0) { bar.style.display = 'none'; return; }
+    for (let a of links) {
+        let li = document.createElement('li');
+        li.className = 'nav-item';
+        let link = document.createElement('a');
+        link.className = 'nav-link' + (a.classList.contains('active') ? ' active' : '');
+        link.href = a.getAttribute('href');
+        link.textContent = a.textContent;
+        link.addEventListener('click', (e) => {
+            setTimeout(mirrorSubnavFromContent, 50);
+        });
+        li.appendChild(link);
+        list.appendChild(li);
+    }
+    bar.style.display = '';
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    try {
+        // Restore last tab/hash if available and no explicit hash set
+        const savedHash = localStorage.getItem('sui.lastHash');
+        if (!window.location.hash && savedHash) {
+            window.location.hash = savedHash;
+        }
+        setActiveWorkspaceByHash(window.location.hash || '#Text2Image');
+
+        // Track hash changes and persist
+        window.addEventListener('hashchange', () => {
+            localStorage.setItem('sui.lastHash', window.location.hash);
+            setActiveWorkspaceByHash(window.location.hash);
+        });
+
+// On tab change, just toggle Comfy-only visibility (no header subnav)
+        document.body.addEventListener('shown.bs.tab', (e) => {
+            const href = e.target?.getAttribute?.('href');
+            const comfyVisible = href === '#Comfy';
+            for (const node of document.querySelectorAll('.comfy-only')) {
+                node.style.display = comfyVisible ? '' : 'none';
+            }
+        });
+// Initial setup: toggle Comfy-only visibility based on initial tab
+        setTimeout(() => {
+            const comfyVisible = (document.querySelector('a.nav-link.active')?.getAttribute('href') === '#Comfy') || (window.location.hash === '#Comfy');
+            for (const node of document.querySelectorAll('.comfy-only')) {
+                node.style.display = comfyVisible ? '' : 'none';
+            }
+        }, 250);
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.altKey && (e.key === 'i' || e.key === 'I')) {
+                const btn = document.getElementById('alt_interrupt_button') || document.getElementById('interrupt_button');
+                if (btn && !btn.classList.contains('interrupt-button-none')) {
+                    btn.click();
+                    e.preventDefault();
+                }
+            }
+        });
+
+        // Theme toggle (light/dark) persistence
+        const root = document.documentElement;
+        const THEME_KEY = 'sui.bsTheme';
+        function applyBsTheme(theme) {
+            root.setAttribute('data-bs-theme', theme);
+            localStorage.setItem(THEME_KEY, theme);
+            const icon = document.getElementById('theme_toggle_icon');
+            if (icon) {
+                icon.className = theme === 'dark' ? 'bi bi-moon' : 'bi bi-sun';
+            }
+        }
+        const savedTheme = localStorage.getItem(THEME_KEY) || 'dark';
+        applyBsTheme(savedTheme);
+        const toggleBtn = document.getElementById('theme_toggle_button');
+        if (toggleBtn) {
+            toggleBtn.addEventListener('click', () => {
+                const newTheme = (root.getAttribute('data-bs-theme') === 'dark') ? 'light' : 'dark';
+                applyBsTheme(newTheme);
+            });
+        }
+    } catch (err) {
+        console.warn('site.js init error', err);
+    }
+});
 
 function triggerChangeFor(elem) {
     elem.dispatchEvent(new Event('input', { bubbles: true }));
@@ -587,9 +712,6 @@ function autoNumberWidth(elem) {
     span.remove();
 }
 
-function makeGenericPopover(id, name, type, description, example) {
-    return `<div class="sui-popover sui-info-popover" id="popover_${id}"><b>${escapeHtml(name)}</b> (${type}):<br>&emsp;${safeHtmlOnly(description)}${example}</div>`;
-}
 
 let popoverHoverTimer = null;
 
@@ -654,6 +776,19 @@ function getPopoverElemsFor(id, popover_button) {
 
 function getRangeStyle(value, min, max) {
     return `--range-value: ${(value-min)/(max-min)*100}%`;
+}
+
+// Generic popover HTML generator used across tabs
+function makeGenericPopover(id, name, type, description, extraClass = '') {
+    try {
+        const cls = extraClass ? ` ${extraClass}` : '';
+        const safeName = escapeHtmlNoBr ? escapeHtmlNoBr(name) : name;
+        const safeDesc = (typeof safeHtmlOnly !== 'undefined') ? safeHtmlOnly(description) : description;
+        return `<div class="sui-popover${cls}" id="popover_${id}"><b>${safeName}</b> (${type}):<br><span class="translate slight-left-margin-block">${safeDesc}</span></div>`;
+    } catch (e) {
+        // Fallback without helpers
+        return `<div class=\"sui-popover${extraClass ? ' ' + extraClass : ''}\" id=\"popover_${id}\"><b>${name}</b> (${type}):<br><span class=\"translate slight-left-margin-block\">${description}</span></div>`;
+    }
 }
 
 function updateRangeStyle(e) {

@@ -77,7 +77,7 @@ function updateCurrentStatusDirect(data) {
         if (num == 0) {
             return '';
         }
-        return `<span class="interrupt-line-part">${num} ${text.replaceAll('%', autoS(num))},</span> `;
+        return `<span class=\"interrupt-line-part\">${num} ${text.replaceAll('%', autoS(num))},</span> `;
     }
     let timeEstimate = '';
     if (total > 0 && mainGenHandler.totalGensThisRun > 0) {
@@ -85,9 +85,12 @@ function updateCurrentStatusDirect(data) {
         let estTime = avgGenTime * total;
         timeEstimate = ` (est. ${durationStringify(estTime)})`;
     }
-    elem.innerHTML = total == 0 ? (isGeneratingPreviews ? generatingPreviewsText.get() : '') : `${autoBlock(num_current_gens, 'current generation%')}${autoBlock(num_live_gens, 'running')}${autoBlock(num_backends_waiting, 'queued')}${autoBlock(num_models_loading, waitingOnModelLoadText.get())} ${timeEstimate}...`;
+    const statusText = total == 0 ? (isGeneratingPreviews ? generatingPreviewsText.get() : '') : `${autoBlock(num_current_gens, 'current generation%')}${autoBlock(num_live_gens, 'running')}${autoBlock(num_backends_waiting, 'queued')}${autoBlock(num_models_loading, waitingOnModelLoadText.get())} ${timeEstimate}...`;
+    elem.innerHTML = statusText;
     let max = Math.max(num_current_gens, num_models_loading, num_live_gens, num_backends_waiting);
     setPageTitle(total == 0 ? curAutoTitle : `(${max} ${generatingText.get()}) ${curAutoTitle}`);
+    const live = document.getElementById('live_status');
+    if (live) { live.textContent = statusText.replace(/<[^>]*>/g, ''); }
 }
 
 let doesHaveGenCountUpdateQueued = false;
@@ -233,6 +236,9 @@ function genToolsList() {
     let altGenerateButtonRawText = altGenerateButton.innerText;
     let altGenerateButtonRawOnClick = altGenerateButton.onclick;
     toolSelector.value = '';
+    // Restore last selected tool
+    let savedTool = localStorage.getItem('sui.selectedTool') || '';
+    if (savedTool) { toolSelector.value = savedTool; }
     // TODO: Dynamic-from-server option list generation
     toolSelector.addEventListener('change', () => {
         for (let opened of toolContainer.getElementsByClassName('tool-open')) {
@@ -244,6 +250,7 @@ function genToolsList() {
             oldGenerateButton.innerText = altGenerateButtonRawText;
         }
         let tool = toolSelector.value;
+        localStorage.setItem('sui.selectedTool', tool || '');
         if (tool == '') {
             getRequiredElementById('clear_selected_tool_button').style.display = 'none';
             return;
@@ -261,6 +268,8 @@ function genToolsList() {
         div.dispatchEvent(new Event('tool-opened'));
         getRequiredElementById('clear_selected_tool_button').style.display = '';
     });
+    // Trigger initial selection application
+    triggerChangeFor(toolSelector);
 }
 
 let toolOverrides = {};
@@ -427,6 +436,9 @@ function doFeatureInstaller(name, button_div_id, alt_confirm, callback = null, d
     genericRequest('ComfyInstallFeatures', {'features': name}, data => {
         if (buttonDiv) {
             buttonDiv.appendChild(createDiv('', null, "Installed! Please wait while backends restart. If it doesn't work, you may need to restart Swarm."));
+        }
+        if (typeof showSuccess === 'function') {
+            showSuccess('Feature(s) installed. Backends are restarting...');
         }
         reviseStatusBar();
         setTimeout(() => {

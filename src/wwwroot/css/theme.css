@@ -1,36 +1,80 @@
 :root {
-    --bs-primary: #0B5ED7;
-    --bs-secondary: #6C757D;
-    --bs-success: #198754;
-    --bs-info: #0DCAF0;
-    --bs-warning: #FFC107;
-    --bs-danger: #DC3545;
-    --bs-light: #F8F9FA;
-    --bs-dark: #212529;
-
+    /* Base font stacks */
     --bs-font-sans-serif: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
     --bs-font-monospace: "Fira Code", SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-
-    --bs-body-color: #dee2e6;
-    --bs-body-bg: #121212;
     --bs-body-font-family: var(--bs-font-sans-serif);
 }
 
+/* Dark theme palette using Bootstrap variables (consolidated from overhaul.css) */
 [data-bs-theme="dark"] {
-    --bs-body-color: #dee2e6;
-    --bs-body-bg: #121212;
-    --bs-tertiary-bg: #1e1e1e;
-    --bs-border-color: #495057;
-    --bs-emphasis-color: #fff;
+    /* Surfaces */
+    --bs-body-bg: #0f1115;            /* page background */
+    --bs-tertiary-bg: #151821;        /* bars/panels level 1 */
+    --bs-secondary-bg: #1b2030;       /* elevated panels level 2 */
+    --bs-border-color: #2a2f3d;       /* subtle borders */
+
+    /* Text & emphasis */
+    --bs-body-color: #e6e9ef;         /* primary text */
+    --bs-emphasis-color: #e6e9ef;
+    --bs-secondary-color: #9aa3b2;    /* muted text */
+
+    /* Brand/semantic */
+    --bs-primary: #7c9cff;            /* accent */
+    --bs-primary-rgb: 124,156,255;
+    --bs-link-color: var(--bs-primary);
+    --bs-link-hover-color: #5c7cff;
+
+    --bs-success: #35d0a3;
+    --bs-warning: #ffc857;
+    --bs-danger:  #ff6b6b;
+
+    /* Components */
+    --bs-navbar-color: rgba(230,233,239,.65);
+    --bs-navbar-hover-color: rgba(230,233,239,.85);
+    --bs-navbar-active-color: #e6e9ef;
+}
+
+/* Light theme palette */
+[data-bs-theme="light"] {
+    /* Surfaces */
+    --bs-body-bg: #ffffff;
+    --bs-tertiary-bg: #f7f8fa;
+    --bs-secondary-bg: #ffffff;
+    --bs-border-color: #dee2e6;
+
+    /* Text */
+    --bs-body-color: #212529;
+    --bs-emphasis-color: #212529;
+    --bs-secondary-color: #6c757d;
+
+    /* Brand/semantic */
+    --bs-primary: #5c7cff;
+    --bs-primary-rgb: 92,124,255;
+    --bs-link-color: var(--bs-primary);
+    --bs-link-hover-color: #3f5fff;
+
+    --bs-success: #35d0a3;
+    --bs-warning: #ffb800;
+    --bs-danger:  #e55353;
 }
 
 .btn-primary {
     --bs-btn-bg: var(--bs-primary);
     --bs-btn-border-color: var(--bs-primary);
-    --bs-btn-hover-bg: #0a58ca;
-    --bs-btn-hover-border-color: #0a58ca;
+    --bs-btn-color: #0b1020;
+    --bs-btn-hover-bg: #5c7cff;
+    --bs-btn-hover-border-color: #5c7cff;
 }
 
-.navbar {
-    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+.btn-outline-secondary {
+    --bs-btn-color: var(--bs-secondary-color);
+    --bs-btn-border-color: var(--bs-border-color);
+    --bs-btn-hover-color: var(--bs-body-color);
+    --bs-btn-hover-border-color: var(--bs-primary);
 }
+
+.card, .tab-content { background-color: var(--bs-secondary-bg); }
+.navbar { box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.2); }
+/* Tabs */
+.nav.nav-tabs .nav-link.active { border-color: var(--bs-border-color) var(--bs-border-color) transparent; }
+.nav.nav-tabs { border-bottom: 1px solid var(--bs-border-color); }

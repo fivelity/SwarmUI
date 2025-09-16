@@ -67,6 +67,15 @@
 <div id="comfy_workflow_topbar_holder" class="comfy_workflow_topbar_holder" style="display:none;">
     <div class="browser_container" id="comfy_workflow_browser_container"></div>
 </div>
-<div id="comfy_workflow_frameholder" class="comfy_workflow_frameholder">
-    <h1 class="translate">Seems like the ComfyUI workflow editor direct-access hasn't loaded. Give it a second to load, or try clicking the "Comfy Workflow" tab header - if it doesn't load, there might be an error message in your browser console or the server logs.</h1>
+<div id="comfy_notice_slot" class="comfy-only">
+    <div id="comfy_direct_access_warning" class="alert alert-warning mt-3" role="alert" style="max-width: 72rem;">
+        <div class="d-flex align-items-start">
+            <div class="me-2"><i class="bi bi-exclamation-triangle-fill"></i></div>
+            <div>
+                <div class="translate">Seems like the ComfyUI workflow editor direct-access hasn't loaded. Give it a second to load - if it doesn't there might be an error message in your browser console or the server logs.</div>
+                <button type="button" class="btn btn-sm btn-outline-secondary mt-2" onclick="(document.querySelector('a[href=\'#Comfy\']')||{}).click?.();">Open Comfy Workflow</button>
+            </div>
+        </div>
+    </div>
 </div>
+<div id="comfy_workflow_frameholder" class="comfy_workflow_frameholder" style="display:none;"></div>

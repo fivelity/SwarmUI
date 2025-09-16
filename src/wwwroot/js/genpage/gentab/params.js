@@ -952,6 +952,8 @@ function refreshParameterValues(strong = true, callback = null) {
     genericRequest('TriggerRefresh', {strong: strong}, data => {
         loadUserData();
         if (!gen_param_types) {
+            if (strong && typeof showSuccess === 'function') { showSuccess('Models list updated'); }
+            if (callback) { callback(); }
             return;
         }
         for (let param of data.list) {
@@ -1011,18 +1013,14 @@ function refreshParameterValues(strong = true, callback = null) {
                         // Update underlying select options
                         elem.add(new Option(val, val, false, false));
                         presetElem.add(new Option(val, val, false, false));
-                        // If Choices is active, add to it as well
-                        if (elem.choices) {
-                            elem.choices.setChoices([{ value: val, label: val, selected: false }], 'value', 'label', false);
-                        }
-                        if (presetElem.choices) {
-                            presetElem.choices.setChoices([{ value: val, label: val, selected: false }], 'value', 'label', false);
-                        }
                     }
                 }
             }
             if (callback) {
                 callback();
+            }
+            if (strong && typeof showSuccess === 'function') {
+                showSuccess('Models list updated');
             }
             hideUnsupportableParams();
         });
@@ -1043,22 +1041,13 @@ function setDirectParamValue(param, value, paramElem = null, forceDropdowns = fa
         for (let val of vals) {
             if (val && !existing.has(val)) {
                 paramElem.add(new Option(val, val, false, false));
-                if (paramElem.choices) {
-                    paramElem.choices.setChoices([{ value: val, label: val, selected: false }], 'value', 'label', false);
-                }
             }
         }
-        // Apply selection
-        if (paramElem.choices) {
-            paramElem.choices.removeActiveItems();
-            paramElem.choices.setChoiceByValue(vals);
+        // Apply selection (native select[multiple])
+        for (let option of paramElem.options) {
+            option.selected = vals.includes(option.value);
         }
-        else {
-            for (let option of paramElem.options) {
-                option.selected = vals.includes(option.value);
-            }
-            paramElem.dispatchEvent(new Event('change'));
-        }
+        paramElem.dispatchEvent(new Event('change'));
     }
     else if (param.type == "image" || param.type == "image_list") {
         // do not edit images directly, this will just misbehave

@@ -43,9 +43,9 @@ body {
 .tab-content {
     white-space: normal;
 }
-/* Hide duplicated in-content subnav strips (they are mirrored into header subnav) */
+/* Sub-navigation within pages (in-content subnav) */
 .swarm-gen-tab-subnav {
-    display: none !important;
+    display: block;
 }
 .advanced_input_checkbox {
     cursor: pointer;
@@ -432,21 +432,9 @@ body {
 #add_preset_modal .modal-body {
     overflow-y: auto;
 }
-/* Workspace subnav (second header) */
-#workspace_subnav_bar {
-    position: sticky;
-    top: 0;
-    z-index: 1030; /* above content */
-}
-#workspace_subnav_list {
-    display: block;
-    overflow-x: auto;
-    overflow-y: hidden;
-    white-space: nowrap;
-}
-#workspace_subnav_list .nav-link {
-    padding: 0.25rem 0.5rem;
-}
+/* Comfy-only elements are only visible within the Comfy tab */
+.comfy-only { display: none; }
+#Comfy .comfy-only { display: block; }
 /* Ensure popovers layer above content */
 .sui-popover, .sui-popover-notice {
     z-index: 1055;

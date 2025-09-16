@@ -183,6 +183,7 @@ class GenPageBrowserClass {
      */
     refresh() {
         refreshParameterValues(true, () => {
+            if (typeof showSuccess === 'function') { showSuccess('Models list updated'); }
             this.chunksRendered = 0;
             let path = this.folder;
             this.folder = '';
