@@ -85,10 +85,10 @@ class GenTabLayout {
     layoutResets = [];
     
     /** Whether the left section should be shut. */
-    leftShut = localStorage.getItem('barspot_leftShut') === 'true';
+    leftShut = localStorage.getItem('barspot_leftShut') == 'true';
 
     /** Whether the bottom section should be shut. */
-    bottomShut = localStorage.getItem('barspot_midForceToBottom') === 'true';
+    bottomShut = localStorage.getItem('barspot_midForceToBottom') == 'true';
 
     /** Position of the image-editor alignment bar (the split between image editor and output area). -1 if unset. */
     imageEditorBarPos = parseInt(getCookie('barspot_imageEditorSizeBar') || '-1');
@@ -141,9 +141,11 @@ class GenTabLayout {
         this.bottomBarDrag = false;
         this.imageEditorSizeBarDrag = false;
         this.isSmallWindow = this.mobileDesktopLayout == 'auto' ? window.innerWidth < 768 : this.mobileDesktopLayout == 'mobile';
-        // Don't automatically hide sidebars unless explicitly in mobile layout mode
-        // Let users manually control sidebar visibility rather than forcing it based on window size
-        if (this.mobileDesktopLayout == 'mobile') {
+        this.antiDup = false;
+        this.swipeStartX = -1;
+        this.swipeStartY = -1;
+        this.minSwipeDelta = Math.min(100, window.innerWidth * 0.4);
+        if (this.isSmallWindow) {
             this.bottomShut = true;
             this.leftShut = true;
             this.rightSectionBarPos = 0;
@@ -159,9 +161,8 @@ class GenTabLayout {
         this.rightSectionBarPos = -1;
         this.bottomSectionBarPos = -1;
         this.imageEditorBarPos = -1;
-        // Only hide sidebars if explicitly in mobile mode, not just because of window size
-        this.bottomShut = this.mobileDesktopLayout == 'mobile';
-        this.leftShut = this.mobileDesktopLayout == 'mobile';
+        this.bottomShut = this.isSmallWindow;
+        this.leftShut = this.isSmallWindow;
         this.reapplyPositions();
         for (let runnable of this.layoutResets) {
             runnable();
@@ -338,14 +339,14 @@ class GenTabLayout {
             }
             this.leftBarDrag = true;
             e.preventDefault();
-        }, { capture: true, passive: false });
+        }, true);
         this.rightSplitBar.addEventListener('touchstart', (e) => {
             if (this.isSmallWindow) {
                 return;
             }
             this.rightBarDrag = true;
             e.preventDefault();
-        }, { capture: true, passive: false });
+        }, true);
         this.editorSizebar.addEventListener('mousedown', (e) => {
             this.imageEditorSizeBarDrag = true;
             e.preventDefault();
@@ -353,7 +354,7 @@ class GenTabLayout {
         this.editorSizebar.addEventListener('touchstart', (e) => {
             this.imageEditorSizeBarDrag = true;
             e.preventDefault();
-        }, { capture: true, passive: false });
+        }, true);
         this.bottomSplitBar.addEventListener('mousedown', (e) => {
             if (this.isSmallWindow) {
                 return;
@@ -375,7 +376,7 @@ class GenTabLayout {
             this.bottomBarDrag = true;
             this.setBottomShut(false);
             e.preventDefault();
-        }, { capture: true, passive: false });
+        }, true);
         this.bottomSplitBarButton.addEventListener('click', (e) => {
             e.preventDefault();
             this.bottomBarDrag = false;
@@ -429,13 +430,7 @@ class GenTabLayout {
             }
         };
         document.addEventListener('mousemove', (e) => moveEvt(e, e.pageX, e.pageY));
-        document.addEventListener('touchmove', (e) => {
-            moveEvt(e, e.touches.item(0).pageX, e.touches.item(0).pageY);
-            // Prevent default during drag operations to avoid scroll conflicts
-            if (this.leftBarDrag || this.rightBarDrag || this.bottomBarDrag || this.imageEditorSizeBarDrag) {
-                e.preventDefault();
-            }
-        });
+        document.addEventListener('touchmove', (e) => moveEvt(e, e.touches.item(0).pageX, e.touches.item(0).pageY));
         document.addEventListener('mouseup', (e) => {
             this.leftBarDrag = false;
             this.rightBarDrag = false;
@@ -451,7 +446,7 @@ class GenTabLayout {
                 this.swipeStartX = -1;
                 this.swipeStartY = -1;
             }
-        }, { passive: true });
+        });
         document.addEventListener('touchend', (e) => {
             this.leftBarDrag = false;
             this.rightBarDrag = false;
@@ -510,7 +505,7 @@ class GenTabLayout {
                 this.swipeStartX = -1;
                 this.swipeStartY = -1;
             }
-        }, { passive: true });
+        });
         for (let tab of getRequiredElementById('bottombartabcollection').getElementsByTagName('a')) {
             tab.addEventListener('click', (e) => {
                 if (swarmHasLoaded) {

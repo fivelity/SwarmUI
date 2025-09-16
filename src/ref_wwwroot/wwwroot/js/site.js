@@ -1,3 +1,4 @@
+
 let session_id = getCookie('session_id') || null;
 let user_id = null;
 let outputAppendUser = null;
@@ -67,20 +68,16 @@ function enableSliderForBox(div) {
     autoNumberWidth(number);
 }
 
-function showError(message, time = 5000) {
-    let container = getRequiredElementById('error_toast_box');
+function showError(message) {
+    let container = getRequiredElementById('center_toast');
+    let box = getRequiredElementById('error_toast_box');
     getRequiredElementById('error_toast_content').innerText = message;
-    let toast = new bootstrap.Toast(container, { delay: time });
-    toast.show();
-}
-
-function showSuccess(message, time = 3000) {
-    let container = document.getElementById('success_toast_box');
-    if (!container) { console.warn('Missing success toast container'); return; }
-    let body = getRequiredElementById('success_toast_content');
-    body.innerText = message;
-    let toast = new bootstrap.Toast(container, { delay: time });
-    toast.show();
+    if (!box.classList.contains('show')) {
+        box.classList.add('show');
+        box.classList.remove('hide');
+    }
+    var new_container = container.cloneNode(true);
+    container.parentNode.replaceChild(new_container, container);
 }
 
 let genericServerErrorMsg = translatable(`Failed to send request to server. Did the server crash?`);
@@ -242,336 +239,15 @@ function doGlobalErrorDebug() {
      };
 }
 
-/***** Header/workspace/subnav helpers *****/
-function setActiveMainNavByHash(hash) {
-    const map = {
-        '#Generate': 'main_nav_generate',
-        '#Text2Image': 'main_nav_generate', 
-        '#Simple': 'main_nav_simple',
-        '#Comfy': 'main_nav_comfy',
-        '#Utilities': 'main_nav_utilities',
-        '#Settings': 'main_nav_settings',
-        '#Server': 'main_nav_server'
-    };
-    
-    // Remove active from all main nav links
-    const mainNavLinks = document.querySelectorAll('#navbarNav .nav-link');
-    mainNavLinks.forEach(link => link.classList.remove('active'));
-    
-    // Set active based on current hash
-    let targetId = map[hash] || 'main_nav_generate';
-    let target = document.getElementById(targetId);
-    if (target) {
-        target.classList.add('active');
-    }
-    
-    // Show/hide ComfyUI nav item based on usage
-    const comfyNavItem = document.getElementById('main_nav_comfy_item');
-    if (comfyNavItem) {
-        if (hash && hash.toLowerCase().includes('comfy')) {
-            comfyNavItem.style.display = '';
-        } else {
-            comfyNavItem.style.display = 'none';
-        }
-    }
-}
-
-
-// Mirror the active pane's sub-navigation into the workspace subnav bar
-function mirrorSubnavFromContent() {
-    const bar = document.getElementById('workspace_subnav_bar');
-    const list = document.getElementById('workspace_subnav_list');
-    if (!bar || !list) { return; }
-    list.innerHTML = '';
-    let activePane = document.querySelector('.tab-pane.show.active');
-    if (!activePane) { bar.style.display = 'none'; return; }
-    // Prefer Bottom Bar subnav in Generate for faster navigation
-    let subnav = activePane.querySelector('#bottombartabcollection') || activePane.querySelector('.swarm-gen-tab-subnav');
-    if (!subnav) { bar.style.display = 'none'; return; }
-    let links = subnav.querySelectorAll('a.nav-link');
-    if (!links || links.length === 0) { bar.style.display = 'none'; return; }
-    for (let a of links) {
-        let li = document.createElement('li');
-        li.className = 'nav-item';
-        let link = document.createElement('a');
-        link.className = 'nav-link' + (a.classList.contains('active') ? ' active' : '');
-        link.href = a.getAttribute('href');
-        link.textContent = a.textContent;
-        link.addEventListener('click', (e) => {
-            setTimeout(mirrorSubnavFromContent, 50);
-        });
-        li.appendChild(link);
-        list.appendChild(li);
-    }
-    bar.style.display = '';
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    try {
-        // Add click handlers to main navigation to integrate with existing routing system
-        const mainNavLinks = document.querySelectorAll('#navbarNav .nav-link');
-        mainNavLinks.forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                
-                // Get the target hash from href
-                const href = link.getAttribute('href');
-                if (!href || !href.includes('#')) return;
-                
-                const targetHash = href.substring(href.indexOf('#'));
-                
-                // Map main nav to legacy tab IDs for proper routing
-                const legacyTabMap = {
-                    '#Generate': 'text2imagetabbutton',
-                    '#Simple': 'simpletabbutton',
-                    '#Utilities': 'utilitiestabbutton', 
-                    '#Settings': 'usersettingstabbutton',
-                    '#Server': 'servertabbutton'
-                };
-                
-                const tabButtonId = legacyTabMap[targetHash];
-                console.log('Navigation:', { targetHash, tabButtonId });
-                
-                if (tabButtonId) {
-                    const tabButton = document.getElementById(tabButtonId);
-                    console.log('Found tab button:', tabButton);
-                    if (tabButton) {
-                        // First update the hash
-                        window.location.hash = targetHash;
-                        console.log('Updated hash to:', targetHash);
-                        // Then click the legacy tab button to trigger proper content switching
-                        setTimeout(() => {
-                            console.log('Clicking tab button:', tabButtonId);
-                            tabButton.click();
-                            
-                            // Ensure the tab content is properly shown
-                            setTimeout(() => {
-                                const targetHref = tabButton.getAttribute('href');
-                                if (targetHref) {
-                                    const targetPane = document.querySelector(targetHref);
-                                    if (targetPane) {
-                                        console.log('Ensuring tab pane is visible:', targetHref);
-                                        
-                                        // Remove active and show classes from all panes
-                                        document.querySelectorAll('.tab-pane').forEach(pane => {
-                                            pane.classList.remove('show', 'active');
-                                            // Also remove any inline display:none that might interfere
-                                            if (pane.style.display === 'none') {
-                                                pane.style.removeProperty('display');
-                                            }
-                                        });
-                                        
-                                        // Add active and show classes to target pane
-                                        targetPane.classList.add('show', 'active');
-                                        
-                                        // Remove any inline display:none from the target pane
-                                        if (targetPane.style.display === 'none') {
-                                            targetPane.style.removeProperty('display');
-                                        }
-                                        
-                                        console.log('Tab pane classes after activation:', targetPane.classList.toString());
-                                    }
-                                }
-                            }, 50);
-                        }, 10);
-                    }
-                } else {
-                    // For other cases, just update the hash
-                    console.log('No tab mapping, updating hash to:', targetHash);
-                    window.location.hash = targetHash;
-                }
-            });
-        });
-        
-        // Initialize active nav state on page load
-        const currentHash = window.location.hash || '#Generate';
-        setActiveMainNavByHash(currentHash);
-        
-        // Ensure the top tab list is visible
-        const ensureTabListVisible = () => {
-            const topTabList = document.getElementById('toptablist');
-            if (topTabList && topTabList.style.display === 'none') {
-                console.log('Making toptablist visible');
-                topTabList.style.display = '';
-            }
-        };
-        
-        // Fix tab panes by removing inline display:none styles that prevent content from showing
-        const fixTabPanes = () => {
-            const tabPanes = document.querySelectorAll('.tab-pane[style*="display: none"]');
-            tabPanes.forEach(pane => {
-                console.log('Removing inline display:none from tab pane:', pane.id);
-                pane.style.removeProperty('display');
-            });
-        };
-        
-        // Make tab list visible and fix tab panes immediately
-        ensureTabListVisible();
-        fixTabPanes();
-        
-        // Also check after a short delay to ensure everything is fixed after page load
-        setTimeout(() => {
-            ensureTabListVisible();
-            fixTabPanes();
-        }, 100);
-        setTimeout(() => {
-            ensureTabListVisible();
-            fixTabPanes();
-        }, 500);
-        
-        // Add diagnostic function for checking page state
-        window.checkPageState = () => {
-            console.log('=== Page State Check ===');
-            console.log('Current hash:', window.location.hash);
-            
-            // Check main navigation
-            const mainNav = document.getElementById('navbarNav');
-            console.log('Main nav exists:', !!mainNav);
-            
-            // Check tab system
-            const topTabList = document.getElementById('toptablist');
-            console.log('Top tab list exists:', !!topTabList);
-            if (topTabList) {
-                console.log('Top tab list display style:', topTabList.style.display);
-                const activeTab = topTabList.querySelector('.nav-link.active');
-                console.log('Active tab:', activeTab ? activeTab.textContent : 'none');
-            }
-            
-            // Check visible content
-            const activePane = document.querySelector('.tab-pane.show.active');
-            console.log('Active pane:', activePane ? activePane.id : 'none');
-            
-            // Check sidebars
-            const inputSidebar = document.getElementById('input_sidebar');
-            console.log('Input sidebar:', inputSidebar ? `visible: ${inputSidebar.style.display !== 'none'}` : 'not found');
-            
-            const bottomBar = document.getElementById('t2i_bottom_bar');
-            console.log('Bottom bar:', bottomBar ? `visible: ${bottomBar.style.display !== 'none'}` : 'not found');
-            
-            // Check sub-navigation
-            const subnavBar = document.getElementById('subnav_bar');
-            console.log('Sub-nav bar:', subnavBar ? `visible: ${subnavBar.style.display !== 'none'}` : 'not found');
-            
-            console.log('=== End Check ===');
-        };
-        
-        // Handle hash changes from other sources (like direct URL changes)
-        window.addEventListener('hashchange', () => {
-            setActiveMainNavByHash(window.location.hash);
-        });
-
-// On tab change, just toggle Comfy-only visibility (no header subnav)
-        document.body.addEventListener('shown.bs.tab', (e) => {
-            const href = e.target?.getAttribute?.('href');
-            const comfyVisible = href === '#Comfy';
-            for (const node of document.querySelectorAll('.comfy-only')) {
-                node.style.display = comfyVisible ? '' : 'none';
-            }
-        });
-// Initial setup: toggle Comfy-only visibility based on initial tab
-        setTimeout(() => {
-            const comfyVisible = (document.querySelector('a.nav-link.active')?.getAttribute('href') === '#Comfy') || (window.location.hash === '#Comfy');
-            for (const node of document.querySelectorAll('.comfy-only')) {
-                node.style.display = comfyVisible ? '' : 'none';
-            }
-        }, 250);
-
-        // Keyboard shortcuts
-        document.addEventListener('keydown', (e) => {
-            if (e.altKey && (e.key === 'i' || e.key === 'I')) {
-                const btn = document.getElementById('alt_interrupt_button') || document.getElementById('interrupt_button');
-                if (btn && !btn.classList.contains('interrupt-button-none')) {
-                    btn.click();
-                    e.preventDefault();
-                }
-            }
-        });
-
-        // Theme toggle (light/dark) persistence
-        const root = document.documentElement;
-        const THEME_KEY = 'sui.bsTheme';
-        function applyBsTheme(theme) {
-            root.setAttribute('data-bs-theme', theme);
-            localStorage.setItem(THEME_KEY, theme);
-            const icon = document.getElementById('theme_toggle_icon');
-            if (icon) {
-                icon.className = theme === 'dark' ? 'bi bi-moon' : 'bi bi-sun';
-            }
-        }
-        const savedTheme = localStorage.getItem(THEME_KEY) || 'dark';
-        applyBsTheme(savedTheme);
-        const toggleBtn = document.getElementById('theme_toggle_button');
-        if (toggleBtn) {
-            toggleBtn.addEventListener('click', () => {
-                const newTheme = (root.getAttribute('data-bs-theme') === 'dark') ? 'light' : 'dark';
-                applyBsTheme(newTheme);
-            });
-        }
-
-        // Density toggle (comfortable/compact) persistence
-        const DENSITY_KEY = 'sui.density';
-        function applyDensity(density) {
-            if (density === 'compact') {
-                root.setAttribute('data-density', 'compact');
-            } else {
-                root.removeAttribute('data-density');
-            }
-            localStorage.setItem(DENSITY_KEY, density);
-            const dIcon = document.getElementById('density_toggle_icon');
-            if (dIcon) {
-                dIcon.className = density === 'compact' ? 'bi bi-arrows-collapse' : 'bi bi-arrows-expand';
-            }
-        }
-        const savedDensity = localStorage.getItem(DENSITY_KEY) || 'comfortable';
-        applyDensity(savedDensity);
-        const densityBtn = document.getElementById('density_toggle_button');
-        if (densityBtn) {
-            densityBtn.addEventListener('click', () => {
-                const newDensity = (root.getAttribute('data-density') === 'compact') ? 'comfortable' : 'compact';
-                applyDensity(newDensity);
-            });
-        }
-    } catch (err) {
-        console.warn('site.js init error', err);
-    }
-});
-
 function triggerChangeFor(elem) {
-    elem.dispatchEvent(new Event('input', { bubbles: true }));
+    elem.dispatchEvent(new Event('input'));
     if (elem.oninput) {
         elem.oninput(elem);
     }
-    elem.dispatchEvent(new Event('change', { bubbles: true }));
+    elem.dispatchEvent(new Event('change'));
     if (elem.onchange) {
         elem.onchange(elem);
     }
-}
-
-/** Safely show a Bootstrap 5 modal by element id (no jQuery). */
-function showModalById(id) {
-    let el = document.getElementById(id);
-    if (!el) { return; }
-    let instance = bootstrap.Modal.getOrCreateInstance(el);
-    instance.show();
-}
-
-/** Safely hide a Bootstrap 5 modal by element id (no jQuery). */
-function hideModalById(id) {
-    let el = document.getElementById(id);
-    if (!el) { return; }
-    let instance = bootstrap.Modal.getOrCreateInstance(el);
-    instance.hide();
-}
-
-/** Set multiple values for a <select multiple> or single value for normal selects, then trigger change. */
-function setSelectValues(selectElem, values) {
-    if (!selectElem) return;
-    let vals = Array.isArray(values) ? values : [values];
-    let isMultiple = selectElem.multiple === true;
-    for (let opt of selectElem.options) {
-        opt.selected = isMultiple ? vals.includes(opt.value) : (vals.length > 0 && opt.value === vals[0]);
-    }
-    triggerChangeFor(selectElem);
 }
 
 function textPromptDoCount(elem, countElem = null, prefix = '') {
@@ -890,6 +566,9 @@ function autoNumberWidth(elem) {
     span.remove();
 }
 
+function makeGenericPopover(id, name, type, description, example) {
+    return `<div class="sui-popover sui-info-popover" id="popover_${id}"><b>${escapeHtml(name)}</b> (${type}):<br>&emsp;${safeHtmlOnly(description)}${example}</div>`;
+}
 
 let popoverHoverTimer = null;
 
@@ -954,19 +633,6 @@ function getPopoverElemsFor(id, popover_button) {
 
 function getRangeStyle(value, min, max) {
     return `--range-value: ${(value-min)/(max-min)*100}%`;
-}
-
-// Generic popover HTML generator used across tabs
-function makeGenericPopover(id, name, type, description, extraClass = '') {
-    try {
-        const cls = extraClass ? ` ${extraClass}` : '';
-        const safeName = escapeHtmlNoBr ? escapeHtmlNoBr(name) : name;
-        const safeDesc = (typeof safeHtmlOnly !== 'undefined') ? safeHtmlOnly(description) : description;
-        return `<div class="sui-popover${cls}" id="popover_${id}"><b>${safeName}</b> (${type}):<br><span class="translate slight-left-margin-block">${safeDesc}</span></div>`;
-    } catch (e) {
-        // Fallback without helpers
-        return `<div class=\"sui-popover${extraClass ? ' ' + extraClass : ''}\" id=\"popover_${id}\"><b>${name}</b> (${type}):<br><span class=\"translate slight-left-margin-block\">${description}</span></div>`;
-    }
 }
 
 function updateRangeStyle(e) {
@@ -1108,7 +774,7 @@ function makeDropdownInput(featureid, id, paramid, name, description, values, de
         <label>
             <span class="auto-input-name">${getToggleHtml(toggles, id, name)}${translateableHtml(name)}${popover}</span>
         </label>
-        <select class="form-select" id="${id}" data-name="${name}" data-param_id="${paramid}" autocomplete="off" onchange="autoSelectWidth(this)">`;
+        <select class="auto-dropdown" id="${id}" data-name="${name}" data-param_id="${paramid}" autocomplete="off" onchange="autoSelectWidth(this)">`;
     for (let i = 0; i < values.length; i++) {
         let value = values[i];
         let alt_name = alt_names && alt_names[i] ? alt_names[i] : value;
@@ -1287,13 +953,11 @@ function quickAppendButton(div, name, func, classes = '', title = '') {
 }
 
 function modalHeader(id, title) {
-    return `<div class="modal" tabindex="-1" id="${id}">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">${title}</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>`;
+    return `
+    <div class="modal" tabindex="-1" role="dialog" id="${id}">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header"><h5 class="modal-title translate">${title}</h5></div>`;
 }
 
 function modalFooter() {
