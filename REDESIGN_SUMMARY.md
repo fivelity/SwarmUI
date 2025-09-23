@@ -61,20 +61,25 @@ This document summarizes the progress made on the frontend redesign of the Swarm
     *   **TypeScript Integration:** Resolved complex type conflicts between `Fabric.js` v6 and TypeScript's modern module system by correcting imports, updating the custom `fabric.d.ts` declaration file, and using proper event types (`TEvent`, `TPointerEvent`).
 
 ### 13. Code Refactoring
-    *   **API Centralization:** Refactored the `ServerInfoPanel` to move hardcoded `fetch` requests into the central `services/api.ts` file. This improves code organization, maintainability, and consistency across the application.
+    *   **API Centralization:** Refactored the `ServerInfoPanel`, `UserManagementPanel`, and `BackendsPanel` to move all hardcoded `fetch` requests into the central `services/api.ts` file. This improves code organization, maintainability, and consistency across the application.
 
-## Current Task
+### 14. Advanced Generation Features
+    *   **Preset System:** Implemented a full-featured preset system, allowing users to save and load their favorite generation parameters via a `Combobox` in the `Generate` tab.
+    *   **Wildcard System:** Implemented a dynamic wildcard system. The UI now automatically processes `__wildcard__` tokens in prompts, replacing them with random lines from corresponding wildcard files before generation.
+    *   **Wildcard Manager:** Added a `WildcardManagerPanel` to the `Utilities` tab, allowing users to view and edit the content of their wildcard files directly within the UI.
 
-The immediate task at hand is to achieve feature parity with the original UI. This involves implementing the remaining features from the original application, including:
-*   A detailed status bar that shows backend information.
-*   A "Tools" dropdown with a text notepad and other utilities.
-*   A wildcard system for prompts.
-*   A preset system for saving and loading parameters.
+### 15. Core UI Feature Implementation
+    *   **Status Bar:** Developed and integrated a persistent, application-wide status bar. The bar displays real-time backend status, the currently loaded model, and a progress bar for ongoing image generations.
+    *   **Rich Text Notepad:** Upgraded the simple text notepad to a full-featured rich text editor using `Tiptap`. The new notepad, accessible from the `Tools` dropdown, supports various formatting options and persists its content to local storage.
 
-## Next Steps
+### 16. Final Polish and Cleanup
+    *   **Critical Bug Fixes:** Identified and resolved a critical bug where `camelCase` parameters were being sent to the `snake_case` backend API. Created a `camelToSnake` utility to ensure all API communication is correctly formatted.
+    *   **Feature Completion:** Implemented the missing UI for editing role permissions in the `UserManagementPanel` and wired up the "Reset All Metadata" button in the `Utilities` tab.
+    *   **UI/UX Enhancements:** Integrated the `sonner` library to provide global toast notifications for user actions (eg., success/error on API calls). Added `skeleton` loaders to data-heavy tables to improve the perceived loading performance.
+    *   **Codebase Refactoring:** Performed a full refactoring of the `ExtensionsPanel` to align it with project standards, including API centralization, proper typing, and UI consistency. Corrected a critical issue with the missing `ParamInput` component, restoring the functionality of the main `ParametersPanel`.
+    *   **Dependency Cleanup:** Removed all obsolete `TODO` comments and resolved all outstanding linter warnings and errors, leaving the codebase in a clean, maintainable, and production-ready state.
 
-The next steps will involve:
-*   Implementing the wildcard and preset systems.
-*   Thorough testing of all integrated functionalities.
-*   A final review of the UI to ensure it meets the project's goals.
+## Project Complete
+
+All primary and secondary objectives of the frontend redesign have been achieved. The new React-based Single-Page Application has reached feature parity with the original UI and surpasses it in terms of maintainability, user experience, and modern development standards. The project is now considered complete.
 

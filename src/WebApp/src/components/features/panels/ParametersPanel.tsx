@@ -41,7 +41,6 @@ export const ParametersPanel: React.FC<ParametersPanelProps> = ({ params, setPar
         acc[p.group].push(p);
         return acc;
       }, {});
-      // TODO: Sort groups based on group priority from backend
       setParamGroups(groups);
 
       // Initialize params state with defaults

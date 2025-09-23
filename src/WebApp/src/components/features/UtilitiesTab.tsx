@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { tokenize } from '@/services/api';
+import { tokenize, resetAllMetadata } from '@/services/api';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
@@ -13,6 +14,16 @@ import { WildcardManagerPanel } from './panels/WildcardManagerPanel';
 
 const InfoTab = () => {
   const { t } = useTranslation();
+
+  const handleResetMetadata = async () => {
+    try {
+      await resetAllMetadata();
+      toast.success(t('Metadata Reset Successfully'));
+    } catch (e: any) {
+      toast.error(t('Error resetting metadata'), { description: e.message });
+    }
+  };
+
   return (
     <div className="max-w-xl flex flex-col gap-4">
       <ParameterGroup title={t('Utilities')}>
@@ -21,7 +32,7 @@ const InfoTab = () => {
       <ParameterGroup title={t('Metadata Utilities')}>
         <p className="text-muted-foreground">{t('If you click this button, all Model and Image metadata datastores will be reset, and they will be reloaded from source files. This is useful for example if you\'ve externally modified your model or image files and want to clean out or update Swarm\'s metadata tracking.')}</p>
         <div className="flex justify-center">
-          <Button onClick={() => alert('TODO: Call ResetAllMetadata API')}>{t('Reset All Metadata')}</Button>
+          <Button onClick={handleResetMetadata}>{t('Reset All Metadata')}</Button>
         </div>
       </ParameterGroup>
     </div>

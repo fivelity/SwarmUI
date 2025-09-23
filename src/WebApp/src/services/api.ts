@@ -1,5 +1,19 @@
 const API_BASE = './API'; // Relative to the web root
 
+export async function getInstallStatus() {
+  try {
+    const response = await fetch(`${API_BASE}/BasicAPIFeatures/GetInstallStatus`);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return await response.json();
+  } catch (e) {
+    console.error('Failed to fetch install status:', e);
+    // Assume not installed if status check fails, to show the installer
+    return { is_installed: false };
+  }
+}
+
 export async function getModels() {
   try {
     const response = await fetch(`${API_BASE}/T2IAPI/ListModels`);
@@ -372,4 +386,21 @@ export async function updateRolePermissions(id: string, permissions_csv: string)
 
 export async function listPermissions() {
     return fetch(`${API_BASE}/Admin/ListPermissions`).then(res => res.json());
+}
+
+export async function resetAllMetadata() {
+    return fetch(`${API_BASE}/Util/ResetAllMetadata`, { method: 'POST' }).then(res => res.json());
+}
+
+// Backend Management
+export async function listBackends() {
+    return fetch(`${API_BASE}/Backend/ListBackends`).then(res => res.json());
+}
+
+export async function toggleBackend(id: number, enabled: boolean) {
+    return fetch(`${API_BASE}/Backend/ToggleBackend?backend_id=${id}&enabled=${enabled}`, { method: 'POST' });
+}
+
+export async function restartAllBackends() {
+    return fetch(`${API_BASE}/Backend/RestartBackends`, { method: 'POST' });
 }

@@ -9,6 +9,7 @@ import { UserTab } from './components/features/UserTab';
 import { ServerTab } from './components/features/ServerTab';
 import { StatusBar } from './components/core/StatusBar';
 import { Tools } from './components/core/Tools';
+import { Toaster } from '@/components/ui/sonner';
 
 function App() {
   const { t } = useTranslation();
@@ -35,6 +36,7 @@ function App() {
             </div>
         </div>
         <StatusBar />
+        <Toaster />
       </ProtectedRoute>
     </AuthProvider>
   );

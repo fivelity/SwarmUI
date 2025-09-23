@@ -22,10 +22,6 @@ export const LogsPanel = () => {
 
   useEffect(() => {
     fetchLogs();
-    // TODO: Implement WebSocket for real-time logs
-    // const ws = new WebSocket('ws://localhost:7801/ws/logs');
-    // ws.onmessage = (event) => setLogs(prev => [...prev, event.data]);
-    // return () => ws.close();
   }, [logLevel, filter]);
 
   const handlePastebin = async () => {

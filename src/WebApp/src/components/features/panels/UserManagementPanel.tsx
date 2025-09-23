@@ -2,10 +2,13 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { ParameterGroup } from '@/components/layout/ParameterGroup';
+import { EditRolePermissionsDialog } from './EditRolePermissionsDialog';
+import { User, Role } from '@/types/index';
 
 import {
     listUsers,
@@ -15,21 +18,8 @@ import {
     listRoles,
     addRole,
     deleteRole,
-    // updateRolePermissions, // TODO: Implement permission editing UI
-    // listPermissions, // TODO: Implement permission editing UI
 } from '@/services/api';
 
-interface User {
-    id: string;
-    username: string;
-    roles: string[];
-}
-
-interface Role {
-    id: string;
-    name: string;
-    permissions: string[];
-}
 
 const UserList = () => {
     const { t } = useTranslation();
@@ -74,24 +64,38 @@ const UserList = () => {
                 <Table>
                     <TableHeader><TableRow><TableHead>{t('ID')}</TableHead><TableHead>{t('Username')}</TableHead><TableHead>{t('Roles')}</TableHead><TableHead className="text-right">{t('Actions')}</TableHead></TableRow></TableHeader>
                     <TableBody>
-                        {users.map(user => (
-                            <TableRow key={user.id}>
-                                <TableCell>{user.id}</TableCell>
-                                <TableCell>{user.username}</TableCell>
-                                <TableCell>{user.roles.join(', ')}</TableCell>
-                                <TableCell className="text-right space-x-2">
-                                    <Dialog>
-                                        <DialogTrigger asChild><Button variant="outline">{t('Edit Roles')}</Button></DialogTrigger>
-                                        <DialogContent>
-                                            <DialogHeader><DialogTitle>{t('Edit Roles for')} {user.username}</DialogTitle></DialogHeader>
-                                            <Input defaultValue={user.roles.join(', ')} onChange={e => setNewRoles(e.target.value)} />
-                                            <DialogFooter><Button onClick={handleUpdateUserRoles}>{t('Save')}</Button></DialogFooter>
-                                        </DialogContent>
-                                    </Dialog>
-                                    <Button variant="destructive" onClick={() => handleDeleteUser(user.id)}>{t('Delete')}</Button>
-                                </TableCell>
-                            </TableRow>
-                        ))}
+                        {users.length === 0 ? (
+                            Array.from({ length: 3 }).map((_, i) => (
+                                <TableRow key={i}>
+                                    <TableCell><Skeleton className="h-4 w-24" /></TableCell>
+                                    <TableCell><Skeleton className="h-4 w-32" /></TableCell>
+                                    <TableCell><Skeleton className="h-4 w-48" /></TableCell>
+                                    <TableCell className="text-right space-x-2">
+                                        <Skeleton className="h-8 w-20 inline-block" />
+                                        <Skeleton className="h-8 w-20 inline-block" />
+                                    </TableCell>
+                                </TableRow>
+                            ))
+                        ) : (
+                            users.map(user => (
+                                <TableRow key={user.id}>
+                                    <TableCell>{user.id}</TableCell>
+                                    <TableCell>{user.username}</TableCell>
+                                    <TableCell>{user.roles.join(', ')}</TableCell>
+                                    <TableCell className="text-right space-x-2">
+                                        <Dialog>
+                                            <DialogTrigger asChild><Button variant="outline">{t('Edit Roles')}</Button></DialogTrigger>
+                                            <DialogContent>
+                                                <DialogHeader><DialogTitle>{t('Edit Roles for')} {user.username}</DialogTitle></DialogHeader>
+                                                <Input defaultValue={user.roles.join(', ')} onChange={e => setNewRoles(e.target.value)} />
+                                                <DialogFooter><Button onClick={handleUpdateUserRoles}>{t('Save')}</Button></DialogFooter>
+                                            </DialogContent>
+                                        </Dialog>
+                                        <Button variant="destructive" onClick={() => handleDeleteUser(user.id)}>{t('Delete')}</Button>
+                                    </TableCell>
+                                </TableRow>
+                            ))
+                        )}
                     </TableBody>
                 </Table>
             </ParameterGroup>
@@ -132,17 +136,31 @@ const RoleList = () => {
                 <Table>
                     <TableHeader><TableRow><TableHead>{t('ID')}</TableHead><TableHead>{t('Name')}</TableHead><TableHead>{t('Permissions')}</TableHead><TableHead className="text-right">{t('Actions')}</TableHead></TableRow></TableHeader>
                     <TableBody>
-                        {roles.map(role => (
-                            <TableRow key={role.id}>
-                                <TableCell>{role.id}</TableCell>
-                                <TableCell>{role.name}</TableCell>
-                                <TableCell>{role.permissions.join(', ')}</TableCell>
-                                <TableCell className="text-right space-x-2">
-                                    {/* TODO: Implement permission editing with a dialog */}
-                                    <Button variant="destructive" onClick={() => handleDeleteRole(role.id)}>{t('Delete')}</Button>
-                                </TableCell>
-                            </TableRow>
-                        ))}
+                        {roles.length === 0 ? (
+                            Array.from({ length: 3 }).map((_, i) => (
+                                <TableRow key={i}>
+                                    <TableCell><Skeleton className="h-4 w-24" /></TableCell>
+                                    <TableCell><Skeleton className="h-4 w-32" /></TableCell>
+                                    <TableCell><Skeleton className="h-4 w-48" /></TableCell>
+                                    <TableCell className="text-right space-x-2">
+                                        <Skeleton className="h-8 w-20 inline-block" />
+                                        <Skeleton className="h-8 w-20 inline-block" />
+                                    </TableCell>
+                                </TableRow>
+                            ))
+                        ) : (
+                            roles.map(role => (
+                                <TableRow key={role.id}>
+                                    <TableCell>{role.id}</TableCell>
+                                    <TableCell>{role.name}</TableCell>
+                                    <TableCell>{role.permissions.join(', ')}</TableCell>
+                                    <TableCell className="text-right space-x-2">
+                                        <EditRolePermissionsDialog role={role} onSave={fetchRoles} />
+                                        <Button variant="destructive" onClick={() => handleDeleteRole(role.id)}>{t('Delete')}</Button>
+                                    </TableCell>
+                                </TableRow>
+                            ))
+                        )}
                     </TableBody>
                 </Table>
             </ParameterGroup>

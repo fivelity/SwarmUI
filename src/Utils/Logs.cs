@@ -99,7 +99,7 @@ public static class Logs
         return RecentLogsBuffer.Where(log =>
         {
             // Parse log level from string (e.g., "HH:mm:ss [INFO] message")
-            string levelStr = log.Split(' ')[1].Replace('[', '').Replace(']', '');
+            string levelStr = log.Split(' ')[1].Replace("[", "").Replace("]", "");
             LogLevel logEntryLevel = (LogLevel)Enum.Parse(typeof(LogLevel), levelStr, true);
             return logEntryLevel >= minLevel && (string.IsNullOrEmpty(filter) || log.Contains(filter, StringComparison.OrdinalIgnoreCase));
         }).TakeLast(limit).ToList();

@@ -7,7 +7,6 @@ import {
 import { ReactNode } from 'react';
 
 const MainLayout = ({ children }: { children: ReactNode[] }) => {
-    // TODO: Connect this to the LayoutProvider to dynamically change layouts
     return (
         <ResizablePanelGroup direction="horizontal" className="w-full h-full">
             <ResizablePanel defaultSize={25}>

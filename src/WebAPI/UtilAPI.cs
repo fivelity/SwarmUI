@@ -114,11 +114,9 @@ public class UtilAPI : ControllerBase
             ["connected_users"] = new JArray(Program.Sessions.Sessions.Values.Select(s => s.User.UserID).Distinct().ToList())
         });
     }
-
     [HttpGet("About")] 
     public IActionResult About() 
     { 
         return Ok(GetAboutUs()); 
     } 
- 
-    [HttpGet("GetMySessions")]
+}

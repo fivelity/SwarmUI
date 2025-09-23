@@ -29,8 +29,9 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
     getThemes().then(fetchedThemes => {
       if (fetchedThemes && fetchedThemes.length > 0) {
         setThemes(fetchedThemes);
-        // TODO: Load user's preferred theme from cookies/localStorage
-        setThemeState(fetchedThemes[0]);
+        const savedThemeId = localStorage.getItem('user-theme');
+        const savedTheme = savedThemeId ? fetchedThemes.find((t: Theme) => t.id === savedThemeId) : null;
+        setThemeState(savedTheme || fetchedThemes[0]);
       }
     });
   }, []);
@@ -52,6 +53,7 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
     const newTheme = themes.find(t => t.id === themeId);
     if (newTheme) {
       setThemeState(newTheme);
+      localStorage.setItem('user-theme', themeId);
     }
   };
 

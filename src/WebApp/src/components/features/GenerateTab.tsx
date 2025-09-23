@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { generate, listWildcards } from '../../services/api';
+import { camelToSnake } from '@/lib/utils';
 import MainLayout from '../layout/MainLayout';
 import { ParametersPanel } from './panels/ParametersPanel';
 import { PromptsPanel } from './panels/PromptsPanel';
@@ -43,11 +44,10 @@ export const GenerateTab = () => {
         }
     }
 
-    // TODO: The API expects snake_case keys, but our params are camelCase from the C# property names.
-    // A conversion step is needed here before sending.
     const finalParams = { ...params, prompt: processedPrompt };
+    const snakeParams = camelToSnake(finalParams);
 
-    const resultImages = await generate(finalParams);
+    const resultImages = await generate(snakeParams);
     if (resultImages) setImages(prev => [...resultImages, ...prev]);
     setLoading(false);
   };

@@ -5,6 +5,14 @@ import { defineConfig } from "vite"
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  server: {
+    proxy: {
+      '/API': {
+        target: 'http://localhost:7801',
+        changeOrigin: true,
+      },
+    },
+  },
   plugins: [react(), tailwindcss()],
   resolve: {
     alias: {

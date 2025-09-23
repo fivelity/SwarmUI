@@ -3,13 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-
-// This would be expanded to call the real APIs
-const api = {
-    listBackends: async () => fetch('/API/Backend/ListBackends').then(res => res.json()),
-    toggleBackend: async (id: number, enabled: boolean) => fetch(`/API/Backend/ToggleBackend?backend_id=${id}&enabled=${enabled}`),
-    restartAll: async () => fetch('/API/Backend/RestartBackends'),
-};
+import { listBackends, toggleBackend, restartAllBackends } from '@/services/api';
 
 type BackendStatus = 'running' | 'errored' | 'disabled' | 'waiting' | 'loading';
 
@@ -35,7 +29,7 @@ export const BackendsPanel = () => {
     const [backends, setBackends] = useState<Record<string, Backend>>({});
 
     const refresh = () => {
-        api.listBackends().then(setBackends);
+        listBackends().then(setBackends);
     };
 
     useEffect(refresh, []);
@@ -43,8 +37,7 @@ export const BackendsPanel = () => {
     return (
         <div className="flex flex-col gap-4">
             <div className="flex gap-2">
-                <Button onClick={api.restartAll}>{t('Restart All Backends')}</Button>
-                {/* TODO: Add New Backend functionality */}
+                <Button onClick={restartAllBackends}>{t('Restart All Backends')}</Button>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {Object.values(backends).map(backend => (
@@ -57,7 +50,7 @@ export const BackendsPanel = () => {
                             <CardDescription>{t('Type')}: {backend.type}</CardDescription>
                         </CardHeader>
                         <CardFooter className="flex justify-end">
-                            <Button onClick={() => api.toggleBackend(backend.id, !backend.enabled).then(refresh)} variant={backend.enabled ? 'secondary' : 'default'}>
+                            <Button onClick={() => toggleBackend(backend.id, !backend.enabled).then(refresh)} variant={backend.enabled ? 'secondary' : 'default'}>
                                 {backend.enabled ? t('Disable') : t('Enable')}
                             </Button>
                         </CardFooter>
