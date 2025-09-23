@@ -15,26 +15,26 @@ function App() {
   return (
     <AuthProvider>
       <ProtectedRoute>
-        <div className="bg-background text-text min-h-screen p-4">
+        <div className="bg-background text-text min-h-screen p-4 pb-12"> {/* Add padding-bottom to avoid content overlap */}
             <div className="flex gap-4">
                 <Tools />
-            <Tabs defaultValue="generate" className="w-full">
-                <TabsList>
-                    <TabsTrigger value="generate">{t('Generate')}</TabsTrigger>
-                    <TabsTrigger value="simple">{t('Simple')}</TabsTrigger>
-                    <TabsTrigger value="utilities">{t('Utilities')}</TabsTrigger>
-                    <TabsTrigger value="user">{t('User')}</TabsTrigger>
-                    <TabsTrigger value="server">{t('Server')}</TabsTrigger>
-                </TabsList>
-                <TabsContent value="generate"><GenerateTab /></TabsContent>
-                <TabsContent value="simple"><SimpleTab /></TabsContent>
-                <TabsContent value="utilities"><UtilitiesTab /></TabsContent>
-                <TabsContent value="user"><UserTab /></TabsContent>
-                <TabsContent value="server"><ServerTab /></TabsContent>
-            </Tabs>
-            <StatusBar />
+                <Tabs defaultValue="generate" className="w-full">
+                    <TabsList>
+                        <TabsTrigger value="generate">{t('Generate')}</TabsTrigger>
+                        <TabsTrigger value="simple">{t('Simple')}</TabsTrigger>
+                        <TabsTrigger value="utilities">{t('Utilities')}</TabsTrigger>
+                        <TabsTrigger value="user">{t('User')}</TabsTrigger>
+                        <TabsTrigger value="server">{t('Server')}</TabsTrigger>
+                    </TabsList>
+                    <TabsContent value="generate"><GenerateTab /></TabsContent>
+                    <TabsContent value="simple"><SimpleTab /></TabsContent>
+                    <TabsContent value="utilities"><UtilitiesTab /></TabsContent>
+                    <TabsContent value="user"><UserTab /></TabsContent>
+                    <TabsContent value="server"><ServerTab /></TabsContent>
+                </Tabs>
+            </div>
         </div>
-</div>
+        <StatusBar />
       </ProtectedRoute>
     </AuthProvider>
   );
