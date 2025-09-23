@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -30,6 +31,7 @@ const statusVariant = (status: BackendStatus): 'default' | 'secondary' | 'destru
 }
 
 export const BackendsPanel = () => {
+    const { t } = useTranslation();
     const [backends, setBackends] = useState<Record<string, Backend>>({});
 
     const refresh = () => {
@@ -41,7 +43,7 @@ export const BackendsPanel = () => {
     return (
         <div className="flex flex-col gap-4">
             <div className="flex gap-2">
-                <Button onClick={api.restartAll}>Restart All Backends</Button>
+                <Button onClick={api.restartAll}>{t('Restart All Backends')}</Button>
                 {/* TODO: Add New Backend functionality */}
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -52,11 +54,11 @@ export const BackendsPanel = () => {
                                 {backend.title}
                                 <Badge variant={statusVariant(backend.status)}>{backend.status.toUpperCase()}</Badge>
                             </CardTitle>
-                            <CardDescription>Type: {backend.type}</CardDescription>
+                            <CardDescription>{t('Type')}: {backend.type}</CardDescription>
                         </CardHeader>
                         <CardFooter className="flex justify-end">
                             <Button onClick={() => api.toggleBackend(backend.id, !backend.enabled).then(refresh)} variant={backend.enabled ? 'secondary' : 'default'}>
-                                {backend.enabled ? 'Disable' : 'Enable'}
+                                {backend.enabled ? t('Disable') : t('Enable')}
                             </Button>
                         </CardFooter>
                     </Card>

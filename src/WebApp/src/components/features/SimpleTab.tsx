@@ -1,10 +1,12 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { generate } from '@/services/api';
 import { ImageGallery } from './ImageGallery';
 
 export const SimpleTab = () => {
+  const { t } = useTranslation();
   const [prompt, setPrompt] = useState('');
   const [loading, setLoading] = useState(false);
   const [images, setImages] = useState<string[]>([]);
@@ -21,12 +23,12 @@ export const SimpleTab = () => {
 
   return (
     <div className="max-w-xl mx-auto flex flex-col gap-4">
-      <h2 className="text-2xl font-bold text-center">Simple Mode</h2>
-      <p className="text-center text-text/70">Just type a prompt and go!</p>
-      <Textarea rows={5} value={prompt} onChange={e => setPrompt(e.target.value)} placeholder="A beautiful landscape painting..." />
+      <h2 className="text-2xl font-bold text-center">{t('Simple Mode')}</h2>
+      <p className="text-center text-text/70">{t('Just type a prompt and go!')}</p>
+      <Textarea rows={5} value={prompt} onChange={e => setPrompt(e.target.value)} placeholder={t('A beautiful landscape painting...')} />
       <div className="flex justify-center">
         <Button onClick={handleGenerate} disabled={loading}>
-          {loading ? 'Generating...' : 'Generate'}
+          {loading ? t('Generating...') : t('Generate')}
         </Button>
       </div>
       <ImageGallery images={images} />

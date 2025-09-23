@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
 import 'tailwindcss/css'
+import './i18n';
 
 import { ThemeProvider } from './contexts/ThemeProvider';
 

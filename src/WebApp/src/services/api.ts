@@ -174,6 +174,19 @@ export async function submitLogsToPastebin(payload: { logs: string }) {
     }
 }
 
+export async function getCurrentStatus() {
+  try {
+    const response = await fetch(`${API_BASE}/Admin/GetCurrentStatus`);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return await response.json();
+  } catch (e) {
+    console.error('Failed to fetch status:', e);
+    return null;
+  }
+}
+
 export async function getServerInfo() {
   try {
     const response = await fetch(`${API_BASE}/Admin/GetServerInfo`);

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -8,6 +9,7 @@ import { ParameterGroup } from '@/components/layout/ParameterGroup';
 import { getLogs, submitLogsToPastebin } from '@/services/api';
 
 export const LogsPanel = () => {
+  const { t } = useTranslation();
   const [logs, setLogs] = useState<string[]>([]);
   const [filter, setFilter] = useState('');
   const [logLevel, setLogLevel] = useState('Info');
@@ -32,16 +34,16 @@ export const LogsPanel = () => {
       const result = await submitLogsToPastebin(payload);
       setPastebinUrl(result.url);
     } catch (error: any) {
-      alert(`Failed to submit logs: ${error.message}`);
+      alert(`${t('Failed to submit logs')}: ${error.message}`);
     }
   };
 
   return (
     <div className="flex flex-col gap-4">
-      <ParameterGroup title="Server Logs">
+      <ParameterGroup title={t('Server Logs')}>
         <div className="flex items-end gap-2 mb-4">
           <div className="grid gap-1.5">
-            <Label htmlFor="log-level">View</Label>
+            <Label htmlFor="log-level">{t('View')}</Label>
             <Select value={logLevel} onValueChange={setLogLevel}>
                 <SelectTrigger id="log-level" className="w-[180px]"><SelectValue /></SelectTrigger>
                 <SelectContent>
@@ -55,12 +57,12 @@ export const LogsPanel = () => {
             </Select>
           </div>
           <div className="grid gap-1.5 flex-grow">
-            <Label htmlFor="log-filter">Filter</Label>
-            <Input id="log-filter" type="text" value={filter} onChange={e => setFilter(e.target.value)} placeholder="Filter logs..." />
+            <Label htmlFor="log-filter">{t('Filter')}</Label>
+            <Input id="log-filter" type="text" value={filter} onChange={e => setFilter(e.target.value)} placeholder={t('Filter logs...')} />
           </div>
-          <Button onClick={handlePastebin}>Pastebin</Button>
+          <Button onClick={handlePastebin}>{t('Pastebin')}</Button>
         </div>
-        {pastebinUrl && <p className="text-sm text-green-500">Logs submitted: <a href={pastebinUrl} target="_blank" rel="noopener noreferrer" className="underline">{pastebinUrl}</a></p>}
+        {pastebinUrl && <p className="text-sm text-green-500">{t('Logs submitted')}: <a href={pastebinUrl} target="_blank" rel="noopener noreferrer" className="underline">{pastebinUrl}</a></p>}
         <ScrollArea className="h-96 w-full rounded-md border p-4 font-mono text-sm">
           {logs.map((line, index) => (
             <div key={index}>{line}</div>

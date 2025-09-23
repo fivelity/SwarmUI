@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -33,6 +34,7 @@ interface Role {
 }
 
 const UserList = () => {
+    const { t } = useTranslation();
     const [users, setUsers] = useState<User[]>([]);
     const [newUser, setNewUser] = useState({ username: '', password: '' });
     const [editingRoles, setEditingRoles] = useState<User | null>(null);
@@ -63,16 +65,16 @@ const UserList = () => {
 
     return (
         <div className="flex flex-col gap-4">
-            <ParameterGroup title="Add New User">
+            <ParameterGroup title={t('Add New User')}>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <Input placeholder="Username" value={newUser.username} onChange={e => setNewUser(p => ({ ...p, username: e.target.value }))} />
-                    <Input type="password" placeholder="Password" value={newUser.password} onChange={e => setNewUser(p => ({ ...p, password: e.target.value }))} />
-                    <Button onClick={handleAddUser}>Add User</Button>
+                    <Input placeholder={t('Username')} value={newUser.username} onChange={e => setNewUser(p => ({ ...p, username: e.target.value }))} />
+                    <Input type="password" placeholder={t('Password')} value={newUser.password} onChange={e => setNewUser(p => ({ ...p, password: e.target.value }))} />
+                    <Button onClick={handleAddUser}>{t('Add User')}</Button>
                 </div>
             </ParameterGroup>
-            <ParameterGroup title="Existing Users">
+            <ParameterGroup title={t('Existing Users')}>
                 <Table>
-                    <TableHeader><TableRow><TableHead>ID</TableHead><TableHead>Username</TableHead><TableHead>Roles</TableHead><TableHead className="text-right">Actions</TableHead></TableRow></TableHeader>
+                    <TableHeader><TableRow><TableHead>{t('ID')}</TableHead><TableHead>{t('Username')}</TableHead><TableHead>{t('Roles')}</TableHead><TableHead className="text-right">{t('Actions')}</TableHead></TableRow></TableHeader>
                     <TableBody>
                         {users.map(user => (
                             <TableRow key={user.id}>
@@ -81,14 +83,14 @@ const UserList = () => {
                                 <TableCell>{user.roles.join(', ')}</TableCell>
                                 <TableCell className="text-right space-x-2">
                                     <Dialog>
-                                        <DialogTrigger asChild><Button variant="outline">Edit Roles</Button></DialogTrigger>
+                                        <DialogTrigger asChild><Button variant="outline">{t('Edit Roles')}</Button></DialogTrigger>
                                         <DialogContent>
-                                            <DialogHeader><DialogTitle>Edit Roles for {user.username}</DialogTitle></DialogHeader>
+                                            <DialogHeader><DialogTitle>{t('Edit Roles for')} {user.username}</DialogTitle></DialogHeader>
                                             <Input defaultValue={user.roles.join(', ')} onChange={e => setNewRoles(e.target.value)} />
-                                            <DialogFooter><Button onClick={handleUpdateUserRoles}>Save</Button></DialogFooter>
+                                            <DialogFooter><Button onClick={handleUpdateUserRoles}>{t('Save')}</Button></DialogFooter>
                                         </DialogContent>
                                     </Dialog>
-                                    <Button variant="destructive" onClick={() => handleDeleteUser(user.id)}>Delete</Button>
+                                    <Button variant="destructive" onClick={() => handleDeleteUser(user.id)}>{t('Delete')}</Button>
                                 </TableCell>
                             </TableRow>
                         ))}
@@ -100,6 +102,7 @@ const UserList = () => {
 };
 
 const RoleList = () => {
+    const { t } = useTranslation();
     const [roles, setRoles] = useState<Role[]>([]);
     const [newRole, setNewRole] = useState({ id: '', name: '' });
 
@@ -120,16 +123,16 @@ const RoleList = () => {
 
     return (
         <div className="flex flex-col gap-4">
-            <ParameterGroup title="Add New Role">
+            <ParameterGroup title={t('Add New Role')}>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <Input placeholder="Role ID" value={newRole.id} onChange={e => setNewRole(p => ({ ...p, id: e.target.value }))} />
-                    <Input placeholder="Role Name" value={newRole.name} onChange={e => setNewRole(p => ({ ...p, name: e.target.value }))} />
-                    <Button onClick={handleAddRole}>Add Role</Button>
+                    <Input placeholder={t('Role ID')} value={newRole.id} onChange={e => setNewRole(p => ({ ...p, id: e.target.value }))} />
+                    <Input placeholder={t('Role Name')} value={newRole.name} onChange={e => setNewRole(p => ({ ...p, name: e.target.value }))} />
+                    <Button onClick={handleAddRole}>{t('Add Role')}</Button>
                 </div>
             </ParameterGroup>
-            <ParameterGroup title="Existing Roles">
+            <ParameterGroup title={t('Existing Roles')}>
                 <Table>
-                    <TableHeader><TableRow><TableHead>ID</TableHead><TableHead>Name</TableHead><TableHead>Permissions</TableHead><TableHead className="text-right">Actions</TableHead></TableRow></TableHeader>
+                    <TableHeader><TableRow><TableHead>{t('ID')}</TableHead><TableHead>{t('Name')}</TableHead><TableHead>{t('Permissions')}</TableHead><TableHead className="text-right">{t('Actions')}</TableHead></TableRow></TableHeader>
                     <TableBody>
                         {roles.map(role => (
                             <TableRow key={role.id}>
@@ -138,7 +141,7 @@ const RoleList = () => {
                                 <TableCell>{role.permissions.join(', ')}</TableCell>
                                 <TableCell className="text-right space-x-2">
                                     {/* TODO: Implement permission editing with a dialog */}
-                                    <Button variant="destructive" onClick={() => handleDeleteRole(role.id)}>Delete</Button>
+                                    <Button variant="destructive" onClick={() => handleDeleteRole(role.id)}>{t('Delete')}</Button>
                                 </TableCell>
                             </TableRow>
                         ))}
@@ -150,11 +153,12 @@ const RoleList = () => {
 };
 
 export const UserManagementPanel = () => {
+    const { t } = useTranslation();
     return (
         <Tabs defaultValue="users" className="w-full">
             <TabsList>
-                <TabsTrigger value="users">Users</TabsTrigger>
-                <TabsTrigger value="roles">Roles</TabsTrigger>
+                <TabsTrigger value="users">{t('Users')}</TabsTrigger>
+                <TabsTrigger value="roles">{t('Roles')}</TabsTrigger>
             </TabsList>
             <TabsContent value="users"><UserList /></TabsContent>
             <TabsContent value="roles"><RoleList /></TabsContent>

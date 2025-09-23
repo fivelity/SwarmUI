@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -26,8 +27,9 @@ interface ServerInfo {
 }
 
 export const ServerInfoPanel = () => {
+    const { t } = useTranslation();
         const [info, setInfo] = useState<ServerInfo | null>(null);
-    const [updateStatus, setUpdateStatus] = useState('Checking...');
+    const [updateStatus, setUpdateStatus] = useState(t('Checking...'));
 
     const fetchInfo = async () => {
         const data = await getServerInfo();
@@ -35,12 +37,12 @@ export const ServerInfoPanel = () => {
     };
 
     const handleCheckForUpdates = async () => {
-        setUpdateStatus('Checking for updates...');
+        setUpdateStatus(t('Checking for updates...'));
         try {
             const result = await checkForUpdates();
             setUpdateStatus(result.message || result.status);
         } catch (error: any) {
-            setUpdateStatus(`Error checking for updates: ${error.message}`);
+            setUpdateStatus(`${t('Error checking for updates')}: ${error.message}`);
         }
     };
 
@@ -52,27 +54,27 @@ export const ServerInfoPanel = () => {
     }, []);
 
     if (!info) {
-        return <div>Loading server info...</div>;
+        return <div>{t('Loading server info...')}</div>;
     }
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <Card>
                 <CardHeader>
-                    <CardTitle>Local Network</CardTitle>
+                    <CardTitle>{t('Local Network')}</CardTitle>
                 </CardHeader>
                 <CardContent>
                     {info.host === '127.0.0.1' || info.host === 'localhost' ? (
-                        <p>This server is only accessible from this computer.</p>
+                        <p>{t('This server is only accessible from this computer.')}</p>
                     ) : (
-                        <p>This server is likely accessible from LAN on one of the following addresses:<br/>{info.local_ip}</p>
+                        <p>{t('This server is likely accessible from LAN on one of the following addresses:')}<br/>{info.local_ip}</p>
                     )}
-                    {info.public_url && <p>This server is also accessible from the open internet at:<br/>{info.public_url}</p>}
+                    {info.public_url && <p>{t('This server is also accessible from the open internet at:')}<br/>{info.public_url}</p>}
                 </CardContent>
             </Card>
             <Card>
                 <CardHeader>
-                    <CardTitle>Resource Usage</CardTitle>
+                    <CardTitle>{t('Resource Usage')}</CardTitle>
                 </CardHeader>
                 <CardContent className="flex flex-col gap-2">
                     <div>
@@ -91,43 +93,43 @@ export const ServerInfoPanel = () => {
             </Card>
             <Card>
                 <CardHeader>
-                    <CardTitle>Connected Users</CardTitle>
+                    <CardTitle>{t('Connected Users')}</CardTitle>
                 </CardHeader>
                 <CardContent>
                     {info.connected_users.length > 0 ? (
                         <ul>{info.connected_users.map(user => <li key={user}>{user}</li>)}</ul>
                     ) : (
-                        <p>No users connected.</p>
+                        <p>{t('No users connected.')}</p>
                     )}
                 </CardContent>
             </Card>
             <Card>
                 <CardHeader>
-                    <CardTitle>Update</CardTitle>
+                    <CardTitle>{t('Update')}</CardTitle>
                 </CardHeader>
                 <CardContent className="flex flex-col gap-2">
                     <p>{updateStatus}</p>
-                    <Button onClick={handleCheckForUpdates}>Check For Updates</Button>
-                    <Button onClick={() => api.restart()}>Update and Restart Server</Button>
+                    <Button onClick={handleCheckForUpdates}>{t('Check For Updates')}</Button>
+                    <Button onClick={() => api.restart()}>{t('Update and Restart Server')}</Button>
                 </CardContent>
             </Card>
             <Card>
                 <CardHeader>
-                    <CardTitle>Shutdown</CardTitle>
+                    <CardTitle>{t('Shutdown')}</CardTitle>
                 </CardHeader>
                 <CardContent className="flex flex-col gap-2">
-                    <p>If you want to shut down the server, click the button below.</p>
-                    <Button onClick={() => api.shutdown()} variant="destructive">Shutdown Server</Button>
+                    <p>{t('If you want to shut down the server, click the button below.')}</p>
+                    <Button onClick={() => api.shutdown()} variant="destructive">{t('Shutdown Server')}</Button>
                 </CardContent>
             </Card>
             <Card>
                 <CardHeader>
-                    <CardTitle>Free Memory</CardTitle>
+                    <CardTitle>{t('Free Memory')}</CardTitle>
                 </CardHeader>
                 <CardContent className="flex flex-col gap-2">
-                    <p>You can free up VRAM or system memory usage from backends.</p>
-                    <Button onClick={() => api.clearVRAM()}>Free VRAM</Button>
-                    <Button onClick={() => api.clearSysRAM()}>Free System RAM</Button>
+                    <p>{t('You can free up VRAM or system memory usage from backends.')}</p>
+                    <Button onClick={() => api.clearVRAM()}>{t('Free VRAM')}</Button>
+                    <Button onClick={() => api.clearSysRAM()}>{t('Free System RAM')}</Button>
                 </CardContent>
             </Card>
         </div>

@@ -1,14 +1,18 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { generate } from '../../services/api';
 import MainLayout from '../layout/MainLayout';
 import { ParametersPanel } from './panels/ParametersPanel';
 import { PromptsPanel } from './panels/PromptsPanel';
 import { GenerateButtonPanel } from './panels/GenerateButtonPanel';
 import { GalleryPanel } from './panels/GalleryPanel';
+import { GenerationParams } from '@/types';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
+import { ImageEditor } from '@/components/core/ImageEditor';
 
 export const GenerateTab = () => {
   // Consolidated state for all parameters
-  const [params, setParams] = useState({});
+  const [params, setParams] = useState<GenerationParams>({ prompt: '', negativeprompt: '' });
 
   // UI State
   const [loading, setLoading] = useState(false);
@@ -29,6 +33,16 @@ export const GenerateTab = () => {
       <div style={{ gridArea: 'params' }}><ParametersPanel params={params} setParams={setParams} /></div>
       <div style={{ gridArea: 'generate' }}><GenerateButtonPanel {...{ handleGenerate, loading }} /></div>
       <div style={{ gridArea: 'gallery' }}><GalleryPanel images={images} /></div>
+            <div style={{ gridArea: 'tools' }}>
+                <Dialog>
+                    <DialogTrigger asChild>
+                        <Button>Open Image Editor</Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-4xl">
+                        <ImageEditor />
+                    </DialogContent>
+                </Dialog>
+            </div>
     </MainLayout>
   );
 };

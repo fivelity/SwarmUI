@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -68,6 +69,7 @@ const SettingsGroup = ({ name, group, values, onValueChange }: { name: string, g
 };
 
 export const ServerConfigurationPanel = () => {
+    const { t } = useTranslation();
     const [settings, setSettings] = useState<SettingsGroupData | null>(null);
     const [edited, setEdited] = useState<any>(null);
 
@@ -85,13 +87,13 @@ export const ServerConfigurationPanel = () => {
     };
 
     if (!settings) {
-        return <div>Loading server settings...</div>;
+        return <div>{t('Loading server settings...')}</div>;
     }
 
     return (
         <div className="flex flex-col gap-4">
             <div className="flex justify-end">
-                <Button onClick={handleSave}>Save Settings</Button>
+                <Button onClick={handleSave}>{t('Save Settings')}</Button>
             </div>
             {Object.entries(settings).map(([key, group]) => (
                 <SettingsGroup key={key} name={key} group={group as SettingsGroupData} values={edited[key]} onValueChange={(subKey, v) => setEdited((e: any) => ({ ...e, [key]: { ...e[key], [subKey]: v } }))} />

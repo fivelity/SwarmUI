@@ -1,5 +1,6 @@
 {
   "files": [],
+  "isolatedModules": true,
   "references": [
     {
       "path": "./tsconfig.app.json"
