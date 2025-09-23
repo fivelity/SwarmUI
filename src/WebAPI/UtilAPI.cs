@@ -1,192 +1,124 @@
-﻿using FreneticUtilities.FreneticExtensions;
-using Newtonsoft.Json.Linq;
-using SwarmUI.Accounts;
-using SwarmUI.Backends;
-using SwarmUI.Core;
-using SwarmUI.Text2Image;
-using SwarmUI.Utils;
-using System.Diagnostics;
-using System.IO;
+using FreneticUtilities.FreneticToolkit; 
+using Microsoft.AspNetCore.Mvc; 
+using SwarmUI.Accounts; 
+using SwarmUI.Core; 
+using SwarmUI.Text2Image; 
+using SwarmUI.Utils; 
+using System.IO; 
+using System.Net.Http; 
+using System.Text; 
 
-namespace SwarmUI.WebAPI;
+namespace SwarmUI.WebAPI; 
+ 
+[ApiController] 
+[Route("/API/Util")] 
+public class UtilAPI : ControllerBase 
+{ 
+    public static JObject GetAboutUs() 
+    { 
+        return new JObject() 
+        { 
+            ["version"] = Utilities.Version, 
+            ["version_id"] = Utilities.VersionID, 
+            ["version_date"] = Program.CurrentGitDate, 
+            ["total_sessions"] = Stats.TotalSessions, 
+            ["total_gens"] = Stats.TotalGens, 
+            ["total_errors"] = Stats.TotalErrors, 
+            ["total_backends"] = Program.Backends.T2IBackends.Count 
+        }; 
+    } 
+ 
+    [HttpGet("ListAllT2IParams")] 
+    public IActionResult ListAllT2IParams() 
+    { 
+        return Ok(T2IParamTypes.Types.Values.Select(p => p.ToNet(AuthHelper.GetSession(Request.HttpContext))).ToList()); 
+    } 
 
-[API.APIClass("General utility API routes.")]
-public static class UtilAPI
-{
-    public static void Register()
+    [HttpGet("ListThemes")] 
+    public IActionResult ListThemes() 
+    { 
+        return Ok(Program.Web.RegisteredThemes.Values.Select(t => t.ToNet()).ToList()); 
+    } 
+
+    [HttpGet("Tokenize")]
+    public IActionResult Tokenize([FromQuery] string text)
     {
-        API.RegisterAPICall(CountTokens, false, Permissions.UseTokenizer);
-        API.RegisterAPICall(TokenizeInDetail, false, Permissions.UseTokenizer);
-        API.RegisterAPICall(Pickle2SafeTensor, true, Permissions.Pickle2Safetensors);
-        API.RegisterAPICall(WipeMetadata, true, Permissions.ResetMetadata);
-    }
-
-    public static ConcurrentDictionary<string, CliplikeTokenizer> Tokenizers = new();
-
-    private static (JObject, CliplikeTokenizer) GetTokenizerForAPI(string text, string tokenset)
-    {
-        if (text.Length > 100 * 1024)
+        if (string.IsNullOrWhiteSpace(text))
         {
-            return (new JObject() { ["error"] = "Text too long, refused." }, null);
+            return Ok(new JObject());
         }
-        tokenset = Utilities.FilePathForbidden.TrimToNonMatches(tokenset);
-        if (tokenset.Contains('/') || tokenset.Contains('.') || tokenset.Trim() == "" || tokenset.Length > 128)
+        CliplikeTokenizer.Token[] tokens = Program.Tokenizer.Encode(text);
+        JArray result = new();
+        foreach (CliplikeTokenizer.Token token in tokens)
         {
-            return (new JObject() { ["error"] = "Invalid tokenset (refused characters or format), refused." }, null);
-        }
-        try
-        {
-            CliplikeTokenizer tokenizer = Tokenizers.GetOrCreate(tokenset, () =>
+            result.Add(new JObject()
             {
-                string fullPath = $"src/srcdata/Tokensets/{tokenset}.txt.gz";
-                if (!File.Exists(fullPath))
-                {
-                    throw new SwarmUserErrorException($"Tokenset '{tokenset}' does not exist.");
-                }
-                CliplikeTokenizer tokenizer = new();
-                tokenizer.Load(fullPath);
-                return tokenizer;
+                ["id"] = token.ID,
+                ["text"] = Program.Tokenizer.Tokens[token.ID]
             });
-            return (null, tokenizer);
         }
-        catch (SwarmReadableErrorException ex)
-        {
-            return (new JObject() { ["error"] = ex.Message },  null);
-        }
+        return Ok(result);
     }
 
-    private static readonly string[] SkippablePromptSyntax = ["segment", "object", "region", "clear", "extend"];
-
-    [API.APIDescription("Count the CLIP-like tokens in a given text prompt.", "\"count\": 0")]
-    public static async Task<JObject> CountTokens(
-        [API.APIParameter("The text to tokenize.")] string text,
-        [API.APIParameter("If false, process prompt syntax (things like `<random:`) as if its regular text. If true, clean it up first.")] bool skipPromptSyntax = false,
-        [API.APIParameter("What tokenization set to use.")] string tokenset = "clip",
-        [API.APIParameter("If true, process weighting (like `(word:1.5)`). If false, don't process that.")] bool weighting = true)
+    [HttpGet("GetLogs")]
+    public IActionResult GetLogs([FromQuery] string level = "Info", [FromQuery] string filter = "", [FromQuery] int limit = 1000)
     {
-        if (skipPromptSyntax)
+        if (!AuthHelper.GetSession(Request.HttpContext).User.HasPermission(Permissions.ViewLogs))
         {
-            foreach (string str in SkippablePromptSyntax)
-            {
-                int skippable = text.IndexOf($"<{str}:");
-                if (skippable != -1)
-                {
-                    text = text[..skippable];
-                }
-            }
-            text = T2IPromptHandling.ProcessPromptLikeForLength(text);
+            return Forbid();
         }
-        (JObject error, CliplikeTokenizer tokenizer) = GetTokenizerForAPI(text, tokenset);
-        if (error is not null)
-        {
-            return error;
-        }
-        if (!weighting)
-        {
-            CliplikeTokenizer.Token[] rawTokens = tokenizer.Encode(text);
-            return new JObject() { ["count"] = rawTokens.Length };
-        }
-        string[] sections = text.Split("<break>");
-        int biggest = sections.Select(text => tokenizer.EncodeWithWeighting(text).Length).Max();
-        return new JObject() { ["count"] = biggest };
+        Logs.LogLevel minLevel = Enum.Parse<Logs.LogLevel>(level, true);
+        List<string> logLines = Logs.GetRecentLogs(minLevel, filter, limit);
+        return Ok(logLines);
     }
 
-    [API.APIDescription("Tokenize some prompt text and get thorough detail about it.",
-        """
-            "tokens":
-            [
-                {
-                    "id": 123,
-                    "weight": 1.0,
-                    "text": "tok"
-                }
-            ]
-        """)]
-    public static async Task<JObject> TokenizeInDetail(
-        [API.APIParameter("The text to tokenize.")] string text,
-        [API.APIParameter("If false, process prompt syntax (things like `<random:`) as if its regular text. If true, clean it up first.")] bool skipPromptSyntax = false,
-        [API.APIParameter("What tokenization set to use.")] string tokenset = "clip",
-        [API.APIParameter("If true, process weighting (like `(word:1.5)`). If false, don't process that.")] bool weighting = true)
+    [HttpPost("SubmitLogsToPastebin")]
+    public async Task<IActionResult> SubmitLogsToPastebin([FromBody] JObject payload)
     {
-        if (skipPromptSyntax)
+        if (!AuthHelper.GetSession(Request.HttpContext).User.HasPermission(Permissions.ViewLogs))
         {
-            foreach (string str in SkippablePromptSyntax)
-            {
-                int skippable = text.IndexOf($"<{str}:");
-                if (skippable != -1)
-                {
-                    text = text[..skippable];
-                }
-            }
-            text = T2IPromptHandling.ProcessPromptLikeForLength(text);
+            return Forbid();
         }
-        (JObject error, CliplikeTokenizer tokenizer) = GetTokenizerForAPI(text, tokenset);
-        if (error is not null)
+        string logs = payload["logs"].ToString();
+        string pastebinUrl = "https://paste.denizenscript.com/New/Swarm";
+        using (HttpClient client = new HttpClient())
         {
-            return error;
+            var content = new StringContent(logs, Encoding.UTF8, "text/plain");
+            var response = await client.PostAsync(pastebinUrl, content);
+            response.EnsureSuccessStatusCode();
+            string result = await response.Content.ReadAsStringAsync();
+            return Ok(new { url = result });
         }
-        CliplikeTokenizer.Token[] tokens = weighting ? tokenizer.EncodeWithWeighting(text) : tokenizer.Encode(text);
-        return new JObject()
-        {
-            ["tokens"] = new JArray(tokens.Select(t => new JObject() { ["id"] = t.ID, ["weight"] = t.Weight, ["text"] = tokenizer.Tokens[t.ID] }).ToArray())
-        };
     }
 
-    [API.APIDescription("Trigger bulk conversion of models from pickle format to safetensors.", "\"success\": true")]
-    public static async Task<JObject> Pickle2SafeTensor(
-        [API.APIParameter("What type of model to convert, eg `Stable-Diffusion`, `LoRA`, etc.")] string type,
-        [API.APIParameter("If true, convert to fp16 while processing. If false, use original model's weight type.")] bool fp16)
+    [HttpGet("GetServerInfo")]
+    public IActionResult GetServerInfo()
     {
-        if (!Program.T2IModelSets.TryGetValue(type, out T2IModelHandler models))
+        if (!AuthHelper.GetSession(Request.HttpContext).User.HasPermission(Permissions.ReadServerInfoPanels))
         {
-            return new JObject() { ["error"] = $"Invalid type '{type}'." };
+            return Forbid();
         }
-        foreach (string path in models.FolderPaths)
+        return Ok(new JObject()
         {
-            Process p = PythonLaunchHelper.LaunchGeneric("launchtools/pickle-to-safetensors.py", true, [path, fp16 ? "true" : "false"]);
-            await p.WaitForExitAsync(Program.GlobalProgramCancel);
-        }
-        return new JObject() { ["success"] = true };
+            ["local_ip"] = Utilities.GetLocalIPAddress(),
+            ["public_url"] = Program.ProxyHandler?.PublicURL,
+            ["host"] = Program.ServerSettings.Network.Host,
+            ["resource_usage"] = new JObject()
+            {
+                ["cpu"] = SystemStatusMonitor.CurrentCPUUsage,
+                ["ram_total"] = SystemStatusMonitor.TotalRAM,
+                ["ram_used"] = SystemStatusMonitor.UsedRAM,
+                ["vram_total"] = SystemStatusMonitor.TotalVRAM,
+                ["vram_used"] = SystemStatusMonitor.UsedVRAM
+            },
+            ["connected_users"] = new JArray(Program.Sessions.Sessions.Values.Select(s => s.User.UserID).Distinct().ToList())
+        });
     }
 
-    [API.APIDescription("Trigger a mass metadata reset.", "\"success\": true")]
-    public static async Task<JObject> WipeMetadata()
-    {
-        BackendHandler.T2IBackendData[] backends = [.. Program.Backends.T2IBackends.Values];
-        foreach (BackendHandler.T2IBackendData backend in backends)
-        {
-            Interlocked.Add(ref backend.Usages, backend.Backend.MaxUsages);
-        }
-        try
-        {
-            int ticks = 0;
-            while (Program.Backends.T2IBackends.Values.Any(b => b.Usages > b.Backend.MaxUsages))
-            {
-                if (Program.GlobalProgramCancel.IsCancellationRequested)
-                {
-                    return null;
-                }
-                await Task.Delay(TimeSpan.FromSeconds(0.5));
-                if (ticks > 240)
-                {
-                    Logs.Info($"Reset All Metadata: stuck waiting for backends to be clear too long, will just do it anyway.");
-                    break;
-                }
-            }
-            foreach (T2IModelHandler handler in Program.T2IModelSets.Values)
-            {
-                handler.MassRemoveMetadata();
-            }
-        }
-        finally
-        {
-            foreach (BackendHandler.T2IBackendData backend in backends)
-            {
-                Interlocked.Add(ref backend.Usages, -backend.Backend.MaxUsages);
-            }
-        }
-        ImageMetadataTracker.MassRemoveMetadata();
-        T2IAPI.LastRefreshed = Environment.TickCount64 - 20000;
-        return new JObject() { ["success"] = true };
-    }
-}
+    [HttpGet("About")] 
+    public IActionResult About() 
+    { 
+        return Ok(GetAboutUs()); 
+    } 
+ 
+    [HttpGet("GetMySessions")]
