@@ -1,21 +1,43 @@
-import { useState } from 'react';
-import { useCivitai } from '../../hooks/useCivitai';
-import { Button } from '../core/Button';
-import { TextInput } from '../core/TextInput';
-import { Select } from '../core/Select';
-import { ParameterGroup } from '../layout/ParameterGroup';
-import { startDownload, getDownloadStatus } from '../../services/api';
+import { useState, useEffect, ChangeEvent } from 'react';
+import { useCivitai } from '@/hooks/useCivitai';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
+import { Progress } from '@/components/ui/progress';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { ParameterGroup } from '@/components/layout/ParameterGroup';
+
+export interface CivitaiModel {
+    id: number;
+    name: string;
+    creator: { username: string };
+    type: string;
+}
+
+export interface CivitaiVersion {
+    id: number;
+    name: string;
+    description: string;
+    files: { name: string }[];
+}
+
+export interface CivitaiMetadata {
+    model: CivitaiModel;
+    version: CivitaiVersion;
+}
+import { startDownload, getDownloadStatus } from '@/services/api';
 
 export const ModelDownloader = () => {
-    const [url, setUrl] = useState('');
-    const [saveAs, setSaveAs] = useState('');
-    const [modelType, setModelType] = useState('Stable-Diffusion'); // Default type
-    const { metadata, status: civitaiStatus, error: civitaiError, fetchMetadata } = useCivitai();
-    const [downloadId, setDownloadId] = useState(null);
-    const [downloadProgress, setDownloadProgress] = useState(0);
-    const [downloadStatus, setDownloadStatus] = useState('');
+    const [url, setUrl] = useState<string>('');
+    const [saveAs, setSaveAs] = useState<string>('');
+    const [modelType, setModelType] = useState<string>('Stable-Diffusion');
+        const { metadata, status: civitaiStatus, error: civitaiError, fetchMetadata } = useCivitai() as { metadata: CivitaiMetadata | null, status: string, error: string | null, fetchMetadata: (url: string) => void };
+    const [downloadId, setDownloadId] = useState<string | null>(null);
+    const [downloadProgress, setDownloadProgress] = useState<number>(0);
+    const [downloadStatus, setDownloadStatus] = useState<string>('');
 
-    const handleUrlChange = (e) => {
+    const handleUrlChange = (e: ChangeEvent<HTMLInputElement>) => {
         const newUrl = e.target.value;
         setUrl(newUrl);
         if (newUrl.includes('civitai.com')) {
@@ -31,9 +53,8 @@ export const ModelDownloader = () => {
         setDownloadProgress(0);
         setDownloadStatus('Initiating...');
         try {
-            const result = await startDownload(url, modelType, saveAs || metadata.version.files[0].name.replace('.safetensors', ''));
+            const result = await startDownload(url, modelType, saveAs || metadata.version.files[0].name.replace(/\.safetensors|\.pt/g, ''));
             setDownloadId(result.download_id);
-            // Start polling for status
             const pollInterval = setInterval(async () => {
                 const statusResult = await getDownloadStatus(result.download_id);
                 if (statusResult) {
@@ -41,61 +62,72 @@ export const ModelDownloader = () => {
                     setDownloadStatus(statusResult.status);
                     if (statusResult.status === 'Completed' || statusResult.status === 'Failed') {
                         clearInterval(pollInterval);
-                        setDownloadId(null); // Clear download ID after completion
+                        setDownloadId(null);
                     }
                 }
             }, 1000);
-        } catch (e) {
+        } catch (e: any) {
             setDownloadStatus(`Error: ${e.message}`);
         }
     };
 
     useEffect(() => {
         if (metadata) {
-            setSaveAs(metadata.version.files[0].name.replace('.safetensors', ''));
-            setModelType(metadata.model.type); // Set model type from metadata
+            setSaveAs(metadata.version.files[0].name.replace(/\.safetensors|\.pt/g, ''));
+            setModelType(metadata.model.type);
         }
     }, [metadata]);
 
     return (
         <ParameterGroup title="Model Downloader">
             <div className="flex flex-col gap-4">
-                <div>
-                    <label>Model URL</label>
-                    <TextInput type="text" value={url} onChange={handleUrlChange} placeholder="https://civitai.com/models/12345" />
-                    <p className="text-sm text-text/70">Status: {civitaiStatus}</p>
-                    {civitaiError && <p className="text-sm text-danger">Error: {civitaiError}</p>}
+                <div className="grid gap-1.5">
+                    <Label htmlFor="model-url">Model URL</Label>
+                    <Input id="model-url" type="text" value={url} onChange={handleUrlChange} placeholder="https://civitai.com/models/12345" />
+                    <p className="text-sm text-muted-foreground">Status: {civitaiStatus}</p>
+                    {civitaiError && <p className="text-sm text-destructive">Error: {civitaiError}</p>}
                 </div>
 
                 {metadata && (
-                    <div className="border border-border p-4 rounded-lg bg-secondary flex flex-col gap-2">
-                        <h3 className="text-lg font-bold">{metadata.model.name}</h3>
-                        <p className="text-sm">Type: <span className="font-semibold">{metadata.model.type}</span></p>
-                        <p className="text-sm">Creator: <span className="font-semibold">{metadata.model.creator.username}</span></p>
-                        <div className="text-sm" dangerouslySetInnerHTML={{ __html: metadata.version.description }}></div>
-                        
-                        <div className="mt-4">
-                            <label>Model Type</label>
-                            <Select value={modelType} onChange={e => setModelType(e.target.value)}>
-                                <option value="Stable-Diffusion">Base Model</option>
-                                <option value="LoRA">LoRA</option>
-                                <option value="VAE">VAE</option>
-                                <option value="Embedding">Embedding</option>
-                                <option value="ControlNet">ControlNet</option>
-                            </Select>
-                        </div>
-                        <div className="mt-2">
-                            <label>Save as</label>
-                            <TextInput type="text" value={saveAs} onChange={e => setSaveAs(e.target.value)} />
-                        </div>
-                        <Button className="mt-2" onClick={handleDownload} disabled={downloadId !== null}>Download</Button>
-                        {downloadId && (
-                            <div className="mt-2">
-                                <p>Download Status: {downloadStatus} ({downloadProgress}%)</p>
-                                <progress className="w-full" value={downloadProgress} max="100"></progress>
+                    <Card>
+                        <CardHeader>
+                                <CardTitle>{metadata.model.name}</CardTitle>
+                                <CardDescription>Creator: {metadata.model.creator.username}</CardDescription>
+                            </CardHeader>
+                        <CardContent className="flex flex-col gap-4">
+                            <div className="text-sm prose dark:prose-invert" dangerouslySetInnerHTML={{ __html: metadata.version.description }}></div>
+                            <div className="grid w-full max-w-sm items-center gap-1.5">
+                                <Label htmlFor="model-type">Model Type</Label>
+                                <Select value={modelType} onValueChange={setModelType}>
+                                    <SelectTrigger id="model-type">
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="Stable-Diffusion">Base Model</SelectItem>
+                                        <SelectItem value="LoRA">LoRA</SelectItem>
+                                        <SelectItem value="VAE">VAE</SelectItem>
+                                        <SelectItem value="Embedding">Embedding</SelectItem>
+                                        <SelectItem value="ControlNet">ControlNet</SelectItem>
+                                    </SelectContent>
+                                </Select>
                             </div>
-                        )}
-                    </div>
+                            <div className="grid w-full max-w-sm items-center gap-1.5">
+                                <Label htmlFor="save-as">Save As</Label>
+                                <Input id="save-as" type="text" value={saveAs} onChange={e => setSaveAs(e.target.value)} />
+                            </div>
+                        </CardContent>
+                        <CardFooter className="flex flex-col items-start gap-2">
+                            <Button onClick={handleDownload} disabled={downloadId !== null} className="w-full">
+                                {downloadId ? 'Downloading...' : 'Download'}
+                            </Button>
+                            {downloadId && (
+                                <div className="w-full">
+                                    <p className="text-sm text-muted-foreground">{downloadStatus} ({downloadProgress.toFixed(2)}%)</p>
+                                    <Progress value={downloadProgress} className="w-full" />
+                                </div>
+                            )}
+                        </CardFooter>
+                    </Card>
                 )}
             </div>
         </ParameterGroup>

@@ -1,152 +1,149 @@
 import { useEffect, useState } from 'react';
-import { Button } from '../core/Button';
-import { TextInput } from '../core/TextInput';
-import { ParameterGroup } from '../layout/ParameterGroup';
-import { Tabs, Tab } from '../core/Tabs';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { ParameterGroup } from '@/components/layout/ParameterGroup';
 
+// TODO: Move to a dedicated api.ts file and centralize
 const api = {
-    listUsers: async () => fetch('/API/Admin/ListUsers').then(res => res.json()),
+    listUsers: async (): Promise<User[]> => fetch('/API/Admin/ListUsers').then(res => res.json()),
     addUser: async (username, password) => fetch(`/API/Admin/AddUser?username=${username}&password=${password}`, { method: 'POST' }).then(res => res.json()),
     deleteUser: async (id) => fetch(`/API/Admin/DeleteUser?id=${id}`, { method: 'POST' }).then(res => res.json()),
     updateUserRoles: async (id, roles_csv) => fetch(`/API/Admin/UpdateUserRoles?id=${id}&roles_csv=${roles_csv}`, { method: 'POST' }).then(res => res.json()),
     changeUserPassword: async (id, new_password) => fetch(`/API/Admin/ChangeUserPassword?id=${id}&new_password=${new_password}`, { method: 'POST' }).then(res => res.json()),
-
-    listRoles: async () => fetch('/API/Admin/ListRoles').then(res => res.json()),
+    listRoles: async (): Promise<Role[]> => fetch('/API/Admin/ListRoles').then(res => res.json()),
     addRole: async (id, name) => fetch(`/API/Admin/AddRole?id=${id}&name=${name}`, { method: 'POST' }).then(res => res.json()),
     deleteRole: async (id) => fetch(`/API/Admin/DeleteRole?id=${id}`, { method: 'POST' }).then(res => res.json()),
     updateRolePermissions: async (id, permissions_csv) => fetch(`/API/Admin/UpdateRolePermissions?id=${id}&permissions_csv=${permissions_csv}`, { method: 'POST' }).then(res => res.json()),
-
-    listPermissions: async () => fetch('/API/Admin/ListPermissions').then(res => res.json()),
+    listPermissions: async (): Promise<string[]> => fetch('/API/Admin/ListPermissions').then(res => res.json()),
 };
 
+interface User {
+    id: string;
+    username: string;
+    roles: string[];
+}
+
+interface Role {
+    id: string;
+    name: string;
+    permissions: string[];
+}
+
 const UserList = () => {
-    const [users, setUsers] = useState([]);
-    const [roles, setRoles] = useState([]);
+    const [users, setUsers] = useState<User[]>([]);
     const [newUser, setNewUser] = useState({ username: '', password: '' });
+    const [editingRoles, setEditingRoles] = useState<User | null>(null);
+    const [newRoles, setNewRoles] = useState('');
 
-    const fetchUsersAndRoles = async () => {
-        setUsers(await api.listUsers());
-        setRoles(await api.listRoles());
-    };
+    const fetchUsers = async () => setUsers(await api.listUsers());
 
-    useEffect(() => { fetchUsersAndRoles(); }, []);
+    useEffect(() => { fetchUsers(); }, []);
 
     const handleAddUser = async () => {
         await api.addUser(newUser.username, newUser.password);
         setNewUser({ username: '', password: '' });
-        fetchUsersAndRoles();
+        fetchUsers();
     };
 
-    const handleDeleteUser = async (id) => {
+    const handleDeleteUser = async (id: string) => {
         await api.deleteUser(id);
-        fetchUsersAndRoles();
+        fetchUsers();
     };
 
-    const handleUpdateUserRoles = async (userId, currentRoles) => {
-        const newRoles = prompt(`Enter new roles (comma-separated) for ${userId}:`, currentRoles.join(','));
-        if (newRoles !== null) {
-            await api.updateUserRoles(userId, newRoles);
-            fetchUsersAndRoles();
-        }
-    };
-
-    const handleChangeUserPassword = async (userId) => {
-        const newPassword = prompt(`Enter new password for ${userId}:`);
-        if (newPassword !== null) {
-            await api.changeUserPassword(userId, newPassword);
-            alert('Password changed.');
+    const handleUpdateUserRoles = async () => {
+        if (editingRoles) {
+            await api.updateUserRoles(editingRoles.id, newRoles);
+            setEditingRoles(null);
+            fetchUsers();
         }
     };
 
     return (
         <div className="flex flex-col gap-4">
             <ParameterGroup title="Add New User">
-                <TextInput placeholder="Username" value={newUser.username} onChange={e => setNewUser(p => ({ ...p, username: e.target.value }))} />
-                <TextInput type="password" placeholder="Password" value={newUser.password} onChange={e => setNewUser(p => ({ ...p, password: e.target.value }))} />
-                <Button onClick={handleAddUser}>Add User</Button>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <Input placeholder="Username" value={newUser.username} onChange={e => setNewUser(p => ({ ...p, username: e.target.value }))} />
+                    <Input type="password" placeholder="Password" value={newUser.password} onChange={e => setNewUser(p => ({ ...p, password: e.target.value }))} />
+                    <Button onClick={handleAddUser}>Add User</Button>
+                </div>
             </ParameterGroup>
             <ParameterGroup title="Existing Users">
-                <table className="w-full text-left table-auto">
-                    <thead>
-                        <tr><th>ID</th><th>Username</th><th>Roles</th><th>Actions</th></tr>
-                    </thead>
-                    <tbody>
+                <Table>
+                    <TableHeader><TableRow><TableHead>ID</TableHead><TableHead>Username</TableHead><TableHead>Roles</TableHead><TableHead className="text-right">Actions</TableHead></TableRow></TableHeader>
+                    <TableBody>
                         {users.map(user => (
-                            <tr key={user.id}>
-                                <td>{user.id}</td>
-                                <td>{user.username}</td>
-                                <td>{user.roles.join(', ')}</td>
-                                <td className="flex gap-2">
-                                    <Button onClick={() => handleUpdateUserRoles(user.id, user.roles)}>Edit Roles</Button>
-                                    <Button onClick={() => handleChangeUserPassword(user.id)}>Change Password</Button>
-                                    <Button onClick={() => handleDeleteUser(user.id)}>Delete</Button>
-                                </td>
-                            </tr>
+                            <TableRow key={user.id}>
+                                <TableCell>{user.id}</TableCell>
+                                <TableCell>{user.username}</TableCell>
+                                <TableCell>{user.roles.join(', ')}</TableCell>
+                                <TableCell className="text-right space-x-2">
+                                    <Dialog>
+                                        <DialogTrigger asChild><Button variant="outline">Edit Roles</Button></DialogTrigger>
+                                        <DialogContent>
+                                            <DialogHeader><DialogTitle>Edit Roles for {user.username}</DialogTitle></DialogHeader>
+                                            <Input defaultValue={user.roles.join(', ')} onChange={e => setNewRoles(e.target.value)} />
+                                            <DialogFooter><Button onClick={handleUpdateUserRoles}>Save</Button></DialogFooter>
+                                        </DialogContent>
+                                    </Dialog>
+                                    <Button variant="destructive" onClick={() => handleDeleteUser(user.id)}>Delete</Button>
+                                </TableCell>
+                            </TableRow>
                         ))}
-                    </tbody>
-                </table>
+                    </TableBody>
+                </Table>
             </ParameterGroup>
         </div>
     );
 };
 
 const RoleList = () => {
-    const [roles, setRoles] = useState([]);
-    const [permissions, setPermissions] = useState([]);
+    const [roles, setRoles] = useState<Role[]>([]);
     const [newRole, setNewRole] = useState({ id: '', name: '' });
 
-    const fetchRolesAndPermissions = async () => {
-        setRoles(await api.listRoles());
-        setPermissions(await api.listPermissions());
-    };
+    const fetchRoles = async () => setRoles(await api.listRoles());
 
-    useEffect(() => { fetchRolesAndPermissions(); }, []);
+    useEffect(() => { fetchRoles(); }, []);
 
     const handleAddRole = async () => {
         await api.addRole(newRole.id, newRole.name);
         setNewRole({ id: '', name: '' });
-        fetchRolesAndPermissions();
+        fetchRoles();
     };
 
-    const handleDeleteRole = async (id) => {
+    const handleDeleteRole = async (id: string) => {
         await api.deleteRole(id);
-        fetchRolesAndPermissions();
-    };
-
-    const handleUpdateRolePermissions = async (roleId, currentPermissions) => {
-        const newPermissions = prompt(`Enter new permissions (comma-separated) for ${roleId}:`, currentPermissions.join(','));
-        if (newPermissions !== null) {
-            await api.updateRolePermissions(roleId, newPermissions);
-            fetchRolesAndPermissions();
-        }
+        fetchRoles();
     };
 
     return (
         <div className="flex flex-col gap-4">
             <ParameterGroup title="Add New Role">
-                <TextInput placeholder="Role ID" value={newRole.id} onChange={e => setNewRole(p => ({ ...p, id: e.target.value }))} />
-                <TextInput placeholder="Role Name" value={newRole.name} onChange={e => setNewRole(p => ({ ...p, name: e.target.value }))} />
-                <Button onClick={handleAddRole}>Add Role</Button>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <Input placeholder="Role ID" value={newRole.id} onChange={e => setNewRole(p => ({ ...p, id: e.target.value }))} />
+                    <Input placeholder="Role Name" value={newRole.name} onChange={e => setNewRole(p => ({ ...p, name: e.target.value }))} />
+                    <Button onClick={handleAddRole}>Add Role</Button>
+                </div>
             </ParameterGroup>
             <ParameterGroup title="Existing Roles">
-                <table className="w-full text-left table-auto">
-                    <thead>
-                        <tr><th>ID</th><th>Name</th><th>Permissions</th><th>Actions</th></tr>
-                    </thead>
-                    <tbody>
+                <Table>
+                    <TableHeader><TableRow><TableHead>ID</TableHead><TableHead>Name</TableHead><TableHead>Permissions</TableHead><TableHead className="text-right">Actions</TableHead></TableRow></TableHeader>
+                    <TableBody>
                         {roles.map(role => (
-                            <tr key={role.id}>
-                                <td>{role.id}</td>
-                                <td>{role.name}</td>
-                                <td>{role.permissions.join(', ')}</td>
-                                <td className="flex gap-2">
-                                    <Button onClick={() => handleUpdateRolePermissions(role.id, role.permissions)}>Edit Permissions</Button>
-                                    <Button onClick={() => handleDeleteRole(role.id)}>Delete</Button>
-                                </td>
-                            </tr>
+                            <TableRow key={role.id}>
+                                <TableCell>{role.id}</TableCell>
+                                <TableCell>{role.name}</TableCell>
+                                <TableCell>{role.permissions.join(', ')}</TableCell>
+                                <TableCell className="text-right space-x-2">
+                                    {/* TODO: Implement permission editing with a dialog */}
+                                    <Button variant="destructive" onClick={() => handleDeleteRole(role.id)}>Delete</Button>
+                                </TableCell>
+                            </TableRow>
                         ))}
-                    </tbody>
-                </table>
+                    </TableBody>
+                </Table>
             </ParameterGroup>
         </div>
     );
@@ -154,13 +151,13 @@ const RoleList = () => {
 
 export const UserManagementPanel = () => {
     return (
-        <Tabs>
-            <Tab label="Users">
-                <UserList />
-            </Tab>
-            <Tab label="Roles">
-                <RoleList />
-            </Tab>
+        <Tabs defaultValue="users" className="w-full">
+            <TabsList>
+                <TabsTrigger value="users">Users</TabsTrigger>
+                <TabsTrigger value="roles">Roles</TabsTrigger>
+            </TabsList>
+            <TabsContent value="users"><UserList /></TabsContent>
+            <TabsContent value="roles"><RoleList /></TabsContent>
         </Tabs>
     );
 };

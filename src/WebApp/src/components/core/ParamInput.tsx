@@ -1,38 +1,56 @@
-import { TextInput } from './TextInput';
-import { Select } from './Select';
+import { Input } from '@/components/ui/input';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Slider } from '@/components/ui/slider';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { T2IParam } from '../features/panels/ParametersPanel';
 
-const ParamInput = ({ param, value, onChange }) => {
-  const commonProps = {
-    value: value ?? param.default,
-    onChange: e => onChange(param.id, e.target.value),
-  };
+interface ParamInputProps {
+  param: T2IParam;
+  value: any;
+  onChange: (id: string, value: any) => void;
+}
+
+const ParamInput: React.FC<ParamInputProps> = ({ param, value, onChange }) => {
+  const currentValue = value ?? param.default;
 
   if (param.type === 'boolean') {
-    return <input type="checkbox" checked={commonProps.value} onChange={e => onChange(param.id, e.target.checked)} />;
+    return <Checkbox checked={currentValue} onCheckedChange={checked => onChange(param.id, checked)} />;
   }
 
   if (param.view_type === 'slider') {
     return (
       <div className="flex items-center gap-2">
-        <input type="range" {...commonProps} min={param.min} max={param.max} step={param.step} className="w-full" />
-        <span className="w-16 text-right">{commonProps.value}</span>
+        <Slider
+          value={[currentValue]}
+          onValueChange={([val]) => onChange(param.id, val)}
+          min={param.min}
+          max={param.max}
+          step={param.step}
+          className="w-full"
+        />
+        <span className="w-16 text-right">{currentValue}</span>
       </div>
     );
   }
 
   if (param.type === 'dropdown') {
     return (
-      <Select {...commonProps}>
-        {param.values.map(val => <option key={val} value={val}>{val}</option>)}
+      <Select value={currentValue} onValueChange={val => onChange(param.id, val)}>
+        <SelectTrigger>
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          {param.values?.map(val => <SelectItem key={val} value={val}>{val}</SelectItem>)}
+        </SelectContent>
       </Select>
     );
   }
 
   if (param.type === 'integer' || param.type === 'decimal') {
-    return <TextInput type="number" {...commonProps} step={param.step} />;
+    return <Input type="number" value={currentValue} onChange={e => onChange(param.id, e.target.value)} step={param.step} />;
   }
 
-  return <TextInput type="text" {...commonProps} />;
+  return <Input type="text" value={currentValue} onChange={e => onChange(param.id, e.target.value)} />;
 };
 
 export default ParamInput;

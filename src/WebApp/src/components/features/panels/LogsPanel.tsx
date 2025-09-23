@@ -1,7 +1,11 @@
 import { useEffect, useState } from 'react';
-import { Button } from '../core/Button';
-import { ParameterGroup } from '../layout/ParameterGroup';
-import { getLogs, submitLogsToPastebin } from '../../services/api';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Label } from '@/components/ui/label';
+import { ParameterGroup } from '@/components/layout/ParameterGroup';
+import { getLogs, submitLogsToPastebin } from '@/services/api';
 
 export const LogsPanel = () => {
   const [logs, setLogs] = useState<string[]>([]);
@@ -27,7 +31,7 @@ export const LogsPanel = () => {
     try {
       const result = await submitLogsToPastebin(payload);
       setPastebinUrl(result.url);
-    } catch (error) {
+    } catch (error: any) {
       alert(`Failed to submit logs: ${error.message}`);
     }
   };
@@ -35,26 +39,33 @@ export const LogsPanel = () => {
   return (
     <div className="flex flex-col gap-4">
       <ParameterGroup title="Server Logs">
-        <div className="flex gap-2 mb-4">
-          <label>View:</label>
-          <select value={logLevel} onChange={e => setLogLevel(e.target.value)} className="bg-secondary border border-border rounded px-2 py-1">
-            <option>Verbose</option>
-            <option>Debug</option>
-            <option>Info</option>
-            <option>Warning</option>
-            <option>Error</option>
-            <option>Init</option>
-          </select>
-          <label>Filter:</label>
-          <input type="text" value={filter} onChange={e => setFilter(e.target.value)} placeholder="Filter logs..." className="bg-secondary border border-border rounded px-2 py-1 flex-grow" />
+        <div className="flex items-end gap-2 mb-4">
+          <div className="grid gap-1.5">
+            <Label htmlFor="log-level">View</Label>
+            <Select value={logLevel} onValueChange={setLogLevel}>
+                <SelectTrigger id="log-level" className="w-[180px]"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                    <SelectItem value="Verbose">Verbose</SelectItem>
+                    <SelectItem value="Debug">Debug</SelectItem>
+                    <SelectItem value="Info">Info</SelectItem>
+                    <SelectItem value="Warning">Warning</SelectItem>
+                    <SelectItem value="Error">Error</SelectItem>
+                    <SelectItem value="Init">Init</SelectItem>
+                </SelectContent>
+            </Select>
+          </div>
+          <div className="grid gap-1.5 flex-grow">
+            <Label htmlFor="log-filter">Filter</Label>
+            <Input id="log-filter" type="text" value={filter} onChange={e => setFilter(e.target.value)} placeholder="Filter logs..." />
+          </div>
           <Button onClick={handlePastebin}>Pastebin</Button>
         </div>
-        {pastebinUrl && <p className="text-sm text-success">Logs submitted: <a href={pastebinUrl} target="_blank" rel="noopener noreferrer">{pastebinUrl}</a></p>}
-        <div className="bg-secondary border border-border rounded p-2 h-96 overflow-auto font-mono text-sm">
+        {pastebinUrl && <p className="text-sm text-green-500">Logs submitted: <a href={pastebinUrl} target="_blank" rel="noopener noreferrer" className="underline">{pastebinUrl}</a></p>}
+        <ScrollArea className="h-96 w-full rounded-md border p-4 font-mono text-sm">
           {logs.map((line, index) => (
             <div key={index}>{line}</div>
           ))}
-        </div>
+        </ScrollArea>
       </ParameterGroup>
     </div>
   );

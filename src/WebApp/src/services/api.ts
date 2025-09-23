@@ -144,6 +144,49 @@ export async function checkForUpdates() {
   }
 }
 
+export async function getLogs(level: string, filter: string) {
+  try {
+    const response = await fetch(`${API_BASE}/Admin/GetLogs?level=${level}&filter=${filter}`);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return await response.json();
+  } catch (e) {
+    console.error('Failed to fetch logs:', e);
+    return [];
+  }
+}
+
+export async function submitLogsToPastebin(payload: { logs: string }) {
+    try {
+        const response = await fetch(`${API_BASE}/Admin/SubmitLogsToPastebin`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+        });
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return await response.json();
+    } catch (e) {
+        console.error('Failed to submit logs:', e);
+        throw e;
+    }
+}
+
+export async function getServerInfo() {
+  try {
+    const response = await fetch(`${API_BASE}/Admin/GetServerInfo`);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return await response.json();
+  } catch (e) {
+    console.error('Failed to fetch server info:', e);
+    return null;
+  }
+}
+
 export async function generate(params: any) {
   try {
     const response = await fetch(`${API_BASE}/T2IAPI/GenerateText2Image`, {

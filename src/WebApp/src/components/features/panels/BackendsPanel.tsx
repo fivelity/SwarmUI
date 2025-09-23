@@ -1,24 +1,36 @@
 import { useEffect, useState } from 'react';
-import { Button } from '../core/Button';
+import { Button } from '@/components/ui/button';
+import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 
 // This would be expanded to call the real APIs
 const api = {
     listBackends: async () => fetch('/API/Backend/ListBackends').then(res => res.json()),
-    toggleBackend: async (id, enabled) => fetch(`/API/Backend/ToggleBackend?backend_id=${id}&enabled=${enabled}`),
+    toggleBackend: async (id: number, enabled: boolean) => fetch(`/API/Backend/ToggleBackend?backend_id=${id}&enabled=${enabled}`),
     restartAll: async () => fetch('/API/Backend/RestartBackends'),
 };
 
-const statusClass = (status) => {
+type BackendStatus = 'running' | 'errored' | 'disabled' | 'waiting' | 'loading';
+
+interface Backend {
+    id: number;
+    title: string;
+    status: BackendStatus;
+    type: string;
+    enabled: boolean;
+}
+
+const statusVariant = (status: BackendStatus): 'default' | 'secondary' | 'destructive' | 'outline' => {
     switch (status) {
-        case 'running': return 'bg-success';
-        case 'errored': return 'bg-danger';
-        case 'disabled': return 'bg-secondary';
-        default: return 'bg-warning';
+        case 'running': return 'default';
+        case 'errored': return 'destructive';
+        case 'disabled': return 'secondary';
+        default: return 'outline';
     }
 }
 
 export const BackendsPanel = () => {
-    const [backends, setBackends] = useState({});
+    const [backends, setBackends] = useState<Record<string, Backend>>({});
 
     const refresh = () => {
         api.listBackends().then(setBackends);
@@ -34,18 +46,20 @@ export const BackendsPanel = () => {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {Object.values(backends).map(backend => (
-                    <div key={backend.id} className="border border-border rounded-lg p-4 flex flex-col gap-2 bg-secondary">
-                        <div className="flex justify-between items-center">
-                            <h3 className="text-lg font-bold text-accent">{backend.title}</h3>
-                            <div className={`px-2 py-1 text-xs rounded-full ${statusClass(backend.status)}`}>{backend.status.toUpperCase()}</div>
-                        </div>
-                        <p className="text-sm">Type: {backend.type}</p>
-                        <div className="flex-grow"></div>
-                        <div className="flex gap-2 mt-2">
-                            <Button onClick={() => api.toggleBackend(backend.id, !backend.enabled).then(refresh)}>{backend.enabled ? 'Disable' : 'Enable'}</Button>
-                            {/* TODO: Edit, Delete */}
-                        </div>
-                    </div>
+                    <Card key={backend.id}>
+                        <CardHeader>
+                            <CardTitle className="flex justify-between items-center">
+                                {backend.title}
+                                <Badge variant={statusVariant(backend.status)}>{backend.status.toUpperCase()}</Badge>
+                            </CardTitle>
+                            <CardDescription>Type: {backend.type}</CardDescription>
+                        </CardHeader>
+                        <CardFooter className="flex justify-end">
+                            <Button onClick={() => api.toggleBackend(backend.id, !backend.enabled).then(refresh)} variant={backend.enabled ? 'secondary' : 'default'}>
+                                {backend.enabled ? 'Disable' : 'Enable'}
+                            </Button>
+                        </CardFooter>
+                    </Card>
                 ))}
             </div>
         </div>

@@ -1,7 +1,8 @@
-import { useTheme } from '../../contexts/ThemeProvider';
-import { useLayout, layouts } from '../../contexts/LayoutProvider';
-import { Select } from '../core/Select';
-import { ParameterGroup } from '../layout/ParameterGroup';
+import { useTheme } from '@/contexts/ThemeProvider';
+import { useLayout, layouts } from '@/contexts/LayoutProvider';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
+import { ParameterGroup } from '@/components/layout/ParameterGroup';
 
 export const UserTab = () => {
   const { theme, themes, setTheme } = useTheme();
@@ -10,23 +11,27 @@ export const UserTab = () => {
   return (
     <div className="max-w-md">
       <ParameterGroup title="Appearance Settings">
-        <div>
-          <label className="text-sm font-medium">Theme</label>
-          <Select value={theme.id} onChange={e => setTheme(e.target.value)}>
-            {themes.map(t => (
-              <option key={t.id} value={t.id}>{t.name}</option>
-            ))}
-          </Select>
+        <div className="grid gap-1.5">
+            <Label htmlFor="theme-select">Theme</Label>
+            <Select value={theme.id} onValueChange={setTheme}>
+                <SelectTrigger id="theme-select"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                    {themes.map(t => <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>)}
+                </SelectContent>
+            </Select>
         </div>
-        <div>
-          <label className="text-sm font-medium">Layout</label>
-          <Select defaultValue="default" onChange={e => setLayout(e.target.value as keyof typeof layouts)}>
-            {Object.keys(layouts).map(layoutName => (
-              <option key={layoutName} value={layoutName}>
-                {layoutName.charAt(0).toUpperCase() + layoutName.slice(1)}
-              </option>
-            ))}
-          </Select>
+        <div className="grid gap-1.5">
+            <Label htmlFor="layout-select">Layout</Label>
+            <Select defaultValue="default" onValueChange={e => setLayout(e as keyof typeof layouts)}>
+                <SelectTrigger id="layout-select"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                    {Object.keys(layouts).map(layoutName => (
+                        <SelectItem key={layoutName} value={layoutName}>
+                            {layoutName.charAt(0).toUpperCase() + layoutName.slice(1)}
+                        </SelectItem>
+                    ))}
+                </SelectContent>
+            </Select>
         </div>
       </ParameterGroup>
     </div>
