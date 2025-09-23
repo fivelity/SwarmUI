@@ -43,8 +43,7 @@ public static class BasicAPIFeatures
         T2IAPI.Register();
         ModelsAPI.Register();
         BackendAPI.Register();
-        AdminAPI.Register();
-        UtilAPI.Register();
+        // AdminAPI and UtilAPI are MVC controllers; no manual registration needed here.
     }
 
     /// <summary>Rate limiter for <see cref="Login(HttpContext, string, string)"/> to prevent spamming it, limited by IP address.</summary>

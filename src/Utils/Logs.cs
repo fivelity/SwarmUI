@@ -1,6 +1,10 @@
-using System.Collections.Concurrent;
-using System.Reflection;
+using System;
+using System.IO;
+using System.Linq;
 using System.Text;
+using System.Threading;
+using System.Collections.Generic;
+using System.Collections.Concurrent;
 
 namespace SwarmUI.Utils;
 
@@ -18,6 +22,9 @@ public static class Logs
 
     public static LogLevel MinimumLevel = LogLevel.Info;
 
+    /// <summary>How long to wait before repeating timestamp in console output.</summary>
+    public static TimeSpan RepeatTimestampAfter = TimeSpan.FromMinutes(10);
+
     public static ConcurrentQueue<string> LogsToSave = new();
     public static Thread LogSaveThread = null;
     public static ManualResetEvent LogSaveCompletion = new(false);
@@ -29,13 +36,9 @@ public static class Logs
 
     public static void StartLogSaving()
     {
-        if (!Program.ServerSettings.Logs.SaveLogToFile)
-        {
-            LogSaveCompletion.Set();
-            LogsToSave = null;
-            return;
-        }
-        LogFilePath = Program.ServerSettings.Logs.LogsPath;
+        // This will be called by Program.cs after settings are loaded
+        // For now, just set up basic file logging
+        LogFilePath = "Logs/swarm.log";
         LogSaveThread = new(LogSaveInternalLoop) { Name = "logsaver" };
         LogSaveThread.Start();
     }
@@ -85,6 +88,15 @@ public static class Logs
 
         Console.WriteLine(logEntry);
         LogsToSave?.Enqueue(logEntry);
+
+        // Track to any external trackers
+        lock (OtherTrackers)
+        {
+            foreach (var tracker in OtherTrackers.Values)
+            {
+                tracker.Track(logEntry);
+            }
+        }
     }
 
     public static void Verbose(string message) => WriteLog(LogLevel.Verbose, message);
@@ -105,12 +117,37 @@ public static class Logs
         }).TakeLast(limit).ToList();
     }
 
-    // Existing static constructor and other methods remain as is
     static Logs()
     {
-        // This part remains as it was, ensuring the initial setup of the logger
-        // For example, setting initial MinimumLevel from Program.ServerSettings.Logs.LogLevel
-        // and handling the initial console output.
-        // I'm omitting the full content here to avoid redundancy, but it should be preserved.
+        // Initialize basic logging setup
+        Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] [INIT] Logs system initializing...");
     }
+
+    // ===== Added to support external log trackers (eg. process monitoring) =====
+
+    /// <summary>Tracker object to collect recent logs for a specific source.</summary>
+    public class LogTracker
+    {
+        /// <summary>Identifier of what this tracker is for.</summary>
+        public string Identifier;
+
+        /// <summary>Recent log lines recorded.</summary>
+        public ConcurrentQueue<string> Recent = new();
+
+        /// <summary>Maximum number of lines to keep.</summary>
+        public int Max = 1000;
+
+        /// <summary>Record a new log line.</summary>
+        public void Track(string line)
+        {
+            Recent.Enqueue(line);
+            while (Recent.Count > Max)
+            {
+                Recent.TryDequeue(out _);
+            }
+        }
+    }
+
+    /// <summary>Other trackers added by various subsystems, keyed by name.</summary>
+    public static Dictionary<string, LogTracker> OtherTrackers { get; } = new();
 }

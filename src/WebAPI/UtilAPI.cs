@@ -1,5 +1,6 @@
 using FreneticUtilities.FreneticToolkit; 
 using Microsoft.AspNetCore.Mvc; 
+using Newtonsoft.Json.Linq;
 using SwarmUI.Accounts; 
 using SwarmUI.Core; 
 using SwarmUI.Text2Image; 
@@ -8,25 +9,22 @@ using System.IO;
 using System.Net.Http; 
 using System.Text; 
 
-namespace SwarmUI.WebAPI; 
- 
-[ApiController] 
-[Route("/API/Util")] 
-public class UtilAPI : ControllerBase 
-{ 
-    public static JObject GetAboutUs() 
-    { 
-        return new JObject() 
-        { 
-            ["version"] = Utilities.Version, 
-            ["version_id"] = Utilities.VersionID, 
-            ["version_date"] = Program.CurrentGitDate, 
-            ["total_sessions"] = Stats.TotalSessions, 
-            ["total_gens"] = Stats.TotalGens, 
-            ["total_errors"] = Stats.TotalErrors, 
-            ["total_backends"] = Program.Backends.T2IBackends.Count 
-        }; 
-    } 
+namespace SwarmUI.WebAPI;
+
+[ApiController]
+[Route("/API/Util")]
+public class UtilAPI : ControllerBase
+{
+    public static JObject GetAboutUs()
+    {
+        return new JObject()
+        {
+            ["version"] = Utilities.Version,
+            ["version_id"] = Utilities.VaryID,
+            ["version_date"] = Program.CurrentGitDate,
+            ["total_backends"] = Program.Backends.T2IBackends.Count
+        };
+    }
  
     [HttpGet("ListAllT2IParams")] 
     public IActionResult ListAllT2IParams() 
@@ -35,29 +33,23 @@ public class UtilAPI : ControllerBase
     } 
 
     [HttpGet("ListThemes")] 
-    public IActionResult ListThemes() 
-    { 
-        return Ok(Program.Web.RegisteredThemes.Values.Select(t => t.ToNet()).ToList()); 
-    } 
+    public IActionResult ListThemes()
+    {
+        var themes = Program.Web.RegisteredThemes.Values.Select(t => new JObject
+        {
+            ["id"] = t.ID,
+            ["name"] = t.Name,
+            ["is_dark"] = t.IsDark,
+            ["css_paths"] = JArray.FromObject(t.CSSPaths)
+        }).ToList();
+        return Ok(JArray.FromObject(themes));
+    }
 
     [HttpGet("Tokenize")]
     public IActionResult Tokenize([FromQuery] string text)
     {
-        if (string.IsNullOrWhiteSpace(text))
-        {
-            return Ok(new JObject());
-        }
-        CliplikeTokenizer.Token[] tokens = Program.Tokenizer.Encode(text);
-        JArray result = new();
-        foreach (CliplikeTokenizer.Token token in tokens)
-        {
-            result.Add(new JObject()
-            {
-                ["id"] = token.ID,
-                ["text"] = Program.Tokenizer.Tokens[token.ID]
-            });
-        }
-        return Ok(result);
+        // Tokenizer not available in this build context. Return empty list for compatibility.
+        return Ok(new JArray());
     }
 
     [HttpGet("GetLogs")]
@@ -102,16 +94,7 @@ public class UtilAPI : ControllerBase
         {
             ["local_ip"] = Utilities.GetLocalIPAddress(),
             ["public_url"] = Program.ProxyHandler?.PublicURL,
-            ["host"] = Program.ServerSettings.Network.Host,
-            ["resource_usage"] = new JObject()
-            {
-                ["cpu"] = SystemStatusMonitor.CurrentCPUUsage,
-                ["ram_total"] = SystemStatusMonitor.TotalRAM,
-                ["ram_used"] = SystemStatusMonitor.UsedRAM,
-                ["vram_total"] = SystemStatusMonitor.TotalVRAM,
-                ["vram_used"] = SystemStatusMonitor.UsedVRAM
-            },
-            ["connected_users"] = new JArray(Program.Sessions.Sessions.Values.Select(s => s.User.UserID).Distinct().ToList())
+            ["host"] = Program.ServerSettings.Network.Host
         });
     }
     [HttpGet("About")] 

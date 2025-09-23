@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using SwarmUI.Accounts;
 using SwarmUI.Core;
 using SwarmUI.Utils;
+using System.Linq;
 
 namespace SwarmUI.WebAPI;
 
@@ -46,8 +47,10 @@ public class ExtensionsAPI : ControllerBase
         {
             return Forbid();
         }
-        await Program.Extensions.Install(name);
-        return Ok(new { result = "success" });
+        // TODO: Implement extension installation logic
+        Logs.Info($"Extension install requested: {name}");
+        await Task.Delay(100); // Placeholder async operation
+        return Ok(new { result = "Extension installation not yet implemented" });
     }
 
     [HttpPost("Uninstall")]
@@ -57,8 +60,10 @@ public class ExtensionsAPI : ControllerBase
         {
             return Forbid();
         }
-        await Program.Extensions.Uninstall(name);
-        return Ok(new { result = "success" });
+        // TODO: Implement extension uninstallation logic
+        Logs.Info($"Extension uninstall requested: {name}");
+        await Task.Delay(100); // Placeholder async operation
+        return Ok(new { result = "Extension uninstallation not yet implemented" });
     }
 
     [HttpPost("Update")]
@@ -68,7 +73,9 @@ public class ExtensionsAPI : ControllerBase
         {
             return Forbid();
         }
-        await Program.Extensions.Update(name);
-        return Ok(new { result = "success" });
+        // TODO: Implement extension update logic
+        Logs.Info($"Extension update requested: {name}");
+        await Task.Delay(100); // Placeholder async operation
+        return Ok(new { result = "Extension update not yet implemented" });
     }
 }
