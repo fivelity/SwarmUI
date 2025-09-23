@@ -219,3 +219,157 @@ export async function generate(params: any) {
     return null;
   }
 }
+
+export async function shutdown() {
+    try {
+        const response = await fetch(`${API_BASE}/Admin/Shutdown`, { method: 'POST' });
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return await response.json();
+    } catch (e) {
+        console.error('Failed to shutdown server:', e);
+        throw e;
+    }
+}
+
+export async function restart() {
+    try {
+        const response = await fetch(`${API_BASE}/Admin/Restart`, { method: 'POST' });
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return await response.json();
+    } catch (e) {
+        console.error('Failed to restart server:', e);
+        throw e;
+    }
+}
+
+export async function clearVRAM() {
+    try {
+        const response = await fetch(`${API_BASE}/Admin/ClearVRAM`, { method: 'POST' });
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return await response.json();
+    } catch (e) {
+        console.error('Failed to clear VRAM:', e);
+        throw e;
+    }
+}
+
+export async function clearSysRAM() {
+    try {
+        const response = await fetch(`${API_BASE}/Admin/ClearSysRAM`, { method: 'POST' });
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return await response.json();
+    } catch (e) {
+        console.error('Failed to clear system RAM:', e);
+        throw e;
+    }
+}
+
+export async function listPresets() {
+    try {
+        const response = await fetch(`${API_BASE}/Util/ListPresets`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return await response.json();
+    } catch (e) {
+        console.error('Failed to fetch presets:', e);
+        return [];
+    }
+}
+
+export async function savePreset(name: string, params: any) {
+    try {
+        const response = await fetch(`${API_BASE}/Util/SavePreset`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, params }),
+        });
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return await response.json();
+    } catch (e) {
+        console.error('Failed to save preset:', e);
+        throw e;
+    }
+}
+
+export async function listWildcards() {
+    try {
+        const response = await fetch(`${API_BASE}/Util/ListWildcards`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return await response.json();
+    } catch (e) {
+        console.error('Failed to fetch wildcards:', e);
+        return {};
+    }
+}
+
+export async function saveWildcard(filename: string, content: string) {
+    try {
+        const response = await fetch(`${API_BASE}/Util/SaveWildcard`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ filename, content }),
+        });
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return await response.json();
+    } catch (e) {
+        console.error('Failed to save wildcard:', e);
+        throw e;
+    }
+}
+
+// User Management
+export async function listUsers() {
+    return fetch(`${API_BASE}/Admin/ListUsers`).then(res => res.json());
+}
+
+export async function addUser(username: string, password: string) {
+    return fetch(`${API_BASE}/Admin/AddUser?username=${username}&password=${password}`, { method: 'POST' }).then(res => res.json());
+}
+
+export async function deleteUser(id: string) {
+    return fetch(`${API_BASE}/Admin/DeleteUser?id=${id}`, { method: 'POST' }).then(res => res.json());
+}
+
+export async function updateUserRoles(id: string, roles_csv: string) {
+    return fetch(`${API_BASE}/Admin/UpdateUserRoles?id=${id}&roles_csv=${roles_csv}`, { method: 'POST' }).then(res => res.json());
+}
+
+export async function changeUserPassword(id: string, new_password: string) {
+    return fetch(`${API_BASE}/Admin/ChangeUserPassword?id=${id}&new_password=${new_password}`, { method: 'POST' }).then(res => res.json());
+}
+
+// Role Management
+export async function listRoles() {
+    return fetch(`${API_BASE}/Admin/ListRoles`).then(res => res.json());
+}
+
+export async function addRole(id: string, name: string) {
+    return fetch(`${API_BASE}/Admin/AddRole?id=${id}&name=${name}`, { method: 'POST' }).then(res => res.json());
+}
+
+export async function deleteRole(id: string) {
+    return fetch(`${API_BASE}/Admin/DeleteRole?id=${id}`, { method: 'POST' }).then(res => res.json());
+}
+
+export async function updateRolePermissions(id: string, permissions_csv: string) {
+    return fetch(`${API_BASE}/Admin/UpdateRolePermissions?id=${id}&permissions_csv=${permissions_csv}`, { method: 'POST' }).then(res => res.json());
+}
+
+export async function listPermissions() {
+    return fetch(`${API_BASE}/Admin/ListPermissions`).then(res => res.json());
+}

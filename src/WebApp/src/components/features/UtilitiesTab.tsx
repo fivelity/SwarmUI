@@ -9,6 +9,7 @@ import { ParameterGroup } from '@/components/layout/ParameterGroup';
 import { ModelDownloader } from './tools/ModelDownloader';
 import { PickleToSafetensorsPanel } from './tools/PickleToSafetensorsPanel';
 import { LoRAExtractorPanel } from './tools/LoRAExtractorPanel';
+import { WildcardManagerPanel } from './panels/WildcardManagerPanel';
 
 const InfoTab = () => {
   const { t } = useTranslation();
@@ -72,12 +73,14 @@ export const UtilitiesTab = () => {
         <TabsTrigger value="pickle-to-safetensors">{t('Pickle to Safetensors')}</TabsTrigger>
         <TabsTrigger value="lora-extractor">{t('LoRA Extractor')}</TabsTrigger>
         <TabsTrigger value="model-downloader">{t('Model Downloader')}</TabsTrigger>
+        <TabsTrigger value="wildcard-manager">{t('Wildcard Manager')}</TabsTrigger>
       </TabsList>
       <TabsContent value="info"><InfoTab /></TabsContent>
       <TabsContent value="clip-tokenizer"><ClipTokenizerTab /></TabsContent>
       <TabsContent value="pickle-to-safetensors"><PickleToSafetensorsPanel /></TabsContent>
       <TabsContent value="lora-extractor"><LoRAExtractorPanel /></TabsContent>
       <TabsContent value="model-downloader"><ModelDownloader /></TabsContent>
+      <TabsContent value="wildcard-manager"><WildcardManagerPanel /></TabsContent>
     </Tabs>
   );
 };

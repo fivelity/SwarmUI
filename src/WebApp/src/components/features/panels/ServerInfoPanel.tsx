@@ -3,14 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { getServerInfo, checkForUpdates } from '@/services/api';
-
-const api = {
-    shutdown: async () => fetch('/API/Admin/Shutdown').then(res => res.json()),
-    restart: async () => fetch('/API/Admin/Restart').then(res => res.json()),
-    clearVRAM: async () => fetch('/API/Admin/ClearVRAM').then(res => res.json()),
-    clearSysRAM: async () => fetch('/API/Admin/ClearSysRAM').then(res => res.json()),
-};
+import { getServerInfo, checkForUpdates, shutdown, restart, clearVRAM, clearSysRAM } from '@/services/api';
 
 interface ServerInfo {
     host: string;
@@ -110,7 +103,7 @@ export const ServerInfoPanel = () => {
                 <CardContent className="flex flex-col gap-2">
                     <p>{updateStatus}</p>
                     <Button onClick={handleCheckForUpdates}>{t('Check For Updates')}</Button>
-                    <Button onClick={() => api.restart()}>{t('Update and Restart Server')}</Button>
+                    <Button onClick={restart}>{t('Update and Restart Server')}</Button>
                 </CardContent>
             </Card>
             <Card>
@@ -119,17 +112,18 @@ export const ServerInfoPanel = () => {
                 </CardHeader>
                 <CardContent className="flex flex-col gap-2">
                     <p>{t('If you want to shut down the server, click the button below.')}</p>
-                    <Button onClick={() => api.shutdown()} variant="destructive">{t('Shutdown Server')}</Button>
+                    <Button onClick={shutdown} variant="destructive">{t('Shutdown Server')}</Button>
                 </CardContent>
             </Card>
             <Card>
                 <CardHeader>
                     <CardTitle>{t('Free Memory')}</CardTitle>
                 </CardHeader>
-                <CardContent className="flex flex-col gap-2">
-                    <p>{t('You can free up VRAM or system memory usage from backends.')}</p>
-                    <Button onClick={() => api.clearVRAM()}>{t('Free VRAM')}</Button>
-                    <Button onClick={() => api.clearSysRAM()}>{t('Free System RAM')}</Button>
+                <CardContent>
+                    <Button onClick={shutdown} className="w-full">{t('Shutdown')}</Button>
+                    <Button onClick={restart} variant="destructive" className="flex-grow">{t('Restart')}</Button>
+                    <Button onClick={clearVRAM} className="flex-grow">{t('Free VRAM')}</Button>
+                    <Button onClick={clearSysRAM} className="flex-grow">{t('Free System RAM')}</Button>
                 </CardContent>
             </Card>
         </div>

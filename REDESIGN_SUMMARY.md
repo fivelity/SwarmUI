@@ -54,22 +54,26 @@ This document summarizes the progress made on the frontend redesign of the Swarm
 ### 11. Project Setup & Maintenance
     *   Created a `.gitignore` file to manage version control.
 
+### 12. Image Editor Implementation
+    *   **Component Creation:** Developed a full-featured image editor component using `Fabric.js` within a `Dialog` for easy access from the `Generate` tab.
+    *   **Feature Set:** Implemented core image editing functionalities, including image uploading, free-form drawing (painting and erasing), panning (Alt + Drag), and zooming.
+    *   **UI/UX:** Designed a clean and intuitive toolbar using `shadcn/ui` components (`Button`, `Tooltip`, `Slider`) and `lucide-react` icons, ensuring a consistent look and feel with the rest of the application.
+    *   **TypeScript Integration:** Resolved complex type conflicts between `Fabric.js` v6 and TypeScript's modern module system by correcting imports, updating the custom `fabric.d.ts` declaration file, and using proper event types (`TEvent`, `TPointerEvent`).
+
+### 13. Code Refactoring
+    *   **API Centralization:** Refactored the `ServerInfoPanel` to move hardcoded `fetch` requests into the central `services/api.ts` file. This improves code organization, maintainability, and consistency across the application.
+
 ## Current Task
 
 The immediate task at hand is to achieve feature parity with the original UI. This involves implementing the remaining features from the original application, including:
 *   A detailed status bar that shows backend information.
 *   A "Tools" dropdown with a text notepad and other utilities.
-*   A full-featured image editor with drawing, panning, and zooming capabilities.
 *   A wildcard system for prompts.
 *   A preset system for saving and loading parameters.
 
-## Work In Progress
-
-*   **Image Editor:** Currently implementing a full-featured image editor using `Fabric.js`. The editor will include drawing, panning, zooming, and other features from the original UI.
-
 ## Next Steps
 
-Once the image editor is complete, the next steps will involve:
+The next steps will involve:
 *   Implementing the wildcard and preset systems.
 *   Thorough testing of all integrated functionalities.
 *   A final review of the UI to ensure it meets the project's goals.

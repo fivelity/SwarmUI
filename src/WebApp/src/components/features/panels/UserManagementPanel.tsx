@@ -7,19 +7,17 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { ParameterGroup } from '@/components/layout/ParameterGroup';
 
-// TODO: Move to a dedicated api.ts file and centralize
-const api = {
-    listUsers: async (): Promise<User[]> => fetch('/API/Admin/ListUsers').then(res => res.json()),
-    addUser: async (username, password) => fetch(`/API/Admin/AddUser?username=${username}&password=${password}`, { method: 'POST' }).then(res => res.json()),
-    deleteUser: async (id) => fetch(`/API/Admin/DeleteUser?id=${id}`, { method: 'POST' }).then(res => res.json()),
-    updateUserRoles: async (id, roles_csv) => fetch(`/API/Admin/UpdateUserRoles?id=${id}&roles_csv=${roles_csv}`, { method: 'POST' }).then(res => res.json()),
-    changeUserPassword: async (id, new_password) => fetch(`/API/Admin/ChangeUserPassword?id=${id}&new_password=${new_password}`, { method: 'POST' }).then(res => res.json()),
-    listRoles: async (): Promise<Role[]> => fetch('/API/Admin/ListRoles').then(res => res.json()),
-    addRole: async (id, name) => fetch(`/API/Admin/AddRole?id=${id}&name=${name}`, { method: 'POST' }).then(res => res.json()),
-    deleteRole: async (id) => fetch(`/API/Admin/DeleteRole?id=${id}`, { method: 'POST' }).then(res => res.json()),
-    updateRolePermissions: async (id, permissions_csv) => fetch(`/API/Admin/UpdateRolePermissions?id=${id}&permissions_csv=${permissions_csv}`, { method: 'POST' }).then(res => res.json()),
-    listPermissions: async (): Promise<string[]> => fetch('/API/Admin/ListPermissions').then(res => res.json()),
-};
+import {
+    listUsers,
+    addUser,
+    deleteUser,
+    updateUserRoles,
+    listRoles,
+    addRole,
+    deleteRole,
+    // updateRolePermissions, // TODO: Implement permission editing UI
+    // listPermissions, // TODO: Implement permission editing UI
+} from '@/services/api';
 
 interface User {
     id: string;
@@ -40,24 +38,24 @@ const UserList = () => {
     const [editingRoles, setEditingRoles] = useState<User | null>(null);
     const [newRoles, setNewRoles] = useState('');
 
-    const fetchUsers = async () => setUsers(await api.listUsers());
+    const fetchUsers = async () => setUsers(await listUsers());
 
     useEffect(() => { fetchUsers(); }, []);
 
     const handleAddUser = async () => {
-        await api.addUser(newUser.username, newUser.password);
+        await addUser(newUser.username, newUser.password);
         setNewUser({ username: '', password: '' });
         fetchUsers();
     };
 
     const handleDeleteUser = async (id: string) => {
-        await api.deleteUser(id);
+        await deleteUser(id);
         fetchUsers();
     };
 
     const handleUpdateUserRoles = async () => {
         if (editingRoles) {
-            await api.updateUserRoles(editingRoles.id, newRoles);
+            await updateUserRoles(editingRoles.id, newRoles);
             setEditingRoles(null);
             fetchUsers();
         }
@@ -106,18 +104,18 @@ const RoleList = () => {
     const [roles, setRoles] = useState<Role[]>([]);
     const [newRole, setNewRole] = useState({ id: '', name: '' });
 
-    const fetchRoles = async () => setRoles(await api.listRoles());
+    const fetchRoles = async () => setRoles(await listRoles());
 
     useEffect(() => { fetchRoles(); }, []);
 
     const handleAddRole = async () => {
-        await api.addRole(newRole.id, newRole.name);
+        await addRole(newRole.id, newRole.name);
         setNewRole({ id: '', name: '' });
         fetchRoles();
     };
 
     const handleDeleteRole = async (id: string) => {
-        await api.deleteRole(id);
+        await deleteRole(id);
         fetchRoles();
     };
 
