@@ -22,7 +22,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-interface MinimalTiptapProps {
+interface RichTextpadProps {
   content?: string;
   onChange?: (content: string) => void;
   placeholder?: string;
@@ -30,13 +30,13 @@ interface MinimalTiptapProps {
   className?: string;
 }
 
-function MinimalTiptap({
+function RichTextpad({
   content = '',
   onChange,
   placeholder = 'Start typing...',
   editable = true,
   className,
-}: MinimalTiptapProps) {
+}: RichTextpadProps) {
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -199,4 +199,4 @@ function MinimalTiptap({
   );
 }
 
-export { MinimalTiptap, type MinimalTiptapProps };
+export { RichTextpad, type RichTextpadProps };

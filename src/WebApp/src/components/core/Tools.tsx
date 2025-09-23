@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Combobox, ComboboxContent, ComboboxInput, ComboboxItem, ComboboxList, ComboboxTrigger } from '@/components/ui/combobox';
-import { NotepadTool } from '@/components/features/tools/NotepadTool';
+import { RichNotepad } from '@/components/features/tools/RichNotepad';
 
 export const Tools = () => {
     const { t } = useTranslation();
     const [selectedTool, setSelectedTool] = useState('');
 
     const tools = [
-        { value: 'notepad', label: t('Text Notepad') },
+        { value: 'notepad', label: t('Notepad') },
     ];
 
     return (
@@ -22,7 +22,7 @@ export const Tools = () => {
                     </ComboboxList>
                 </ComboboxContent>
             </Combobox>
-            {selectedTool === 'notepad' && <NotepadTool />}
+            {selectedTool === 'notepad' && <RichNotepad />}
         </div>
     );
 };
