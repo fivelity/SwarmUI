@@ -79,8 +79,14 @@ export async function deleteWorkflow(name: string): Promise<any> {
 }
 
 // Get the generated workflow for current parameters
-export async function getGeneratedWorkflow(): Promise<any> {
-  const response = await fetch(`${API_BASE}/ComfyUI/GetGeneratedWorkflow`);
+export async function getGeneratedWorkflow(rawInput: any = {}): Promise<any> {
+  const response = await fetch(`${API_BASE}/ComfyUI/GetGeneratedWorkflow`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(rawInput),
+  });
 
   if (!response.ok) {
     const error = await response.json();

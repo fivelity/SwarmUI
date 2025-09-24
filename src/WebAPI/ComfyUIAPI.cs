@@ -129,8 +129,8 @@ public class ComfyUIAPI : ControllerBase
     }
 
     /// <summary>Get the generated workflow for current parameters.</summary>
-    [HttpGet("GetGeneratedWorkflow")]
-    public async Task<IActionResult> GetGeneratedWorkflow()
+    [HttpPost("GetGeneratedWorkflow")]
+    public async Task<IActionResult> GetGeneratedWorkflow([FromBody] JObject rawInput)
     {
         if (!WebUtil.HasValidLogin(Request.HttpContext))
         {
@@ -145,7 +145,7 @@ public class ComfyUIAPI : ControllerBase
                 return Unauthorized();
             }
 
-            var result = await ComfyUIWebAPI.ComfyGetGeneratedWorkflow(session);
+            var result = await ComfyUIWebAPI.ComfyGetGeneratedWorkflow(session, rawInput);
             return Ok(result);
         }
         catch (Exception ex)
