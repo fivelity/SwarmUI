@@ -11,11 +11,7 @@ import { TwoColumnLayout } from '../layout/ModernLayout';
 import { camelToSnake } from '@/lib/utils';
 import { Sparkles, Zap, Palette, Camera, Mountain, Users, Heart, Star } from 'lucide-react';
 
-interface SimpleTabProps {
-  activeSubTab?: string;
-}
-
-export const SimpleTab = ({ activeSubTab }: SimpleTabProps) => {
+export const SimpleTab = () => {
   const { t } = useTranslation();
   const [prompt, setPrompt] = useState('');
   const [loading, setLoading] = useState(false);

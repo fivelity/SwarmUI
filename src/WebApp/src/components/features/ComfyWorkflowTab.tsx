@@ -154,10 +154,10 @@ export const ComfyWorkflowTab = () => {
   };
 
   return (
-    <div className="h-full w-full flex flex-col bg-background">
+    <div className="h-full w-full flex flex-col bg-background overflow-hidden">
       {/* Control Buttons */}
       {buttonsVisible && (
-        <Card className="m-4 mb-2 flex-shrink-0">
+        <Card className="m-4 mb-2 flex-shrink-0 border-0 shadow-none bg-transparent">
           <CardContent className="p-4">
             <div className="flex flex-wrap items-center gap-3">
               {/* Primary Actions */}
@@ -274,8 +274,8 @@ export const ComfyWorkflowTab = () => {
         </div>
       )}
 
-      {/* ComfyUI Iframe Container */}
-      <div className="flex-1 relative bg-card border border-border rounded-lg mx-4 mb-4 overflow-hidden">
+      {/* ComfyUI Iframe Container - Full height container for proper iframe embedding */}
+      <div className="flex-1 w-full relative overflow-hidden" style={{ minHeight: 0 }}>
         {isLoading && (
           <div className="absolute inset-0 flex items-center justify-center bg-background/50 backdrop-blur-sm z-10">
             <div className="text-center space-y-4">
@@ -305,8 +305,13 @@ export const ComfyWorkflowTab = () => {
           src="/ComfyBackendDirect/"
           className="w-full h-full border-0"
           onLoad={handleIframeLoad}
-          style={{ display: isLoaded ? 'block' : 'none' }}
+          style={{ 
+            display: isLoaded ? 'block' : 'none',
+            minHeight: '100%'
+          }}
           title="ComfyUI Workflow Editor"
+          sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals"
+          allow="fullscreen"
         />
       </div>
     </div>

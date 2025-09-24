@@ -14,7 +14,7 @@ interface ServerTabProps {
 export const ServerTab = ({ activeSubTab }: ServerTabProps) => {
     const { t } = useTranslation();
     return (
-        <Tabs defaultValue="info" className="w-full">
+        <Tabs defaultValue={activeSubTab ?? 'info'} className="w-full">
             <TabsList>
                 <TabsTrigger value="info">{t('Server Info')}</TabsTrigger>
                 <TabsTrigger value="backends">{t('Backends')}</TabsTrigger>
