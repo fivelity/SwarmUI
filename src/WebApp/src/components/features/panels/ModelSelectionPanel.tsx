@@ -76,6 +76,40 @@ export const ModelSelectionPanel: React.FC<ModelSelectionPanelProps> = ({
   const [detailSheet, setDetailSheet] = useState<{ type: string; model: Model } | null>(null);
   const [tagSearch, setTagSearch] = useState('');
 
+  const normalizeModelEntry = useCallback((entry: any): Model => {
+    const safeString = (value: any, fallback = '') => {
+      if (typeof value === 'string') {
+        return value;
+      }
+      if (value === null || value === undefined) {
+        return fallback;
+      }
+      try {
+        return String(value);
+      } catch {
+        return fallback;
+      }
+    };
+    const safeTags = (value: any) => Array.isArray(value) ? value.filter((tag: any) => typeof tag === 'string') : [];
+
+    const name = safeString(entry?.name) || safeString(entry?.title);
+
+    return {
+      name,
+      title: safeString(entry?.title, name),
+      author: safeString(entry?.author),
+      description: safeString(entry?.description),
+      preview: safeString(entry?.preview_image),
+      usage_hint: safeString(entry?.usage_hint),
+      trigger_phrase: safeString(entry?.trigger_phrase),
+      merged_from: safeString(entry?.merged_from),
+      tags: safeTags(entry?.tags),
+      is_supported_model_format: entry?.is_supported_model_format !== false,
+      is_negative_embedding: entry?.is_negative_embedding === true,
+      local: entry?.local !== false
+    };
+  }, []);
+
   const modelTypes = useMemo(() => ([
     {
       id: 'Stable-Diffusion',
@@ -111,13 +145,6 @@ export const ModelSelectionPanel: React.FC<ModelSelectionPanelProps> = ({
       icon: '🎯',
       description: 'Control models for guided image generation',
       color: 'bg-red-500/10 text-red-600 border-red-200'
-    },
-    {
-      id: 'Upscaler',
-      label: 'Upscalers',
-      icon: '📈',
-      description: 'Models for image upscaling and enhancement',
-      color: 'bg-cyan-500/10 text-cyan-600 border-cyan-200'
     }
   ]), []);
 
@@ -133,7 +160,7 @@ export const ModelSelectionPanel: React.FC<ModelSelectionPanelProps> = ({
           continue;
         }
         
-        const response = await fetch(`/API/ModelsAPI/ListModels`, {
+        const response = await fetch(`/API/ListModels`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -141,7 +168,7 @@ export const ModelSelectionPanel: React.FC<ModelSelectionPanelProps> = ({
             path: '',
             depth: 5,
             subtype: type.id,
-            sortBy: sortBy === 'name' ? 'Name' : sortBy === 'author' ? 'Author' : 'Modified',
+            sortBy: sortBy === 'name' ? 'Name' : sortBy === 'author' ? 'Title' : 'DateModified',
             allowRemote: true,
             sortReverse: false
           })
@@ -149,7 +176,8 @@ export const ModelSelectionPanel: React.FC<ModelSelectionPanelProps> = ({
         
         if (response.ok) {
           const data = await response.json();
-          modelData[type.id] = data.models || [];
+          const files = Array.isArray(data.files) ? data.files : [];
+          modelData[type.id] = files.map(normalizeModelEntry);
         }
       } catch (error) {
         console.error(`Failed to fetch ${type.label}:`, error);
@@ -159,7 +187,7 @@ export const ModelSelectionPanel: React.FC<ModelSelectionPanelProps> = ({
     
     setModels(modelData);
     setLoading(false);
-  }, [modelTypes, sortBy]);
+  }, [modelTypes, normalizeModelEntry, sortBy]);
 
   useEffect(() => {
     fetchModels();
@@ -190,12 +218,13 @@ export const ModelSelectionPanel: React.FC<ModelSelectionPanelProps> = ({
 
       if (searchTerm) {
         const term = searchTerm.toLowerCase();
+        const matchesTerm = (value?: string) => (value ?? '').toLowerCase().includes(term);
         filtered = filtered.filter(model =>
-          model.name.toLowerCase().includes(term) ||
-          model.title?.toLowerCase().includes(term) ||
-          model.description?.toLowerCase().includes(term) ||
-          model.author?.toLowerCase().includes(term) ||
-          model.tags?.some(tag => tag.toLowerCase().includes(term))
+          matchesTerm(model.name) ||
+          matchesTerm(model.title) ||
+          matchesTerm(model.description) ||
+          matchesTerm(model.author) ||
+          model.tags?.some(tag => matchesTerm(tag))
         );
       }
 
