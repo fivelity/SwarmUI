@@ -8,6 +8,7 @@ import { SimpleTab } from './components/features/SimpleTab';
 import { UtilitiesTab } from './components/features/UtilitiesTab';
 import { UserTab } from './components/features/UserTab';
 import { ServerTab } from './components/features/ServerTab';
+import { ComfyWorkflowTab } from './components/features/ComfyWorkflowTab';
 import { StatusBar } from './components/core/StatusBar';
 import { Toaster } from '@/components/ui/sonner';
 import { 
@@ -25,7 +26,8 @@ import {
   Activity,
   FileText,
   Layers,
-  Sliders
+  Sliders,
+  Workflow
 } from 'lucide-react';
 
 function App() {
@@ -48,6 +50,11 @@ function App() {
       id: 'simple',
       label: t('Simple'),
       icon: <Zap className="h-4 w-4" />
+    },
+    {
+      id: 'comfy-workflow',
+      label: t('Comfy Workflow'),
+      icon: <Workflow className="h-4 w-4" />
     },
     {
       id: 'utilities',
@@ -93,6 +100,8 @@ function App() {
         return <GenerateTab activeSubTab={activeSubTab} />;
       case 'simple':
         return <SimpleTab />;
+      case 'comfy-workflow':
+        return <ComfyWorkflowTab />;
       case 'utilities':
         return <UtilitiesTab activeSubTab={activeSubTab} />;
       case 'user':

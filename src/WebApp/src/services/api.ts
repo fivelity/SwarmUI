@@ -1,4 +1,4 @@
-const API_BASE = './API'; // Relative to the web root
+export const API_BASE = './API'; // Relative to the web root
 
 export async function getInstallStatus() {
   try {
