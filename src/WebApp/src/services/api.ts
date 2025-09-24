@@ -271,7 +271,7 @@ export async function generate(params: any) {
       }
     };
     
-    const response = await fetch(`${API_BASE}/T2IAPI/GenerateText2Image`, {
+    const response = await fetch(`${API_BASE}/GenerateText2Image`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
