@@ -20,10 +20,10 @@ export const ModernLayout: React.FC<ModernLayoutProps> = ({
     defaultSizes = [25, 50, 25]
 }) => {
     return (
-        <div className={cn("h-full bg-background", className)}>
+        <div className={cn("h-full w-full bg-background", className)}>
             <ResizablePanelGroup 
                 direction={orientation} 
-                className="h-full"
+                className="h-full w-full"
             >
                 {children.map((child, index) => (
                     <React.Fragment key={index}>
@@ -32,8 +32,8 @@ export const ModernLayout: React.FC<ModernLayoutProps> = ({
                             minSize={15}
                             className="relative"
                         >
-                            <div className="h-full p-4 overflow-auto">
-                                <div className="glass-card h-full p-4 rounded-lg shadow-soft">
+                            <div className="h-full p-2 overflow-hidden">
+                                <div className="glass-card h-full p-4 rounded-lg shadow-soft overflow-auto">
                                     {child}
                                 </div>
                             </div>

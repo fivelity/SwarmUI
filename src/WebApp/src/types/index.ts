@@ -1,6 +1,10 @@
 export interface GenerationParams {
     prompt: string;
     negativeprompt: string;
+    model?: string;
+    loras?: string[];
+    vae?: string;
+    embeddings?: string[];
     [key: string]: any; // Allow other parameters
 }
 

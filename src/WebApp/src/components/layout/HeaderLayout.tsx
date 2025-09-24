@@ -59,10 +59,10 @@ export const HeaderLayout: React.FC<HeaderLayoutProps> = ({
   };
 
   return (
-    <div className="flex flex-col h-screen bg-background">
+    <div className="flex flex-col h-screen w-full bg-background overflow-hidden">
       {/* Header Navigation */}
-      <header className="bg-card border-b border-border shadow-sm">
-        <div className="flex h-16">
+      <header className="bg-card border-b border-border shadow-sm flex-shrink-0">
+        <div className="flex h-16 w-full overflow-x-auto">
           {tabs.map((tab) => {
             const isActive = activeTab === tab.id;
             const isExpanded = expandedTabs.has(tab.id);
@@ -127,8 +127,10 @@ export const HeaderLayout: React.FC<HeaderLayoutProps> = ({
       </header>
 
       {/* Main Content Area */}
-      <main className="flex-1 overflow-hidden">
-        {children}
+      <main className="flex-1 w-full overflow-hidden">
+        <div className="h-full w-full">
+          {children}
+        </div>
       </main>
     </div>
   );

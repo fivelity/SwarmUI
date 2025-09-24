@@ -80,22 +80,66 @@ interface UtilitiesTabProps {
 
 export const UtilitiesTab = ({ activeSubTab }: UtilitiesTabProps) => {
   const { t } = useTranslation();
+  
+  const renderContent = () => {
+    switch (activeSubTab) {
+      case 'models':
+        return (
+          <div className="h-full space-y-6">
+            <div className="text-center space-y-2">
+              <h1 className="text-2xl font-bold">{t('Model Management')}</h1>
+              <p className="text-muted-foreground">{t('Manage your AI models, LoRAs, and other assets')}</p>
+            </div>
+            <Tabs defaultValue="pickle-to-safetensors" className="w-full">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="pickle-to-safetensors">{t('Pickle to Safetensors')}</TabsTrigger>
+                <TabsTrigger value="lora-extractor">{t('LoRA Extractor')}</TabsTrigger>
+              </TabsList>
+              <TabsContent value="pickle-to-safetensors"><PickleToSafetensorsPanel /></TabsContent>
+              <TabsContent value="lora-extractor"><LoRAExtractorPanel /></TabsContent>
+            </Tabs>
+          </div>
+        );
+      case 'downloads':
+        return (
+          <div className="h-full space-y-6">
+            <div className="text-center space-y-2">
+              <h1 className="text-2xl font-bold">{t('Downloads & Content')}</h1>
+              <p className="text-muted-foreground">{t('Download models and manage content')}</p>
+            </div>
+            <Tabs defaultValue="model-downloader" className="w-full">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="model-downloader">{t('Model Downloader')}</TabsTrigger>
+                <TabsTrigger value="wildcard-manager">{t('Wildcard Manager')}</TabsTrigger>
+              </TabsList>
+              <TabsContent value="model-downloader"><ModelDownloader /></TabsContent>
+              <TabsContent value="wildcard-manager"><WildcardManagerPanel /></TabsContent>
+            </Tabs>
+          </div>
+        );
+      default: // 'tools'
+        return (
+          <div className="h-full space-y-6">
+            <div className="text-center space-y-2">
+              <h1 className="text-2xl font-bold">{t('AI Tools & Utilities')}</h1>
+              <p className="text-muted-foreground">{t('Helpful tools for working with AI models and content')}</p>
+            </div>
+            <Tabs defaultValue="info" className="w-full">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="info">{t('System Info')}</TabsTrigger>
+                <TabsTrigger value="clip-tokenizer">{t('Text Tokenizer')}</TabsTrigger>
+              </TabsList>
+              <TabsContent value="info"><InfoTab /></TabsContent>
+              <TabsContent value="clip-tokenizer"><ClipTokenizerTab /></TabsContent>
+            </Tabs>
+          </div>
+        );
+    }
+  };
+
   return (
-    <Tabs defaultValue="info" className="w-full">
-      <TabsList>
-        <TabsTrigger value="info">{t('Info')}</TabsTrigger>
-        <TabsTrigger value="clip-tokenizer">{t('Tokenizer')}</TabsTrigger>
-        <TabsTrigger value="pickle-to-safetensors">{t('Pickle to Safetensors')}</TabsTrigger>
-        <TabsTrigger value="lora-extractor">{t('LoRA Extractor')}</TabsTrigger>
-        <TabsTrigger value="model-downloader">{t('Model Downloader')}</TabsTrigger>
-        <TabsTrigger value="wildcard-manager">{t('Wildcard Manager')}</TabsTrigger>
-      </TabsList>
-      <TabsContent value="info"><InfoTab /></TabsContent>
-      <TabsContent value="clip-tokenizer"><ClipTokenizerTab /></TabsContent>
-      <TabsContent value="pickle-to-safetensors"><PickleToSafetensorsPanel /></TabsContent>
-      <TabsContent value="lora-extractor"><LoRAExtractorPanel /></TabsContent>
-      <TabsContent value="model-downloader"><ModelDownloader /></TabsContent>
-      <TabsContent value="wildcard-manager"><WildcardManagerPanel /></TabsContent>
-    </Tabs>
+    <div className="h-full w-full p-6 overflow-y-auto">
+      {renderContent()}
+    </div>
   );
 };

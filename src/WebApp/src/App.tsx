@@ -113,7 +113,7 @@ function App() {
           activeSubTab={activeSubTab}
           onTabChange={handleTabChange}
         >
-          <div className="h-full bg-background">
+          <div className="h-full w-full bg-background">
             {renderTabContent()}
           </div>
         </HeaderLayout>

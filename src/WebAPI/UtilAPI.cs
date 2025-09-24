@@ -144,4 +144,16 @@ public class UtilAPI : ControllerBase
         // Return empty wildcard list for now - this would normally scan wildcard files
         return Ok(new JArray());
     }
+
+    [HttpGet("ListPresets")]
+    public IActionResult ListPresets()
+    {
+        if (!WebUtil.HasValidLogin(Request.HttpContext))
+        {
+            return Forbid();
+        }
+        
+        // Return empty presets list for now - this would normally load user presets
+        return Ok(new JArray());
+    }
 }

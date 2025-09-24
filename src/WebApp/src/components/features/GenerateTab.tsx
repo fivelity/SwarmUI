@@ -7,6 +7,7 @@ import { PromptsPanel } from './panels/PromptsPanel';
 import { GenerateButtonPanel } from './panels/GenerateButtonPanel';
 import { GalleryPanel } from './panels/GalleryPanel';
 import { PresetsPanel } from './panels/PresetsPanel';
+import { ModelSelectionPanel } from './panels/ModelSelectionPanel';
 import { GenerationParams } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
@@ -18,7 +19,14 @@ interface GenerateTabProps {
 
 export const GenerateTab = ({ activeSubTab }: GenerateTabProps) => {
   // Consolidated state for all parameters
-  const [params, setParams] = useState<GenerationParams>({ prompt: '', negativeprompt: '' });
+  const [params, setParams] = useState<GenerationParams>({ 
+    prompt: '', 
+    negativeprompt: '',
+    model: '',
+    loras: [],
+    vae: '',
+    embeddings: []
+  });
 
   // UI State
   const [loading, setLoading] = useState(false);
@@ -73,19 +81,34 @@ export const GenerateTab = ({ activeSubTab }: GenerateTabProps) => {
 
   const renderBasicMode = () => (
     <ThreeColumnLayout>
-      <div className="space-y-4">
+      {/* Left Panel: Prompts & Models */}
+      <div className="space-y-4 h-full overflow-y-auto">
         <PromptsPanel 
           prompt={params.prompt} 
           negativePrompt={params.negativeprompt} 
           setPrompt={(v) => setParams(p => ({...p, prompt: v}))} 
           setNegativePrompt={(v) => setParams(p => ({...p, negativeprompt: v}))} 
         />
+        <ModelSelectionPanel
+          selectedModel={params.model}
+          selectedLoRAs={params.loras}
+          selectedVAE={params.vae}
+          selectedEmbeddings={params.embeddings}
+          onModelChange={(model) => setParams(p => ({...p, model}))}
+          onLoRAChange={(loras) => setParams(p => ({...p, loras}))}
+          onVAEChange={(vae) => setParams(p => ({...p, vae}))}
+          onEmbeddingChange={(embeddings) => setParams(p => ({...p, embeddings}))}
+        />
         <GenerateButtonPanel {...{ handleGenerate, loading }} />
       </div>
-      <div>
+      
+      {/* Center Panel: Parameters */}
+      <div className="h-full overflow-y-auto">
         <ParametersPanel params={params} setParams={setParams} />
       </div>
-      <div className="space-y-4">
+      
+      {/* Right Panel: Gallery & Tools */}
+      <div className="space-y-4 h-full overflow-y-auto">
         <PresetsPanel params={params} setParams={setParams} />
         <Dialog>
           <DialogTrigger asChild>
@@ -102,18 +125,39 @@ export const GenerateTab = ({ activeSubTab }: GenerateTabProps) => {
 
   const renderAdvancedMode = () => (
     <TwoColumnLayout>
-      <div className="space-y-4">
+      {/* Left Panel: All Controls */}
+      <div className="space-y-4 h-full overflow-y-auto">
         <PromptsPanel 
           prompt={params.prompt} 
           negativePrompt={params.negativeprompt} 
           setPrompt={(v) => setParams(p => ({...p, prompt: v}))} 
           setNegativePrompt={(v) => setParams(p => ({...p, negativeprompt: v}))} 
         />
+        <ModelSelectionPanel
+          selectedModel={params.model}
+          selectedLoRAs={params.loras}
+          selectedVAE={params.vae}
+          selectedEmbeddings={params.embeddings}
+          onModelChange={(model) => setParams(p => ({...p, model}))}
+          onLoRAChange={(loras) => setParams(p => ({...p, loras}))}
+          onVAEChange={(vae) => setParams(p => ({...p, vae}))}
+          onEmbeddingChange={(embeddings) => setParams(p => ({...p, embeddings}))}
+        />
         <ParametersPanel params={params} setParams={setParams} />
-        <GenerateButtonPanel {...{ handleGenerate, loading }} />
-      </div>
-      <div className="space-y-4">
         <PresetsPanel params={params} setParams={setParams} />
+        <GenerateButtonPanel {...{ handleGenerate, loading }} />
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button className="w-full">Open Image Editor</Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-4xl">
+            <ImageEditor />
+          </DialogContent>
+        </Dialog>
+      </div>
+      
+      {/* Right Panel: Gallery */}
+      <div className="h-full overflow-y-auto">
         <GalleryPanel images={images} />
       </div>
     </TwoColumnLayout>
@@ -121,25 +165,51 @@ export const GenerateTab = ({ activeSubTab }: GenerateTabProps) => {
 
   const renderBatchMode = () => (
     <VerticalLayout>
-      <div className="space-y-4">
-        <PromptsPanel 
-          prompt={params.prompt} 
-          negativePrompt={params.negativeprompt} 
-          setPrompt={(v) => setParams(p => ({...p, prompt: v}))} 
-          setNegativePrompt={(v) => setParams(p => ({...p, negativeprompt: v}))} 
-        />
-        <div className="text-sm text-muted-foreground">
-          Batch generation mode - Generate multiple variations with different seeds
-        </div>
-      </div>
-      <div className="grid grid-cols-2 gap-4">
-        <ParametersPanel params={params} setParams={setParams} />
+      {/* Top Panel: Prompts & Models */}
+      <div className="grid grid-cols-2 gap-4 h-full overflow-y-auto">
         <div className="space-y-4">
-          <PresetsPanel params={params} setParams={setParams} />
+          <PromptsPanel 
+            prompt={params.prompt} 
+            negativePrompt={params.negativeprompt} 
+            setPrompt={(v) => setParams(p => ({...p, prompt: v}))} 
+            setNegativePrompt={(v) => setParams(p => ({...p, negativeprompt: v}))} 
+          />
+          <div className="text-sm text-muted-foreground p-4 bg-muted/20 rounded-lg">
+            <strong>Batch Mode:</strong> Generate multiple variations with different seeds and parameters. 
+            Use wildcards in prompts for automatic variation.
+          </div>
+        </div>
+        <ModelSelectionPanel
+          selectedModel={params.model}
+          selectedLoRAs={params.loras}
+          selectedVAE={params.vae}
+          selectedEmbeddings={params.embeddings}
+          onModelChange={(model) => setParams(p => ({...p, model}))}
+          onLoRAChange={(loras) => setParams(p => ({...p, loras}))}
+          onVAEChange={(vae) => setParams(p => ({...p, vae}))}
+          onEmbeddingChange={(embeddings) => setParams(p => ({...p, embeddings}))}
+        />
+      </div>
+      
+      {/* Middle Panel: Parameters & Controls */}
+      <div className="grid grid-cols-3 gap-4 h-full overflow-y-auto">
+        <ParametersPanel params={params} setParams={setParams} />
+        <PresetsPanel params={params} setParams={setParams} />
+        <div className="space-y-4">
           <GenerateButtonPanel {...{ handleGenerate, loading }} />
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button className="w-full">Open Image Editor</Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-4xl">
+              <ImageEditor />
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
-      <div>
+      
+      {/* Bottom Panel: Gallery */}
+      <div className="h-full overflow-y-auto">
         <GalleryPanel images={images} />
       </div>
     </VerticalLayout>

@@ -33,12 +33,31 @@ export async function getNewSession(): Promise<{ session_id?: string; error?: st
 
 export async function getModels() {
   try {
-    const response = await fetch(`${API_BASE}/T2IAPI/ListModels`);
+    const sessionId = localStorage.getItem('session_id');
+    if (!sessionId) {
+      throw new Error('No session ID available');
+    }
+    
+    const response = await fetch(`${API_BASE}/ListModels`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        session_id: sessionId,
+        path: '',
+        depth: 3,
+        subtype: 'Stable-Diffusion',
+        sortBy: 'Name',
+        allowRemote: true,
+        sortReverse: false
+      })
+    });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    const models = await response.json();
-    return models;
+    const result = await response.json();
+    return result.models || [];
   } catch (e) {
     console.error('Failed to fetch models:', e);
     return [];
@@ -233,12 +252,20 @@ export async function getServerInfo() {
 
 export async function generate(params: any) {
   try {
-    const response = await fetch(`${API_BASE}/T2IAPI/GenerateText2Image`, {
+    const sessionId = localStorage.getItem('session_id');
+    if (!sessionId) {
+      throw new Error('No session ID available');
+    }
+    
+    const response = await fetch(`${API_BASE}/GenerateText2Image`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(params)
+      body: JSON.stringify({
+        session_id: sessionId,
+        ...params
+      })
     });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
