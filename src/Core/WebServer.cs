@@ -1,4 +1,4 @@
-﻿using FreneticUtilities.FreneticExtensions;
+using FreneticUtilities.FreneticExtensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Html;
@@ -142,6 +142,7 @@ public class WebServer
         });
         timer.Check("[Web] WebApp builder prep");
         builder.Services.AddRazorPages();
+        builder.Services.AddControllers();
         builder.Services.AddResponseCompression();
         builder.Logging.SetMinimumLevel(LogLevel);
         WebApp = builder.Build();
@@ -267,14 +268,64 @@ public class WebServer
         WebApp.UseRouting();
         WebApp.UseWebSockets(new WebSocketOptions() { KeepAliveInterval = TimeSpan.FromSeconds(30) });
         WebApp.MapRazorPages();
+        WebApp.MapControllers();
         timer.Check("[Web] core use calls");
-        WebApp.MapGet("/", () => Results.Redirect("Text2Image"));
+        WebApp.MapGet("/", async (HttpContext context) => 
+        {
+            // Always serve the React app's index.html for the root route
+            string indexPath = Path.Combine(WebApp.Environment.WebRootPath, "index.html");
+            
+            if (File.Exists(indexPath))
+            {
+                context.Response.ContentType = "text/html";
+                await context.Response.SendFileAsync(indexPath);
+                return Results.Empty;
+            }
+            // Fallback if React app not found
+            return Results.Content("<html><body><h1>SwarmUI</h1><p>React app not found. Please build the frontend first using 'npm run build' in src/WebApp directory.</p></body></html>", "text/html");
+        });
+        WebApp.MapGet("/Install", async (HttpContext context) => 
+        {
+            // Serve React app for install page - React will show installer if not installed
+            string indexPath = Path.Combine(WebApp.Environment.WebRootPath, "index.html");
+            
+            if (File.Exists(indexPath))
+            {
+                context.Response.ContentType = "text/html";
+                await context.Response.SendFileAsync(indexPath);
+                return Results.Empty;
+            }
+            // Fallback if React app not found
+            return Results.Content("<html><body><h1>SwarmUI</h1><p>React app not found. Please build the frontend first using 'npm run build' in src/WebApp directory.</p></body></html>", "text/html");
+        });
         WebApp.Map("/API/{*Call}", API.HandleAsyncRequest);
         WebApp.MapGet("/Output/{*Path}", ViewOutput);
         WebApp.MapGet("/View/{*Path}", ViewOutput);
         WebApp.MapGet("/ViewSpecial/{*Path}", ViewSpecial);
         WebApp.MapGet("/ExtensionFile/{*f}", ViewExtensionScript);
         WebApp.MapGet("/Audio/{*f}", ViewAudio);
+        // Catch-all route for React Router SPA routing - serve index.html for any non-API routes
+        WebApp.MapFallback(async (HttpContext context) =>
+        {
+            string path = context.Request.Path.Value.ToLowerFast();
+            // Don't handle API routes, static files, or other special routes
+            if (path.StartsWith("/api/") || path.StartsWith("/output/") || path.StartsWith("/view/") || 
+                path.StartsWith("/viewspecial/") || path.StartsWith("/extensionfile/") || path.StartsWith("/audio/") ||
+                path.StartsWith("/error/") || path.Contains('.'))
+            {
+                return Results.NotFound();
+            }
+            
+            // Serve React app's index.html for client-side routing
+            string indexPath = Path.Combine(WebApp.Environment.WebRootPath, "index.html");
+            if (File.Exists(indexPath))
+            {
+                context.Response.ContentType = "text/html";
+                await context.Response.SendFileAsync(indexPath);
+                return Results.Empty;
+            }
+            return Results.NotFound();
+        });
         timer.Check("[Web] core maps");
         WebApp.Use(async (context, next) =>
         {

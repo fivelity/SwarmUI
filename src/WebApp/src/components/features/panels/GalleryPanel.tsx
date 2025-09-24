@@ -1,5 +1,15 @@
-import { ImageGallery } from './ImageGallery';
+import { ImageGallery } from './ImageGallery.tsx';
 
-export const GalleryPanel = ({ images }) => (
+interface GalleryPanelProps {
+  images: Array<{
+    id: string;
+    url: string;
+    thumbnail?: string;
+    filename?: string;
+    metadata?: Record<string, any>;
+  }>;
+}
+
+export const GalleryPanel = ({ images }: GalleryPanelProps) => (
   <ImageGallery images={images} />
 );

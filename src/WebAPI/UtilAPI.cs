@@ -52,6 +52,29 @@ public class UtilAPI : ControllerBase
         return Ok(new JArray());
     }
 
+    [HttpPost("CountTokens")]
+    public IActionResult CountTokens([FromBody] JObject request)
+    {
+        // Extract text from request body
+        string text = request["text"]?.ToString() ?? "";
+        
+        // Simple token counting - split by whitespace and common punctuation
+        // This is a placeholder implementation since the full tokenizer isn't available
+        if (string.IsNullOrEmpty(text))
+        {
+            return Ok(new { count = 0 });
+        }
+        
+        // Basic token estimation: split by spaces and count
+        string[] words = text.Split(new char[] { ' ', '\t', '\n', '\r', ',', '.', '!', '?', ';', ':' }, 
+            StringSplitOptions.RemoveEmptyEntries);
+        
+        // Rough estimation: average 1.3 tokens per word for English text
+        int estimatedTokens = (int)(words.Length * 1.3);
+        
+        return Ok(new { count = estimatedTokens });
+    }
+
     [HttpGet("GetLogs")]
     public IActionResult GetLogs([FromQuery] string level = "Info", [FromQuery] string filter = "", [FromQuery] int limit = 1000)
     {
@@ -62,6 +85,12 @@ public class UtilAPI : ControllerBase
         Logs.LogLevel minLevel = Enum.Parse<Logs.LogLevel>(level, true);
         List<string> logLines = Logs.GetRecentLogs(minLevel, filter, limit);
         return Ok(logLines);
+    }
+
+    [HttpGet("GetInstallStatus")]
+    public IActionResult GetInstallStatus()
+    {
+        return Ok(new { is_installed = Program.ServerSettings.IsInstalled });
     }
 
     [HttpPost("SubmitLogsToPastebin")]

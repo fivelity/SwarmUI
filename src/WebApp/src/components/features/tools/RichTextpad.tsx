@@ -4,7 +4,7 @@ import { EditorContent, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { Toggle } from '@/components/ui/toggle.tsx';
+import { Toggle } from '@/components/ui/toggle';
 import {
   Bold,
   Italic,
