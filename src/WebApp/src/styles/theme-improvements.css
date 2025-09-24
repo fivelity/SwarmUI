@@ -152,3 +152,144 @@
 .shadow-strong {
   box-shadow: 0 8px 32px hsl(var(--foreground) / 0.2);
 }
+
+/* Text contrast improvements for all themes */
+.text-foreground {
+  color: hsl(var(--foreground)) !important;
+}
+
+.text-muted-foreground {
+  color: hsl(var(--muted-foreground)) !important;
+}
+
+/* Ensure proper text contrast on colored backgrounds */
+.bg-primary .text-primary-foreground,
+.bg-primary * {
+  color: hsl(var(--primary-foreground)) !important;
+}
+
+.bg-secondary .text-secondary-foreground,
+.bg-secondary * {
+  color: hsl(var(--secondary-foreground)) !important;
+}
+
+.bg-accent .text-accent-foreground,
+.bg-accent * {
+  color: hsl(var(--accent-foreground)) !important;
+}
+
+.bg-card .text-card-foreground,
+.bg-card * {
+  color: hsl(var(--card-foreground)) !important;
+}
+
+.bg-popover .text-popover-foreground,
+.bg-popover * {
+  color: hsl(var(--popover-foreground)) !important;
+}
+
+/* High contrast mode improvements */
+.theme-high-contrast {
+  --text-contrast-ratio: 1.2;
+}
+
+.theme-high-contrast * {
+  font-weight: 500 !important;
+  text-shadow: 0 0 1px currentColor !important;
+}
+
+/* Light theme text improvements */
+.theme-modern-light,
+.theme-solarized {
+  --text-opacity: 0.9;
+}
+
+.theme-modern-light .text-muted-foreground,
+.theme-solarized .text-muted-foreground {
+  opacity: var(--text-opacity);
+}
+
+/* Dark theme text improvements */
+.theme-modern-dark,
+.theme-solarized-dark,
+.theme-dark-dreams,
+.theme-high-contrast {
+  --text-opacity: 0.95;
+}
+
+.theme-modern-dark .text-muted-foreground,
+.theme-solarized-dark .text-muted-foreground,
+.theme-dark-dreams .text-muted-foreground,
+.theme-high-contrast .text-muted-foreground {
+  opacity: var(--text-opacity);
+}
+
+/* Button text contrast */
+button {
+  color: hsl(var(--foreground)) !important;
+}
+
+button.bg-primary {
+  color: hsl(var(--primary-foreground)) !important;
+}
+
+button.bg-secondary {
+  color: hsl(var(--secondary-foreground)) !important;
+}
+
+button.bg-accent {
+  color: hsl(var(--accent-foreground)) !important;
+}
+
+button.bg-destructive {
+  color: hsl(var(--destructive-foreground)) !important;
+}
+
+/* Input and form text contrast */
+input,
+textarea,
+select {
+  color: hsl(var(--foreground)) !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: hsl(var(--muted-foreground)) !important;
+  opacity: 0.7;
+}
+
+/* Label text improvements */
+label {
+  color: hsl(var(--foreground)) !important;
+  font-weight: 500;
+}
+
+/* Link text improvements */
+a {
+  color: hsl(var(--primary)) !important;
+}
+
+a:hover {
+  color: hsl(var(--primary) / 0.8) !important;
+}
+
+/* Code and monospace text */
+code,
+pre {
+  color: hsl(var(--foreground)) !important;
+  background-color: hsl(var(--muted) / 0.2) !important;
+}
+
+/* Table text improvements */
+table {
+  color: hsl(var(--foreground)) !important;
+}
+
+th {
+  color: hsl(var(--foreground)) !important;
+  font-weight: 600;
+}
+
+td {
+  color: hsl(var(--foreground)) !important;
+}

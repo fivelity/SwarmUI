@@ -257,24 +257,38 @@ export async function generate(params: any) {
       throw new Error('No session ID available');
     }
     
-    const response = await fetch(`${API_BASE}/GenerateText2Image`, {
+    // Extract the number of images to generate (default to 1)
+    const images = params.images || params.batchsize || 1;
+    
+    // For the legacy API system, we need to structure the call differently
+    // The rawInput should contain all the generation parameters
+    const requestBody = {
+      session_id: sessionId,
+      images: images,
+      rawInput: {
+        session_id: sessionId,
+        ...params
+      }
+    };
+    
+    const response = await fetch(`${API_BASE}/T2IAPI/GenerateText2Image`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({
-        session_id: sessionId,
-        ...params
-      })
+      body: JSON.stringify(requestBody)
     });
+    
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      const errorText = await response.text();
+      throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
     }
+    
     const result = await response.json();
-    return result.images; // Assuming the API returns { images: [...] }
+    return result.images || result; // Return the images array or the full result
   } catch (e) {
     console.error('Failed to generate image:', e);
-    return null;
+    throw e; // Re-throw to let the caller handle it
   }
 }
 
