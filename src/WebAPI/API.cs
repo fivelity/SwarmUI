@@ -1,4 +1,4 @@
-﻿using FreneticUtilities.FreneticExtensions;
+using FreneticUtilities.FreneticExtensions;
 using FreneticUtilities.FreneticToolkit;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json.Linq;
@@ -131,7 +131,9 @@ public class API
                 {
                     session.UpdateLastUsedTime();
                 }
-                if (handler.Permission is not null && !session.User.HasPermission(handler.Permission))
+                // Allow initial installer websocket to run without explicit permissions before install completes
+                bool skipPerm = (!Program.ServerSettings.IsInstalled) && (path == "installconfirmws");
+                if (!skipPerm && handler.Permission is not null && !session.User.HasPermission(handler.Permission))
                 {
                     Error($"User lacks required permission '{handler.Permission.ID}' ('{handler.Permission.DisplayName}' in group '{handler.Permission.Group.DisplayName}')");
                     if (socket is not null)

@@ -14,6 +14,23 @@ export async function getInstallStatus() {
   }
 }
 
+export async function getNewSession(): Promise<{ session_id?: string; error?: string }> {
+  try {
+    const response = await fetch(`${API_BASE}/GetNewSession`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({})
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return await response.json();
+  } catch (e) {
+    console.error('Failed to get session:', e);
+    return { error: 'failed' };
+  }
+}
+
 export async function getModels() {
   try {
     const response = await fetch(`${API_BASE}/T2IAPI/ListModels`);

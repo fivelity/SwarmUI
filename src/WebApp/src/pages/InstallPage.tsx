@@ -8,6 +8,7 @@ import { InstallStepModels } from '@/components/features/installer/InstallStepMo
 import { InstallStepConfirm } from '@/components/features/installer/InstallStepConfirm';
 import { InstallStepProgress } from '@/components/features/installer/InstallStepProgress';
 import { InstallSelections } from '@/types/installer';
+import { getNewSession } from '@/services/api';
 
 export default function InstallPage() {
     const [step, setStep] = useState(0);
@@ -35,11 +36,35 @@ export default function InstallPage() {
         }));
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         setStep(steps.length - 1); // Go to progress screen
-        const ws = new WebSocket(`ws://${window.location.host}/API/InstallConfirmWS`);
+        // Ensure we have a session for legacy API websocket route
+        let session_id = localStorage.getItem('session_id');
+        if (!session_id) {
+            const sess = await getNewSession();
+            if (sess && sess.session_id) {
+                session_id = sess.session_id;
+                localStorage.setItem('session_id', session_id);
+            } else {
+                setInstallMessages(prev => [...prev, 'ERROR: Failed to obtain a session. Check server logs.']);
+                return;
+            }
+        }
+
+        const proto = window.location.protocol === 'https:' ? 'wss' : 'ws';
+        const ws = new WebSocket(`${proto}://${window.location.host}/API/InstallConfirmWS`);
         ws.onopen = () => {
-            ws.send(JSON.stringify(selections));
+            const payload = {
+                session_id,
+                theme: selections.theme,
+                installed_for: selections.installed_for,
+                backend: selections.backend,
+                models: selections.models.join(','),
+                install_amd: selections.install_amd,
+                language: selections.language,
+                make_shortcut: selections.make_shortcut,
+            };
+            ws.send(JSON.stringify(payload));
         };
         ws.onmessage = (event) => {
             const data = JSON.parse(event.data);
