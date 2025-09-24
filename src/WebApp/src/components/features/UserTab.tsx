@@ -6,7 +6,11 @@ import { ParameterGroup } from '@/components/layout/ParameterGroup';
 import { useTranslation } from 'react-i18next';
 import { Combobox, ComboboxContent, ComboboxInput, ComboboxItem, ComboboxList, ComboboxTrigger } from '@/components/ui/combobox';
 
-export const UserTab = () => {
+interface UserTabProps {
+  activeSubTab?: string;
+}
+
+export const UserTab = ({ activeSubTab }: UserTabProps) => {
   const { t } = useTranslation();
   const { theme, themes, setTheme } = useTheme();
   const { setLayout } = useLayout();

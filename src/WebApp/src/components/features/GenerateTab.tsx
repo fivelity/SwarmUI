@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { generate, listWildcards } from '../../services/api';
 import { camelToSnake } from '@/lib/utils';
-import MainLayout from '../layout/MainLayout';
+import { ThreeColumnLayout, TwoColumnLayout, VerticalLayout } from '../layout/ModernLayout';
 import { ParametersPanel } from './panels/ParametersPanel';
 import { PromptsPanel } from './panels/PromptsPanel';
 import { GenerateButtonPanel } from './panels/GenerateButtonPanel';
@@ -12,13 +12,23 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import { ImageEditor } from '@/components/core/ImageEditor';
 
-export const GenerateTab = () => {
+interface GenerateTabProps {
+  activeSubTab?: string;
+}
+
+export const GenerateTab = ({ activeSubTab }: GenerateTabProps) => {
   // Consolidated state for all parameters
   const [params, setParams] = useState<GenerationParams>({ prompt: '', negativeprompt: '' });
 
   // UI State
   const [loading, setLoading] = useState(false);
-  const [images, setImages] = useState<string[]>([]);
+  const [images, setImages] = useState<Array<{
+    id: string;
+    url: string;
+    thumbnail?: string;
+    filename?: string;
+    metadata?: Record<string, any>;
+  }>>([]);
   const [wildcards, setWildcards] = useState<Record<string, string[]>>({});
 
   useEffect(() => {
@@ -48,27 +58,103 @@ export const GenerateTab = () => {
     const snakeParams = camelToSnake(finalParams);
 
     const resultImages = await generate(snakeParams);
-    if (resultImages) setImages(prev => [...resultImages, ...prev]);
+    if (resultImages) {
+      const imageObjects = resultImages.map((url: string, index: number) => ({
+        id: `${Date.now()}-${index}`,
+        url,
+        thumbnail: url,
+        filename: `generated-${Date.now()}-${index}.png`,
+        metadata: { ...snakeParams }
+      }));
+      setImages(prev => [...imageObjects, ...prev]);
+    }
     setLoading(false);
   };
 
-  return (
-    <MainLayout>
-      <div style={{ gridArea: 'prompts' }}><PromptsPanel prompt={params.prompt} negativePrompt={params.negativeprompt} setPrompt={(v) => setParams(p => ({...p, prompt: v}))} setNegativePrompt={(v) => setParams(p => ({...p, negativeprompt: v}))} /></div>
-      <div style={{ gridArea: 'params' }}><ParametersPanel params={params} setParams={setParams} /></div>
-      <div style={{ gridArea: 'generate' }}><GenerateButtonPanel {...{ handleGenerate, loading }} /></div>
-      <div style={{ gridArea: 'gallery' }}><GalleryPanel images={images} /></div>
-            <div style={{ gridArea: 'tools' }} className="flex flex-col gap-2">
-                <PresetsPanel params={params} setParams={setParams} />
-                <Dialog>
-                    <DialogTrigger asChild>
-                        <Button>Open Image Editor</Button>
-                    </DialogTrigger>
-                    <DialogContent className="max-w-4xl">
-                        <ImageEditor />
-                    </DialogContent>
-                </Dialog>
-            </div>
-    </MainLayout>
+  const renderBasicMode = () => (
+    <ThreeColumnLayout>
+      <div className="space-y-4">
+        <PromptsPanel 
+          prompt={params.prompt} 
+          negativePrompt={params.negativeprompt} 
+          setPrompt={(v) => setParams(p => ({...p, prompt: v}))} 
+          setNegativePrompt={(v) => setParams(p => ({...p, negativeprompt: v}))} 
+        />
+        <GenerateButtonPanel {...{ handleGenerate, loading }} />
+      </div>
+      <div>
+        <ParametersPanel params={params} setParams={setParams} />
+      </div>
+      <div className="space-y-4">
+        <PresetsPanel params={params} setParams={setParams} />
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button className="w-full">Open Image Editor</Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-4xl">
+            <ImageEditor />
+          </DialogContent>
+        </Dialog>
+        <GalleryPanel images={images} />
+      </div>
+    </ThreeColumnLayout>
   );
+
+  const renderAdvancedMode = () => (
+    <TwoColumnLayout>
+      <div className="space-y-4">
+        <PromptsPanel 
+          prompt={params.prompt} 
+          negativePrompt={params.negativeprompt} 
+          setPrompt={(v) => setParams(p => ({...p, prompt: v}))} 
+          setNegativePrompt={(v) => setParams(p => ({...p, negativeprompt: v}))} 
+        />
+        <ParametersPanel params={params} setParams={setParams} />
+        <GenerateButtonPanel {...{ handleGenerate, loading }} />
+      </div>
+      <div className="space-y-4">
+        <PresetsPanel params={params} setParams={setParams} />
+        <GalleryPanel images={images} />
+      </div>
+    </TwoColumnLayout>
+  );
+
+  const renderBatchMode = () => (
+    <VerticalLayout>
+      <div className="space-y-4">
+        <PromptsPanel 
+          prompt={params.prompt} 
+          negativePrompt={params.negativeprompt} 
+          setPrompt={(v) => setParams(p => ({...p, prompt: v}))} 
+          setNegativePrompt={(v) => setParams(p => ({...p, negativeprompt: v}))} 
+        />
+        <div className="text-sm text-muted-foreground">
+          Batch generation mode - Generate multiple variations with different seeds
+        </div>
+      </div>
+      <div className="grid grid-cols-2 gap-4">
+        <ParametersPanel params={params} setParams={setParams} />
+        <div className="space-y-4">
+          <PresetsPanel params={params} setParams={setParams} />
+          <GenerateButtonPanel {...{ handleGenerate, loading }} />
+        </div>
+      </div>
+      <div>
+        <GalleryPanel images={images} />
+      </div>
+    </VerticalLayout>
+  );
+
+  const renderContent = () => {
+    switch (activeSubTab) {
+      case 'advanced':
+        return renderAdvancedMode();
+      case 'batch':
+        return renderBatchMode();
+      default:
+        return renderBasicMode();
+    }
+  };
+
+  return renderContent();
 };

@@ -74,7 +74,11 @@ const ClipTokenizerTab = () => {
   );
 };
 
-export const UtilitiesTab = () => {
+interface UtilitiesTabProps {
+  activeSubTab?: string;
+}
+
+export const UtilitiesTab = ({ activeSubTab }: UtilitiesTabProps) => {
   const { t } = useTranslation();
   return (
     <Tabs defaultValue="info" className="w-full">

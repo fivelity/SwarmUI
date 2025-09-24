@@ -131,5 +131,17 @@ public class UtilAPI : ControllerBase
     public IActionResult About() 
     { 
         return Ok(GetAboutUs()); 
-    } 
+    }
+
+    [HttpGet("ListWildcards")]
+    public IActionResult ListWildcards()
+    {
+        if (!AuthHelper.GetSession(Request.HttpContext).User.HasPermission(Permissions.ReadServerInfoPanels))
+        {
+            return Forbid();
+        }
+        
+        // Return empty wildcard list for now - this would normally scan wildcard files
+        return Ok(new JArray());
+    }
 }

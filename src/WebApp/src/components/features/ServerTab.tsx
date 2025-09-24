@@ -7,7 +7,11 @@ import { ServerConfigurationPanel } from './panels/ServerConfigurationPanel';
 import { UserManagementPanel } from './panels/UserManagementPanel';
 import { LogsPanel } from './panels/LogsPanel';
 
-export const ServerTab = () => {
+interface ServerTabProps {
+  activeSubTab?: string;
+}
+
+export const ServerTab = ({ activeSubTab }: ServerTabProps) => {
     const { t } = useTranslation();
     return (
         <Tabs defaultValue="info" className="w-full">

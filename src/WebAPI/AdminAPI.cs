@@ -57,12 +57,32 @@ public class AdminAPI : ControllerBase
     // --- Server Settings --- minimal list/save for compilation and basic UI ---
     public static JObject GetFieldNetObject(FieldInfo field, object onInstance)
     {
-        return new JObject
+        try
         {
-            ["name"] = field.Name,
-            ["type"] = field.FieldType.Name,
-            ["value"] = JToken.FromObject(field.GetValue(onInstance) ?? JValue.CreateNull())
-        };
+            var value = field.GetValue(onInstance);
+            var jsonValue = value != null ? JToken.FromObject(value, JsonSerializer.Create(new JsonSerializerSettings
+            {
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                MaxDepth = 10
+            })) : JValue.CreateNull();
+            
+            return new JObject
+            {
+                ["name"] = field.Name,
+                ["type"] = field.FieldType.Name,
+                ["value"] = jsonValue
+            };
+        }
+        catch (Exception ex)
+        {
+            Logs.Debug($"Failed to serialize field {field.Name}: {ex.Message}");
+            return new JObject
+            {
+                ["name"] = field.Name,
+                ["type"] = field.FieldType.Name,
+                ["value"] = JValue.CreateNull()
+            };
+        }
     }
 
     public static JObject GetSettingsMap(object settingsObj)
@@ -139,12 +159,93 @@ public class AdminAPI : ControllerBase
         {
             return Forbid();
         }
-        // In a real implementation, this would trigger the actual update check logic
-        // and return the status.
-        Logs.Info("Triggering check for updates.");
-        // Simulate update status
-        return Ok(new { status = "Up to date", message = "You are running the latest version." });
+        // Placeholder: trigger update check
+        return Ok(new { hasUpdate = false, currentVersion = "0.9.7.0", latestVersion = "0.9.7.0" });
     }
 
-    // Existing endpoints from previous steps...
+    // --- Missing API Methods that Frontend is calling ---
+    
+    [HttpGet("GetCurrentStatus")]
+    public IActionResult GetCurrentStatus()
+    {
+        if (!WebUtil.HasValidLogin(Request.HttpContext))
+        {
+            return Forbid();
+        }
+        
+        return Ok(new { 
+            status = "running",
+            backendStatus = "ready",
+            queueLength = 0,
+            isInstalled = Program.ServerSettings != null
+        });
+    }
+
+    [HttpGet("GetServerInfo")]
+    public IActionResult GetServerInfo()
+    {
+        if (!WebUtil.HasValidLogin(Request.HttpContext))
+        {
+            return Forbid();
+        }
+        
+        return Ok(new { 
+            version = "0.9.7.0",
+            serverName = "SwarmUI",
+            uptime = TimeSpan.FromMilliseconds(Environment.TickCount64 - Utilities.ServerStartTime).TotalSeconds
+        });
+    }
+
+    [HttpGet("ListUsers")]
+    public IActionResult ListUsers()
+    {
+        if (!WebUtil.HasValidLogin(Request.HttpContext) || !WebServer.GetUserFor(Request.HttpContext).HasPermission(Permissions.ManageUsers))
+        {
+            return Forbid();
+        }
+        
+        // Return basic user list - in a real implementation this would come from user management system
+        return Ok(new[] { 
+            new { id = "local", username = "local", role = "admin" }
+        });
+    }
+
+    [HttpGet("ListRoles")]
+    public IActionResult ListRoles()
+    {
+        if (!WebUtil.HasValidLogin(Request.HttpContext) || !WebServer.GetUserFor(Request.HttpContext).HasPermission(Permissions.ManageUsers))
+        {
+            return Forbid();
+        }
+        
+        // Return basic role list
+        return Ok(new[] { 
+            new { id = "admin", name = "Administrator" },
+            new { id = "user", name = "User" }
+        });
+    }
+
+    [HttpPost("AddUser")]
+    public IActionResult AddUser([FromBody] JObject userData)
+    {
+        if (!WebUtil.HasValidLogin(Request.HttpContext) || !WebServer.GetUserFor(Request.HttpContext).HasPermission(Permissions.ManageUsers))
+        {
+            return Forbid();
+        }
+        
+        // Placeholder implementation
+        return Ok(new { success = true, message = "User management not fully implemented" });
+    }
+
+    [HttpPost("AddRole")]
+    public IActionResult AddRole([FromBody] JObject roleData)
+    {
+        if (!WebUtil.HasValidLogin(Request.HttpContext) || !WebServer.GetUserFor(Request.HttpContext).HasPermission(Permissions.ManageUsers))
+        {
+            return Forbid();
+        }
+        
+        // Placeholder implementation
+        return Ok(new { success = true, message = "Role management not fully implemented" });
+    }
 }

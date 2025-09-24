@@ -5,7 +5,11 @@ import { Textarea } from '@/components/ui/textarea';
 import { generate } from '@/services/api';
 import { ImageGallery } from './ImageGallery';
 
-export const SimpleTab = () => {
+interface SimpleTabProps {
+  activeSubTab?: string;
+}
+
+export const SimpleTab = ({ activeSubTab }: SimpleTabProps) => {
   const { t } = useTranslation();
   const [prompt, setPrompt] = useState('');
   const [loading, setLoading] = useState(false);
