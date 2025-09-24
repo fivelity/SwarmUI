@@ -1,0 +1,475 @@
+Build succeeded in 4.3s
+[18:23:56] [INIT] Logs system initializing...
+18:23:56 [INIT] === SwarmUI v0.9.7.0 Starting at 2025-09-23 18:23:56 ===
+18:23:56 [INIT] Prepping extension: SwarmUI.Builtin_ScorersExtension.ScorersExtension...
+18:23:56 [INIT] Prepping extension: SwarmUI.Builtin_ImageBatchToolExtension.ImageBatchToolExtension...
+18:23:56 [INIT] Prepping extension: SwarmUI.Builtin_GridGeneratorExtension.GridGeneratorExtension...
+18:23:56 [INIT] Prepping extension: SwarmUI.Builtin_DynamicThresholding.DynamicThresholdingExtension...
+18:23:56 [INIT] Prepping extension: SwarmUI.Builtin_ComfyUIBackend.ComfyUIBackendExtension...
+18:23:56 [INIT] Prepping extension: SwarmUI.Builtin_AutoWebUIExtension.AutoWebUIBackendExtension...
+18:23:56 [INIT] Parsing command line...
+18:23:56 [INIT] Loading settings file...
+18:23:56 [INIT] Re-saving settings file...
+18:23:56 [INIT] Applying command line settings...
+18:23:56 [INIT] Swarm base path is: V:\local_builds\SwarmUI
+18:23:56 [INIT] Running on OS: Microsoft Windows 10.0.26100
+18:23:56 [INIT] Prepping options...
+18:23:56 [INIT] CPU Cores: 28 | RAM: 31.72 GiB total, 13.21 GiB available, 54.72 GiB total page file, 23.50 GiB available page file
+18:23:56 [INIT] GPU 0: NVIDIA GeForce RTX 4070 Ti SUPER | Temp 44C | Util 22% GPU, 3% Memory | VRAM 15.99 GiB total, 13.07 GiB free, 2.61 GiB used
+18:23:56 [INIT] Will use GPU accelerations specific to NVIDIA GeForce RTX 40xx series and newer.
+18:23:56 [INIT] Loading models list...
+18:23:56 [INIT] Loading backends...
+18:23:56 [INIT] Loading backends from file...
+18:23:56 [INIT] Prepping API...
+18:23:56 [INIT] Backend request handler loop ready...
+18:23:56 [INIT] Prepping webserver...
+18:23:56 [INIT] Scan for web extensions...
+18:23:56 [INIT] Readying extensions for launch...
+18:23:56 [INIT] Launching server...
+18:23:56 [INIT] Starting webserver on http://localhost:7801
+18:23:56 [INIT] Current git commit is [81994343: fix: allow installer websocket to bypass permissions during initial setup], marked as date 2025-09-24 01:23:37 (0 minutes ago)
+18:23:56 [INIT] Swarm is up to date! You have version 0.9.7.0, and 0.9.7-Beta is the latest.
+18:23:56 [INIT] SwarmUI v0.9.7.0 - Local is now running.
+18:23:57 [INIT] Launch web browser to install page...
+18:24:20 [INFO] Creating new session 'local' for ::1
+18:24:20 [INIT] [Installer] Installation request received, processing...
+18:24:20 [INIT] [Installer] Setting theme to dark_dreams.
+18:24:20 [INIT] [Installer] Configuring settings as 'just yourself' install.
+18:24:20 [INIT] [Installer] Downloading ComfyUI backend... please wait...
+18:25:05 [INIT] [Installer] Downloaded! Extracting... (look in terminal window for details)
+
+7-Zip (a) 23.01 (x86) : Copyright (c) 1999-2023 Igor Pavlov : 2023-06-20
+
+Scanning the drive for archives:
+1 file, 2127097891 bytes (2029 MiB)
+
+Extracting archive: dlbackend\comfyui_dl.7z
+--
+Path = dlbackend\comfyui_dl.7z
+Type = 7z
+Physical Size = 2127097891
+Headers Size = 406921
+Method = LZMA2:29 LZMA:20 BCJ2
+Solid = +
+Blocks = 1
+
+Everything is Ok
+
+Folders: 3782
+Files: 34801
+Size:       6660273402
+Compressed: 2127097891
+18:27:28 [INIT] [Installer] Installing prereqs...
+18:27:32 [INIT] [Installer] Prepping ComfyUI's git repo...
+18:27:38 [INIT] [Installer] Ensuring all current Comfy requirements are installed...
+18:27:50 [INFO] Self-Start ComfyUI Install (python requirements) exited properly.
+18:27:50 [INIT] [Installer] Enabling ComfyUI...
+18:27:50 [INIT] Initializing backend #0 - ComfyUI Self-Starting...
+18:27:50 [INIT] [Installer] Downloading model from 'https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0/resolve/main/sd_xl_base_1.0.safetensors'... please wait...
+18:27:57 [INFO] Saving backends...
+18:29:21 [INFO] Self-Start ComfyUI (Installing 'rembg') exited properly.
+18:29:29 [INIT] [Installer] Model download complete.
+18:29:29 [INFO] ComfyUI backend 0 shutting down...
+18:29:29 [INIT] [Installer] Installed!
+18:29:29 [ERROR] [WebAPI] Error handling API request '/API/Util/ListWildcards': Invalid request method: GET
+18:29:31 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:29:32 [INFO] Self-Start ComfyUI (Installing 'onnxruntime') exited properly.
+18:29:33 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:29:35 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:29:37 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:29:39 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:29:39 [INFO] Self-Start ComfyUI (Installing 'matplotlib') exited properly.
+18:29:40 [INFO] Self-Start ComfyUI (Installing 'opencv-python-headless') exited properly.
+18:29:41 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:29:43 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:29:45 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:29:45 [INFO] Self-Start ComfyUI (Installing 'imageio-ffmpeg') exited properly.
+18:29:47 [INFO] Self-Start ComfyUI (Installing 'dill') exited properly.
+18:29:47 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:29:49 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:29:51 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:29:52 [INFO] Self-Start ComfyUI (Installing 'omegaconf') exited properly.
+18:29:53 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:29:55 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:29:57 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:29:59 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:30:01 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:30:03 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:30:03 [INFO] Self-Start ComfyUI (Updating 'ultralytics') exited properly.
+18:30:05 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:30:07 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:30:08 [INFO] Self-Start ComfyUI (Updating 'comfyui_frontend_package') exited properly.
+18:30:08 [INIT] Self-Start ComfyUI-0 on port 7821 is loading...
+18:30:09 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:30:11 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:30:13 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:30:15 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:30:17 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:30:19 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:30:21 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:30:23 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:30:25 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:30:27 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:30:28 [INIT] Self-Start ComfyUI-0 on port 7821 started.
+18:30:28 [INIT] Initializing backend #0 - ComfyUI Self-Starting...
+18:30:29 [INIT] Self-Start ComfyUI-0 on port 7822 is loading...
+18:30:29 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:30:31 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:30:33 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:30:34 [INIT] Self-Start ComfyUI-0 on port 7822 started.
+18:30:35 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:30:37 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:30:39 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:30:41 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:30:43 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:30:45 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:30:47 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:30:49 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:30:51 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:30:53 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:30:55 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:30:57 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:30:59 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:31:01 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:31:03 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:31:05 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:31:07 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:31:09 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:31:11 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:31:13 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:31:15 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:31:16 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetServerInfo': Invalid request method: GET
+18:31:16 [INFO] Triggering check for updates.
+18:31:17 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:31:17 [ERROR] [WebAPI] Error handling API request '/API/Backend/ListBackends': Invalid request method: GET
+18:31:19 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:31:21 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+fail: Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware[1]
+      An unhandled exception has occurred while executing the request.
+      Newtonsoft.Json.JsonSerializationException: Self referencing loop detected for property 'ManifestModule' with type 'System.Reflection.RuntimeModule'. Path 'InternalData.SharedData.SaveSection.Method.Module.Assembly'.
+         at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.CheckForCircularReference(JsonWriter writer, Object value, JsonProperty property, JsonContract contract, JsonContainerContract containerContract, JsonProperty containerProperty)
+         at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.CalculatePropertyValues(JsonWriter writer, Object value, JsonContainerContract contract, JsonProperty member, JsonProperty property, JsonContract& memberContract, Object& memberValue)
+         at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeObject(JsonWriter writer, Object value, JsonObjectContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+         at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+         at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeObject(JsonWriter writer, Object value, JsonObjectContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+         at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+         at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeObject(JsonWriter writer, Object value, JsonObjectContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+         at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+         at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeObject(JsonWriter writer, Object value, JsonObjectContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+         at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+         at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeObject(JsonWriter writer, Object value, JsonObjectContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+         at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+         at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeObject(JsonWriter writer, Object value, JsonObjectContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+         at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+         at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeObject(JsonWriter writer, Object value, JsonObjectContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+         at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+         at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.Serialize(JsonWriter jsonWriter, Object value, Type objectType)
+         at Newtonsoft.Json.JsonSerializer.SerializeInternal(JsonWriter jsonWriter, Object value, Type objectType)
+         at Newtonsoft.Json.JsonSerializer.Serialize(JsonWriter jsonWriter, Object value)
+         at Newtonsoft.Json.Linq.JToken.FromObjectInternal(Object o, JsonSerializer jsonSerializer)
+         at Newtonsoft.Json.Linq.JToken.FromObject(Object o)
+         at SwarmUI.WebAPI.AdminAPI.GetFieldNetObject(FieldInfo field, Object onInstance) in V:\local_builds\SwarmUI\src\WebAPI\AdminAPI.cs:line 60
+         at SwarmUI.WebAPI.AdminAPI.GetSettingsMap(Object settingsObj) in V:\local_builds\SwarmUI\src\WebAPI\AdminAPI.cs:line 77
+         at SwarmUI.WebAPI.AdminAPI.ListServerSettings() in V:\local_builds\SwarmUI\src\WebAPI\AdminAPI.cs:line 89
+         at lambda_method134(Closure, Object, Object[])
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.SyncActionResultExecutor.Execute(ActionContext actionContext, IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeActionMethodAsync()
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeNextActionFilterAsync()
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeInnerFilterAsync()
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResourceFilter>g__Awaited|25_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResourceExecutedContextSealed context)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.InvokeFilterPipelineAsync()
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+         at SwarmUI.Core.WebServer.<>c.<<Prep>b__21_7>d.MoveNext() in V:\local_builds\SwarmUI\src\Core\WebServer.cs:line 332
+      --- End of stack trace from previous location ---
+         at SwarmUI.Core.WebServer.<>c.<<Prep>b__21_3>d.MoveNext() in V:\local_builds\SwarmUI\src\Core\WebServer.cs:line 266
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+18:31:23 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:31:24 [ERROR] [WebAPI] Error handling API request '/API/Admin/ListUsers': Invalid request method: GET
+18:31:25 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+fail: Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware[1]
+      An unhandled exception has occurred while executing the request.
+      Newtonsoft.Json.JsonSerializationException: Self referencing loop detected for property 'ManifestModule' with type 'System.Reflection.RuntimeModule'. Path 'InternalData.SharedData.SaveSection.Method.Module.Assembly'.
+         at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.CheckForCircularReference(JsonWriter writer, Object value, JsonProperty property, JsonContract contract, JsonContainerContract containerContract, JsonProperty containerProperty)
+         at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.CalculatePropertyValues(JsonWriter writer, Object value, JsonContainerContract contract, JsonProperty member, JsonProperty property, JsonContract& memberContract, Object& memberValue)
+         at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeObject(JsonWriter writer, Object value, JsonObjectContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+         at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+         at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeObject(JsonWriter writer, Object value, JsonObjectContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+         at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+         at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeObject(JsonWriter writer, Object value, JsonObjectContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+         at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+         at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeObject(JsonWriter writer, Object value, JsonObjectContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+         at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+         at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeObject(JsonWriter writer, Object value, JsonObjectContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+         at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+         at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeObject(JsonWriter writer, Object value, JsonObjectContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+         at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+         at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeObject(JsonWriter writer, Object value, JsonObjectContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+         at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+         at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.Serialize(JsonWriter jsonWriter, Object value, Type objectType)
+         at Newtonsoft.Json.JsonSerializer.SerializeInternal(JsonWriter jsonWriter, Object value, Type objectType)
+         at Newtonsoft.Json.JsonSerializer.Serialize(JsonWriter jsonWriter, Object value)
+         at Newtonsoft.Json.Linq.JToken.FromObjectInternal(Object o, JsonSerializer jsonSerializer)
+         at Newtonsoft.Json.Linq.JToken.FromObject(Object o)
+         at SwarmUI.WebAPI.AdminAPI.GetFieldNetObject(FieldInfo field, Object onInstance) in V:\local_builds\SwarmUI\src\WebAPI\AdminAPI.cs:line 60
+         at SwarmUI.WebAPI.AdminAPI.GetSettingsMap(Object settingsObj) in V:\local_builds\SwarmUI\src\WebAPI\AdminAPI.cs:line 77
+         at SwarmUI.WebAPI.AdminAPI.ListServerSettings() in V:\local_builds\SwarmUI\src\WebAPI\AdminAPI.cs:line 89
+         at lambda_method134(Closure, Object, Object[])
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.SyncActionResultExecutor.Execute(ActionContext actionContext, IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeActionMethodAsync()
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeNextActionFilterAsync()
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeInnerFilterAsync()
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResourceFilter>g__Awaited|25_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResourceExecutedContextSealed context)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.InvokeFilterPipelineAsync()
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+         at SwarmUI.Core.WebServer.<>c.<<Prep>b__21_7>d.MoveNext() in V:\local_builds\SwarmUI\src\Core\WebServer.cs:line 332
+      --- End of stack trace from previous location ---
+         at SwarmUI.Core.WebServer.<>c.<<Prep>b__21_3>d.MoveNext() in V:\local_builds\SwarmUI\src\Core\WebServer.cs:line 266
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+18:31:27 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:31:27 [ERROR] [WebAPI] Error handling API request '/API/Admin/ListUsers': Invalid request method: GET
+18:31:29 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:31:31 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:31:33 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:31:35 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:31:37 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:31:39 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:31:41 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:31:43 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:31:45 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:31:47 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:31:49 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:31:51 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:31:53 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:31:55 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:31:57 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:31:59 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:32:01 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:32:03 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:32:05 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:32:07 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:32:09 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:32:10 [ERROR] [WebAPI] Error handling API request '/API/Admin/ListUsers': Invalid request method: GET
+18:32:11 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:32:13 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:32:15 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:32:17 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:32:19 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:32:21 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:32:23 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:32:24 [ERROR] [WebAPI] Error handling API request '/API/Admin/ListRoles': Invalid request method: GET
+18:32:25 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:32:25 [ERROR] [WebAPI] Error handling API request '/API/Admin/ListUsers': Invalid request method: GET
+fail: Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware[1]
+      An unhandled exception has occurred while executing the request.
+      Newtonsoft.Json.JsonSerializationException: Self referencing loop detected for property 'ManifestModule' with type 'System.Reflection.RuntimeModule'. Path 'InternalData.SharedData.SaveSection.Method.Module.Assembly'.
+         at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.CheckForCircularReference(JsonWriter writer, Object value, JsonProperty property, JsonContract contract, JsonContainerContract containerContract, JsonProperty containerProperty)
+         at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.CalculatePropertyValues(JsonWriter writer, Object value, JsonContainerContract contract, JsonProperty member, JsonProperty property, JsonContract& memberContract, Object& memberValue)
+         at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeObject(JsonWriter writer, Object value, JsonObjectContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+         at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+         at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeObject(JsonWriter writer, Object value, JsonObjectContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+         at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+         at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeObject(JsonWriter writer, Object value, JsonObjectContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+         at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+         at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeObject(JsonWriter writer, Object value, JsonObjectContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+         at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+         at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeObject(JsonWriter writer, Object value, JsonObjectContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+         at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+         at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeObject(JsonWriter writer, Object value, JsonObjectContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+         at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+         at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeObject(JsonWriter writer, Object value, JsonObjectContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+         at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue(JsonWriter writer, Object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
+         at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.Serialize(JsonWriter jsonWriter, Object value, Type objectType)
+         at Newtonsoft.Json.JsonSerializer.SerializeInternal(JsonWriter jsonWriter, Object value, Type objectType)
+         at Newtonsoft.Json.JsonSerializer.Serialize(JsonWriter jsonWriter, Object value)
+         at Newtonsoft.Json.Linq.JToken.FromObjectInternal(Object o, JsonSerializer jsonSerializer)
+         at Newtonsoft.Json.Linq.JToken.FromObject(Object o)
+         at SwarmUI.WebAPI.AdminAPI.GetFieldNetObject(FieldInfo field, Object onInstance) in V:\local_builds\SwarmUI\src\WebAPI\AdminAPI.cs:line 60
+         at SwarmUI.WebAPI.AdminAPI.GetSettingsMap(Object settingsObj) in V:\local_builds\SwarmUI\src\WebAPI\AdminAPI.cs:line 77
+         at SwarmUI.WebAPI.AdminAPI.ListServerSettings() in V:\local_builds\SwarmUI\src\WebAPI\AdminAPI.cs:line 89
+         at lambda_method134(Closure, Object, Object[])
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.SyncActionResultExecutor.Execute(ActionContext actionContext, IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeActionMethodAsync()
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeNextActionFilterAsync()
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeInnerFilterAsync()
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResourceFilter>g__Awaited|25_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResourceExecutedContextSealed context)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.InvokeFilterPipelineAsync()
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+         at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+         at SwarmUI.Core.WebServer.<>c.<<Prep>b__21_7>d.MoveNext() in V:\local_builds\SwarmUI\src\Core\WebServer.cs:line 332
+      --- End of stack trace from previous location ---
+         at SwarmUI.Core.WebServer.<>c.<<Prep>b__21_3>d.MoveNext() in V:\local_builds\SwarmUI\src\Core\WebServer.cs:line 266
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+18:32:27 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:32:28 [ERROR] [WebAPI] Error handling API request '/API/Backend/ListBackends': Invalid request method: GET
+18:32:29 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:32:29 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetServerInfo': Invalid request method: GET
+18:32:29 [INFO] Triggering check for updates.
+18:32:31 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:32:33 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:32:35 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:32:37 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:32:39 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:32:41 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:32:43 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:32:45 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:32:47 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:32:49 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:32:51 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:32:53 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:32:55 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:32:57 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:32:59 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:33:01 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:33:02 [ERROR] [WebAPI] Error handling API request '/API/Util/ListWildcards': Invalid request method: GET
+18:33:03 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:33:04 [ERROR] [WebAPI] Error handling API request '/API/T2IAPI/ListModels': Invalid request method: GET
+18:33:05 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:33:07 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:33:09 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:33:11 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:33:12 [ERROR] [WebAPI] Error handling API request '/API/Util/ListWildcards': Invalid request method: GET
+18:33:13 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:33:15 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:33:17 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:33:19 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:33:21 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:33:23 [ERROR] [WebAPI] Error handling API request '/API/Util/ListWildcards': Invalid request method: GET
+18:33:25 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:33:27 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:33:29 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:33:31 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:33:32 [ERROR] [WebAPI] Error handling API request '/API/T2IAPI/GenerateText2Image': Request input lacks required session id
+18:33:33 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:33:35 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:33:37 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:33:39 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:33:41 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:33:43 [ERROR] [WebAPI] Error handling API request '/API/T2IAPI/GenerateText2Image': Request input lacks required session id
+18:33:43 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:33:43 [ERROR] [WebAPI] Error handling API request '/API/T2IAPI/GenerateText2Image': Request input lacks required session id
+18:33:44 [ERROR] [WebAPI] Error handling API request '/API/T2IAPI/GenerateText2Image': Request input lacks required session id
+18:33:44 [ERROR] [WebAPI] Error handling API request '/API/T2IAPI/GenerateText2Image': Request input lacks required session id
+18:33:45 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:33:47 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:33:49 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:33:51 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:33:53 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:33:55 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:33:57 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:33:59 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:34:01 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:34:03 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:34:05 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:34:07 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:34:09 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:34:11 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:34:13 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:34:15 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:34:17 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:34:19 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:34:21 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:34:23 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:34:25 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:34:27 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:34:29 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:34:31 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:34:33 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:34:35 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:34:37 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:34:39 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:34:41 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:34:43 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:34:45 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:34:47 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:34:49 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:34:51 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:34:53 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:34:55 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:34:57 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:34:59 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:35:01 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:35:03 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:35:05 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:35:07 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:35:09 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:35:11 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:35:13 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:35:15 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:35:17 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:35:19 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:35:21 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:35:23 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:35:25 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:35:27 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:35:29 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:35:31 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:35:33 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:35:35 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:35:37 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:35:39 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:35:41 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:35:43 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:35:45 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:35:47 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:35:49 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:35:51 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:35:53 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:35:55 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:35:57 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:35:59 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:36:01 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:36:02 [ERROR] [WebAPI] Error handling API request '/API/Util/ListWildcards': Invalid request method: GET
+18:36:03 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:36:05 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:36:07 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:36:09 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:36:11 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:36:13 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:36:15 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:36:17 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:36:19 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:36:21 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:36:23 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:36:25 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:36:26 [ERROR] [WebAPI] Error handling API request '/API/Util/ListWildcards': Invalid request method: GET
+18:36:27 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:36:27 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetServerInfo': Invalid request method: GET
+18:36:27 [INFO] Triggering check for updates.
+18:36:29 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:36:31 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:36:33 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:36:35 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:36:35 [ERROR] [WebAPI] Error handling API request '/API/T2IAPI/GenerateText2Image': Request input lacks required session id
+18:36:37 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:36:39 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:36:41 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
+18:36:43 [ERROR] [WebAPI] Error handling API request '/API/Admin/GetCurrentStatus': Invalid request method: GET
