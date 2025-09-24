@@ -9,7 +9,7 @@ export const ProtectedRoute = ({ children }: { children: ReactNode }) => {
 
     useEffect(() => {
         // Check installation status
-        fetch('/API/GetInstallStatus')
+        fetch('/API/Util/GetInstallStatus')
             .then(res => res.json())
             .then(data => setIsInstalled(data.is_installed))
             .catch(() => setIsInstalled(true)); // Assume installed if API fails

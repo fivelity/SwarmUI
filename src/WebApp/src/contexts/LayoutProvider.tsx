@@ -1,19 +1,13 @@
-import { createContext, useContext, useState, ReactNode } from 'react';
-import { defaultLayout, compactLayout } from '../layouts/definitions';
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { layouts as availableLayouts, defaultLayout, type Layout } from '../layouts/definitions';
 
-interface Layout {
-  gridTemplateAreas: string;
-  gridTemplateColumns: string;
-}
-
-export const layouts = {
-  default: defaultLayout,
-  compact: compactLayout,
-};
+// Export layouts for use in other components
+export const layouts = availableLayouts;
 
 interface LayoutContextType {
   layout: Layout;
-  setLayout: (layoutName: keyof typeof layouts) => void;
+  layouts: Layout[];
+  setLayout: (layoutId: string) => void;
 }
 
 const LayoutContext = createContext<LayoutContextType | undefined>(undefined);
@@ -33,12 +27,23 @@ interface LayoutProviderProps {
 export const LayoutProvider = ({ children }: LayoutProviderProps) => {
   const [layout, setLayoutState] = useState<Layout>(defaultLayout);
 
-  const setLayout = (layoutName: keyof typeof layouts) => {
-    setLayoutState(layouts[layoutName]);
+  useEffect(() => {
+    // Load layout from localStorage or use default
+    const savedLayoutId = localStorage.getItem('user-layout');
+    const savedLayout = savedLayoutId ? availableLayouts.find(l => l.id === savedLayoutId) : null;
+    setLayoutState(savedLayout || defaultLayout);
+  }, []);
+
+  const setLayout = (layoutId: string) => {
+    const newLayout = availableLayouts.find(l => l.id === layoutId);
+    if (newLayout) {
+      setLayoutState(newLayout);
+      localStorage.setItem('user-layout', layoutId);
+    }
   };
 
   return (
-    <LayoutContext.Provider value={{ layout, setLayout }}>
+    <LayoutContext.Provider value={{ layout, layouts: availableLayouts, setLayout }}>
       {children}
     </LayoutContext.Provider>
   );

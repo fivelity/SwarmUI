@@ -39,7 +39,7 @@ public static class BasicAPIFeatures
         API.RegisterAPICall(ServerDebugMessage, false, Permissions.ServerDebugMessage);
         API.RegisterAPICall(SetAPIKey, true, Permissions.EditUserSettings);
         API.RegisterAPICall(GetAPIKeyStatus, false, Permissions.ReadUserSettings);
-        API.RegisterAPICall(GetInstallStatus);
+        // GetInstallStatus is now handled by UtilAPI controller
         T2IAPI.Register();
         ModelsAPI.Register();
         BackendAPI.Register();
@@ -587,12 +587,5 @@ public static class BasicAPIFeatures
         return new JObject() { ["status"] = $"last updated {updated}" };
     }
 
-    [API.APIDescription("Gets the current installation status of the server.",
-        """
-            "is_installed": true
-        """)]
-    public static async Task<JObject> GetInstallStatus()
-    {
-        return new JObject() { ["is_installed"] = Program.ServerSettings.IsInstalled };
-    }
+    // GetInstallStatus moved to UtilAPI controller
 }

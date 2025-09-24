@@ -1,11 +1,5 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { getThemes } from '../services/api';
-
-interface Theme {
-  id: string;
-  name: string;
-  colors: { [key: string]: string };
-}
+import { themes as availableThemes, getThemeById, getDefaultTheme, type Theme } from '../themes';
 
 interface ThemeContextType {
   theme: Theme;
@@ -22,35 +16,28 @@ export const useTheme = () => {
 };
 
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
-  const [themes, setThemes] = useState<Theme[]>([]);
+  const [themes] = useState<Theme[]>(availableThemes);
   const [theme, setThemeState] = useState<Theme | null>(null);
 
   useEffect(() => {
-    getThemes().then(fetchedThemes => {
-      if (fetchedThemes && fetchedThemes.length > 0) {
-        setThemes(fetchedThemes);
-        const savedThemeId = localStorage.getItem('user-theme');
-        const savedTheme = savedThemeId ? fetchedThemes.find((t: Theme) => t.id === savedThemeId) : null;
-        setThemeState(savedTheme || fetchedThemes[0]);
-      }
-    });
+    // Load theme from localStorage or use default
+    const savedThemeId = localStorage.getItem('user-theme');
+    const savedTheme = savedThemeId ? getThemeById(savedThemeId) : null;
+    setThemeState(savedTheme || getDefaultTheme());
   }, []);
 
   useEffect(() => {
-    if (theme) {
+    if (theme && theme.colors) {
       const root = document.documentElement;
-      // It seems the theme object from the backend doesn't have a `colors` property.
-      // This needs to be investigated. For now, this will fail silently.
-      if (theme.colors) {
-        Object.entries(theme.colors).forEach(([key, value]) => {
-          root.style.setProperty(`--color-${key}`, value);
-        });
-      }
+      // Apply theme colors as CSS variables
+      Object.entries(theme.colors).forEach(([key, value]) => {
+        root.style.setProperty(`--color-${key}`, value);
+      });
     }
   }, [theme]);
 
   const setTheme = (themeId: string) => {
-    const newTheme = themes.find(t => t.id === themeId);
+    const newTheme = getThemeById(themeId);
     if (newTheme) {
       setThemeState(newTheme);
       localStorage.setItem('user-theme', themeId);

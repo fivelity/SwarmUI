@@ -2,7 +2,7 @@ const API_BASE = './API'; // Relative to the web root
 
 export async function getInstallStatus() {
   try {
-    const response = await fetch(`${API_BASE}/BasicAPIFeatures/GetInstallStatus`);
+    const response = await fetch(`${API_BASE}/Util/GetInstallStatus`);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }

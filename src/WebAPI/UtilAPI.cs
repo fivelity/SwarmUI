@@ -90,6 +90,7 @@ public class UtilAPI : ControllerBase
     [HttpGet("GetInstallStatus")]
     public IActionResult GetInstallStatus()
     {
+        // This endpoint should work without authentication during installation
         return Ok(new { is_installed = Program.ServerSettings.IsInstalled });
     }
 
