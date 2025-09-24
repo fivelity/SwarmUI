@@ -16,19 +16,29 @@ export const InstallStepBackend: React.FC<InstallStepBackendProps> = ({ value, o
     <Card>
         <CardHeader>
             <CardTitle>Backend Selection</CardTitle>
-            <CardDescription>What backend would you like to use?</CardDescription>
+            <CardDescription>Choose a generation backend. You can change this later in Server settings.</CardDescription>
         </CardHeader>
-        <CardContent>
-            <RadioGroup value={value} onValueChange={onChange} className="flex flex-col gap-4">
-                {backendOptions.map(option => (
-                    <div key={option.id} className="flex items-start space-x-2 p-4 rounded-md border border-input">
-                        <RadioGroupItem value={option.id} id={option.id} />
-                        <div className="grid gap-1.5">
-                            <Label htmlFor={option.id}>{option.name}</Label>
-                            <p className="text-sm text-muted-foreground">{option.description}</p>
-                        </div>
-                    </div>
-                ))}
+        <CardContent className="space-y-4">
+            <RadioGroup value={value} onValueChange={onChange}>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {backendOptions.map(option => {
+                        const selected = value === option.id;
+                        return (
+                            <Label
+                                key={option.id}
+                                htmlFor={option.id}
+                                className={`group cursor-pointer rounded-xl border p-4 transition-all select-none h-full
+                                    ${selected ? 'ring-2 ring-primary border-primary bg-secondary/30' : 'hover:bg-secondary/30 border-border'}`}
+                            >
+                                <div className="flex items-start justify-between gap-2">
+                                    <div className="font-medium text-foreground">{option.name}</div>
+                                    <RadioGroupItem value={option.id} id={option.id} />
+                                </div>
+                                <p className="mt-2 text-sm text-muted-foreground">{option.description}</p>
+                            </Label>
+                        );
+                    })}
+                </div>
             </RadioGroup>
         </CardContent>
     </Card>

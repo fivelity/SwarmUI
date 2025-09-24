@@ -17,19 +17,31 @@ export const InstallStepUsage: React.FC<InstallStepUsageProps> = ({ value, onCha
     <Card>
         <CardHeader>
             <CardTitle>Usage Scenario</CardTitle>
-            <CardDescription>Who is this SwarmUI installation going to be used by?</CardDescription>
+            <CardDescription>Choose how you plan to use SwarmUI. This sets sensible defaults for networking and permissions.</CardDescription>
         </CardHeader>
-        <CardContent>
-            <RadioGroup value={value} onValueChange={onChange} className="flex flex-col gap-4">
-                {usageOptions.map(option => (
-                    <div key={option.id} className="flex items-start space-x-2 p-4 rounded-md border border-input">
-                        <RadioGroupItem value={option.id} id={option.id} disabled={option.disabled} />
-                        <div className="grid gap-1.5">
-                            <Label htmlFor={option.id}>{option.name}</Label>
-                            <p className="text-sm text-muted-foreground">{option.description}</p>
-                        </div>
-                    </div>
-                ))}
+        <CardContent className="space-y-4">
+            <RadioGroup value={value} onValueChange={onChange}>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {usageOptions.map(option => {
+                        const selected = value === option.id;
+                        const disabled = option.disabled;
+                        return (
+                            <Label
+                                key={option.id}
+                                htmlFor={option.id}
+                                className={`group cursor-pointer rounded-xl border p-4 transition-all select-none h-full
+                                    ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
+                                    ${selected ? 'ring-2 ring-primary border-primary bg-secondary/30' : 'hover:bg-secondary/30 border-border'}`}
+                            >
+                                <div className="flex items-start justify-between gap-2">
+                                    <div className="font-medium text-foreground">{option.name}</div>
+                                    <RadioGroupItem value={option.id} id={option.id} disabled={disabled} />
+                                </div>
+                                <p className="mt-2 text-sm text-muted-foreground">{option.description}</p>
+                            </Label>
+                        );
+                    })}
+                </div>
             </RadioGroup>
         </CardContent>
     </Card>

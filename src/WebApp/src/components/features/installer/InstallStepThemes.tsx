@@ -1,8 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
-import { themes, type Theme } from '@/themes';
+import { themes } from '@/themes';
+import { applyThemeVars } from '@/contexts/ThemeProvider';
+import { ThemePreview } from './ThemePreview';
 
 interface InstallStepThemesProps {
     value: string;
@@ -10,24 +12,18 @@ interface InstallStepThemesProps {
 }
 
 export const InstallStepThemes: React.FC<InstallStepThemesProps> = ({ value, onChange }) => {
-    const [currentTheme, setCurrentTheme] = useState<Theme | null>(null);
-
     // Apply theme preview to document root
     useEffect(() => {
         const selectedTheme = themes.find(theme => theme.id === value);
         if (selectedTheme) {
-            setCurrentTheme(selectedTheme);
-            const root = document.documentElement;
-            
-            // Apply theme colors as CSS variables
-            Object.entries(selectedTheme.colors).forEach(([key, value]) => {
-                root.style.setProperty(`--color-${key}`, value);
-            });
+            applyThemeVars(selectedTheme);
         }
     }, [value]);
 
     const handleThemeChange = (themeId: string) => {
         onChange(themeId);
+        // Also persist immediately so navigating between steps keeps preview consistent
+        localStorage.setItem('user-theme', themeId);
     };
 
     return (
@@ -35,51 +31,41 @@ export const InstallStepThemes: React.FC<InstallStepThemesProps> = ({ value, onC
             <CardHeader>
                 <CardTitle>Choose a Theme</CardTitle>
                 <CardDescription>
-                    You can always change this later in the User Settings page. 
-                    {currentTheme && (
-                        <span className="block mt-2 text-sm font-medium">
-                            Preview: {currentTheme.name}
-                        </span>
-                    )}
+                    You can always change this later in the User Settings. Select a card to preview instantly.
                 </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-6">
                 <RadioGroup value={value} onValueChange={handleThemeChange}>
-                    {themes.map(theme => (
-                        <div key={theme.id} className="flex items-center space-x-3 p-3 rounded-lg border hover:bg-secondary/50 transition-colors">
-                            <RadioGroupItem value={theme.id} id={theme.id} />
-                            <div className="flex-1">
-                                <Label htmlFor={theme.id} className="cursor-pointer font-medium">
-                                    {theme.name}
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                        {themes.map(theme => {
+                            const selected = value === theme.id;
+                            return (
+                                <Label
+                                    key={theme.id}
+                                    htmlFor={theme.id}
+                                    className={`group cursor-pointer rounded-xl border p-4 transition-all select-none
+                                    ${selected ? 'ring-2 ring-primary border-primary bg-secondary/30' : 'hover:bg-secondary/30 border-border'}`}
+                                >
+                                    <div className="flex items-start justify-between gap-2">
+                                        <div className="font-medium text-foreground">{theme.name}</div>
+                                        <RadioGroupItem value={theme.id} id={theme.id} className="mt-0.5" />
+                                    </div>
+                                    <div className="flex gap-2 mt-3">
+                                        <div className="w-4 h-4 rounded border border-border" style={{ background: theme.colors.background }} title="Background" />
+                                        <div className="w-4 h-4 rounded border border-border" style={{ background: theme.colors.primary }} title="Primary" />
+                                        <div className="w-4 h-4 rounded border border-border" style={{ background: theme.colors.accent }} title="Accent" />
+                                        <div className="w-4 h-4 rounded border border-border" style={{ background: theme.colors.text }} title="Text" />
+                                    </div>
                                 </Label>
-                                <div className="flex gap-2 mt-2">
-                                    {/* Color preview swatches */}
-                                    <div 
-                                        className="w-4 h-4 rounded-full border border-gray-300"
-                                        style={{ backgroundColor: theme.colors.background }}
-                                        title="Background"
-                                    />
-                                    <div 
-                                        className="w-4 h-4 rounded-full border border-gray-300"
-                                        style={{ backgroundColor: theme.colors.primary }}
-                                        title="Primary"
-                                    />
-                                    <div 
-                                        className="w-4 h-4 rounded-full border border-gray-300"
-                                        style={{ backgroundColor: theme.colors.accent }}
-                                        title="Accent"
-                                    />
-                                    <div 
-                                        className="w-4 h-4 rounded-full border border-gray-300"
-                                        style={{ backgroundColor: theme.colors.text }}
-                                        title="Text"
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                    ))}
+                            );
+                        })}
+                    </div>
                 </RadioGroup>
+
+                <div className="pt-2">
+                    <ThemePreview />
+                </div>
             </CardContent>
         </Card>
     );
-};
+}
