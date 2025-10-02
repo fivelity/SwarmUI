@@ -279,97 +279,10 @@ function setActiveMainNavByHash(hash) {
 
 // Update the sub-navigation bar based on active tab
 function updateSubNavBar() {
+    // Sub-navigation is now handled inline within each tab (horizontal layout)
+    // Disable the header subnav_bar to prevent duplication
     const bar = document.getElementById('subnav_bar');
-    const list = document.getElementById('subnav_list');
-    if (!bar || !list) { return; }
-    
-    list.innerHTML = '';
-    
-    // Get the active tab pane
-    let activePane = document.querySelector('.tab-pane.show.active');
-    if (!activePane) {
-        bar.style.display = 'none';
-        return;
-    }
-    
-    // Check for sub-navigation items based on the active tab
-    let subnavItems = [];
-    
-    switch(activePane.id) {
-        case 'Text2Image':
-            // Generate tab sub-navigation
-            const bottomBar = document.getElementById('bottombartabcollection');
-            if (bottomBar) {
-                const links = bottomBar.querySelectorAll('a.nav-link');
-                links.forEach(link => {
-                    subnavItems.push({
-                        text: link.textContent,
-                        href: link.getAttribute('href'),
-                        active: link.classList.contains('active')
-                    });
-                });
-            }
-            break;
-            
-        case 'utilities_tab':
-            // Utilities tab sub-navigation
-            const utilsList = document.getElementById('utilitiestablist');
-            if (utilsList) {
-                const links = utilsList.querySelectorAll('a.nav-link');
-                links.forEach(link => {
-                    subnavItems.push({
-                        text: link.textContent,
-                        href: link.getAttribute('href'),
-                        active: link.classList.contains('active')
-                    });
-                });
-            }
-            break;
-            
-        case 'user_tab':
-            // User settings tab sub-navigation
-            const userList = document.getElementById('usertablist');
-            if (userList) {
-                const links = userList.querySelectorAll('a.nav-link');
-                links.forEach(link => {
-                    subnavItems.push({
-                        text: link.textContent,
-                        href: link.getAttribute('href'),
-                        active: link.classList.contains('active')
-                    });
-                });
-            }
-            break;
-    }
-    
-    // Populate the sub-navigation bar
-    if (subnavItems.length > 0) {
-        subnavItems.forEach(item => {
-            const li = document.createElement('li');
-            li.className = 'nav-item';
-            
-            const link = document.createElement('a');
-            link.className = 'nav-link' + (item.active ? ' active' : '');
-            link.href = item.href;
-            link.textContent = item.text;
-            
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                // Find and click the original link
-                const originalLink = document.querySelector(`a[href="${item.href}"]`);
-                if (originalLink && originalLink !== link) {
-                    originalLink.click();
-                    // Update sub-nav after a delay
-                    setTimeout(updateSubNavBar, 50);
-                }
-            });
-            
-            li.appendChild(link);
-            list.appendChild(li);
-        });
-        
-        bar.style.display = '';
-    } else {
+    if (bar) {
         bar.style.display = 'none';
     }
 }

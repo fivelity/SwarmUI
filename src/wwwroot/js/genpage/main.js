@@ -923,80 +923,11 @@ function clearParamFilterInput() {
 }
 
 function updateSubNavigation(pageType, subRoute = '') {
+    // Sub-navigation is now handled inline within each tab (horizontal layout)
+    // No need to copy to header subnav_bar
     const subnavBar = document.getElementById('subnav_bar');
-    const subnavList = document.getElementById('subnav_list');
-    const subnavHint = document.getElementById('subnav_hint');
-    
-    if (!subnavBar || !subnavList) return;
-    
-    // Clear existing sub-navigation
-    subnavList.innerHTML = '';
-    
-    function copyLinksFromElement(fromListId, hintText = '') {
-        let src = document.getElementById(fromListId);
-        if (!src) { 
-            subnavBar.style.display = 'none'; 
-            return; 
-        }
-        let links = [...src.querySelectorAll('.nav-link')];
-        if (links.length === 0) { 
-            subnavBar.style.display = 'none'; 
-            return; 
-        }
-        
-        subnavList.innerHTML = links.map(a => {
-            const href = a.getAttribute('href');
-            const active = a.classList.contains('active') ? 'active' : '';
-            return `<li class="nav-item" role="presentation"><a class="nav-link ${active}" href="${href}">${a.innerHTML}</a></li>`;
-        }).join('');
-        
-        // Ensure clicking cloned link triggers original
-        [...subnavList.querySelectorAll('a.nav-link')].forEach(clone => {
-            clone.addEventListener('click', e => {
-                e.preventDefault();
-                const orig = document.querySelector(`ul#${fromListId} a.nav-link[href='${clone.getAttribute('href')}']`);
-                if (orig) orig.click();
-                // Re-sync subnav after click
-                setTimeout(() => updateSubNavigation(pageType, subRoute), 50);
-            });
-        });
-        
-        if (subnavHint) subnavHint.textContent = hintText;
-        subnavBar.style.display = '';
-    }
-    
-    switch (pageType) {
-        case 'generate':
-            // Generate page should not have sub-navigation in the header
-            // The bottom bar tabs (Image History, Presets, Models, etc.) should stay at the bottom
-            // We could potentially add other contextual navigation here if needed
-            subnavBar.style.display = 'none';
-            break;
-        case 'simple':
-            // Simple has no sub-tabs
-            subnavBar.style.display = 'none';
-            break;
-        case 'utilities':
-            copyLinksFromElement('utilitiestablist', 'Utility Tools');
-            break;
-        case 'settings':
-            copyLinksFromElement('usertablist', 'User & System Settings');
-            break;
-        case 'server':
-            copyLinksFromElement('servertablist', 'Server Management');
-            break;
-        case 'comfy':
-            // ComfyUI might have dynamic sub-tabs, let's check for them
-            let comfyTabs = document.querySelector('.tab-pane.show.active .swarm-gen-tab-subnav');
-            if (comfyTabs) {
-                copyLinksFromElement(comfyTabs.id, 'ComfyUI Workflow');
-            } else {
-                subnavBar.style.display = 'none';
-            }
-            break;
-        default:
-            subnavBar.style.display = 'none';
-            break;
+    if (subnavBar) {
+        subnavBar.style.display = 'none';
     }
 }
 
