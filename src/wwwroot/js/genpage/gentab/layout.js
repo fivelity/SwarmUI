@@ -302,10 +302,9 @@ class GenTabLayout {
             this.editorSizebar.style.height = `calc(100vh - ${fixed} - ${altHeight})`;
             this.currentImageBatch.style.height = `calc(100vh - ${fixed})`;
             this.topSection.style.height = `calc(100vh - ${fixed})`;
-            // Don't set a bad height calculation
-            // this.bottomBar.style.height = `calc(${fixed} - 45px)`;
-            this.bottomBar.style.minHeight = '400px';
-            this.bottomBar.style.maxHeight = '50vh';
+            // Optimize bottom bar height to reduce empty space
+            this.bottomBar.style.minHeight = '200px';
+            this.bottomBar.style.maxHeight = '35vh';
             this.bottomBar.style.height = 'auto';
             this.bottomBar.style.display = 'block'; // Always visible
             this.bottomBar.style.visibility = 'visible'; // Always visible
@@ -320,9 +319,9 @@ class GenTabLayout {
             this.currentImageBatch.style.height = '';
             this.topSection.style.height = '';
             let bottomBarHeight = this.bottomInfoBar.offsetHeight;
-            // Use a safe height calculation
-            this.bottomBar.style.minHeight = '400px';
-            this.bottomBar.style.maxHeight = '50vh';
+            // Use optimized height calculation to reduce empty space
+            this.bottomBar.style.minHeight = '200px';
+            this.bottomBar.style.maxHeight = '35vh';
             this.bottomBar.style.height = 'auto';
             this.bottomBar.style.display = 'block'; // Always visible
             this.bottomBar.style.visibility = 'visible'; // Always visible

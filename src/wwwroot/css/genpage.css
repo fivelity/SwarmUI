@@ -210,6 +210,9 @@ main#main {
     overflow-y: auto;
     height: 100%;
     white-space: normal;
+    min-height: 150px;
+    max-height: 300px;
+    padding: 0.25rem;
 }
 .current-image-extras-wrapper {
     min-width: 20rem;
@@ -245,10 +248,12 @@ main#main {
     filter: blur(10px);
 }
 .image-block-batch {
-    width: calc(10rem + 2px);
+    width: calc(8rem + 2px);
     padding: 1px;
     display: inline-block;
     overflow: hidden;
+    margin: 1px;
+    vertical-align: top;
 }
 .image-block-batch img, .image-block-batch video {
     max-height: 100%;
@@ -903,6 +908,7 @@ main#main {
 .d-flex.flex-column.h-100 > .row.g-3.flex-grow-1 {
     /* This is the 3-column layout row */
     flex-shrink: 0;
+    min-height: 0;
 }
 
 #t2i_bottom_bar {
@@ -911,9 +917,9 @@ main#main {
     flex-shrink: 0;
     display: block !important;
     visibility: visible !important;
-    min-height: 400px !important;
+    min-height: 200px !important;
     height: auto !important;
-    max-height: 50vh !important;
+    max-height: 35vh !important;
     overflow: visible !important;
 }
 
@@ -942,8 +948,8 @@ main#main {
 
 /* Bottom bar content area */
 #t2i_bottom_bar_content {
-    min-height: 400px;
-    max-height: calc(50vh);
+    min-height: 200px;
+    max-height: calc(35vh);
 }
 
 /* Bottom info bar styling */
@@ -1514,6 +1520,16 @@ main#main {
     font-size: 150%;
     white-space: pre-wrap;
     text-align: center;
+}
+
+.welcome_message.generating {
+    color: var(--bs-primary);
+    font-weight: 600;
+}
+
+.welcome_message.error {
+    color: var(--bs-danger);
+    font-weight: 600;
 }
 .welcome-message-wrapper {
     min-height: 8em;

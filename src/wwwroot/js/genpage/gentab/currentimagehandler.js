@@ -618,6 +618,13 @@ function setCurrentImage(src, metadata = '', batchId = '', previewGrow = false, 
     }
     currentMetadataVal = metadata;
     let isVideo = isVideoExt(src);
+    
+    // Clear any existing placeholder content
+    let curImg = getRequiredElementById('current_image');
+    if (curImg.querySelector('#welcome_message')) {
+        curImg.querySelector('#welcome_message').style.display = 'none';
+    }
+    
     if ((smoothAdd || !metadata) && canReparse && !isVideo) {
         let image = new Image();
         image.onload = () => {
@@ -629,6 +636,11 @@ function setCurrentImage(src, metadata = '', batchId = '', previewGrow = false, 
             else {
                 setCurrentImage(src, metadata, batchId, previewGrow, false, false);
             }
+        };
+        image.onerror = () => {
+            console.warn('Failed to load image:', src);
+            // Show a proper error state instead of placeholder
+            curImg.innerHTML = '<div class="welcome_message error">Failed to load image. Please try again.</div>';
         };
         image.src = src;
         return;
@@ -683,6 +695,9 @@ function setCurrentImage(src, metadata = '', batchId = '', previewGrow = false, 
             img.height = height * 8;
             img.dataset.previewGrow = 'true';
         }
+        // Ensure the image is properly displayed
+        img.style.display = 'block';
+        img.style.visibility = 'visible';
         alignImageDataFormat();
     }
     if (isVideo) {
@@ -1011,6 +1026,13 @@ function gotImagePreview(image, metadata, batchId) {
         setCurrentImage(src, metadata, batchId, true);
     }
     return batch_div;
+}
+
+// Function to show generation status in main image area
+function showGenerationStatus(message, isGenerating = true) {
+    let curImg = getRequiredElementById('current_image');
+    let statusClass = isGenerating ? 'generating' : 'error';
+    curImg.innerHTML = `<div class="welcome_message ${statusClass}">${message}</div>`;
 }
 
 function imageInputHandler() {
