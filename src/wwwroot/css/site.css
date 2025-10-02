@@ -472,16 +472,16 @@ textarea, input, select {
     border: 1px solid var(--bs-border-color);
     border-radius: 0.5rem;
     padding: 0.5rem;
-    visibility: hidden;
-    opacity: 0;
+    visibility: hidden !important; /* Force hide by default */
+    opacity: 0 !important;
+    display: none !important; /* Also use display none to prevent text showing */
     position: fixed;
     left: 0;
     top: 0;
-    z-index: 1060;
+    z-index: 10000;
     box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
     pointer-events: none;
     width: fit-content;
-    z-index: 10000;
     transition: visibility 0s, opacity 0.3s linear;
     min-width: 10rem;
 }
@@ -489,8 +489,9 @@ textarea, input, select {
     max-width: 40rem;
 }
 .sui-popover-visible {
-    visibility: visible;
-    opacity: 1;
+    visibility: visible !important;
+    opacity: 1 !important;
+    display: block !important; /* Show when visible */
     transition: visibility 0s, opacity 0.3s linear;
     pointer-events: auto;
 }
