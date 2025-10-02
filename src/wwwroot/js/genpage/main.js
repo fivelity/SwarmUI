@@ -1054,6 +1054,42 @@ let modal = new bootstrap.Modal(getRequiredElementById('sam2_installer'));
     
     // Make layout system available globally
     window.genTabLayout = genTabLayout;
+    
+    // CRITICAL: Force bottom bar to be visible after initialization
+    function forceBottomBarVisible() {
+        const bottomBar = document.getElementById('t2i_bottom_bar');
+        if (bottomBar) {
+            bottomBar.style.display = 'block';
+            bottomBar.style.visibility = 'visible';
+            bottomBar.style.minHeight = '400px';
+            bottomBar.style.height = 'auto'; // Let it size naturally
+        }
+    }
+    
+    // Run immediately
+    forceBottomBarVisible();
+    
+    // Run after a short delay to override any layout calculations
+    setTimeout(forceBottomBarVisible, 100);
+    setTimeout(forceBottomBarVisible, 500);
+    
+    // Watch for any changes and re-apply
+    if (window.MutationObserver) {
+        const bottomBar = document.getElementById('t2i_bottom_bar');
+        if (bottomBar) {
+            const observer = new MutationObserver((mutations) => {
+                for (let mutation of mutations) {
+                    if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+                        const computed = window.getComputedStyle(bottomBar);
+                        if (computed.display === 'none' || computed.visibility === 'hidden') {
+                            forceBottomBarVisible();
+                        }
+                    }
+                }
+            });
+            observer.observe(bottomBar, { attributes: true, attributeFilter: ['style'] });
+        }
+    }
     getSession(() => {
         imageHistoryBrowser.navigate('');
         initialModelListLoad();
