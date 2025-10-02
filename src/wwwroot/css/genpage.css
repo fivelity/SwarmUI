@@ -39,10 +39,12 @@ main#main {
 /* Ensure tab content is visible */
 .tab-content {
     display: block !important;
+    flex-shrink: 0;
 }
 
 .tab-pane {
     min-height: 200px;
+    flex-shrink: 0;
 }
 
 /* Fix tab visibility issues */
@@ -205,14 +207,24 @@ main#main {
     object-fit: contain;
     object-position: top left;
 }
+#current_image_batch_wrapper {
+    min-height: 200px;
+    max-height: 300px;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    overflow: hidden;
+}
+
 .current_image_batch_core {
     overflow-x: hidden;
     overflow-y: auto;
-    height: 100%;
+    height: auto;
     white-space: normal;
     min-height: 150px;
     max-height: 300px;
     padding: 0.25rem;
+    flex-shrink: 0;
 }
 .current-image-extras-wrapper {
     min-width: 20rem;
@@ -768,13 +780,15 @@ main#main {
 
 /* Ensure bottom tabs have proper height for tree/content layout */
 .genpage-bottom-tab {
-    height: 100%;
+    height: auto;
     display: flex;
     flex-direction: column;
+    flex-shrink: 0;
 }
 
 .genpage-bottom-tab .browser_container {
     flex: 1;
+    min-height: 0;
 }
 
 
