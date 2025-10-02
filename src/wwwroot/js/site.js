@@ -277,107 +277,161 @@ function setActiveMainNavByHash(hash) {
 }
 
 
-// Mirror the active pane's sub-navigation into the workspace subnav bar
-function mirrorSubnavFromContent() {
-    const bar = document.getElementById('workspace_subnav_bar');
-    const list = document.getElementById('workspace_subnav_list');
+// Update the sub-navigation bar based on active tab
+function updateSubNavBar() {
+    const bar = document.getElementById('subnav_bar');
+    const list = document.getElementById('subnav_list');
     if (!bar || !list) { return; }
+    
     list.innerHTML = '';
+    
+    // Get the active tab pane
     let activePane = document.querySelector('.tab-pane.show.active');
-    if (!activePane) { bar.style.display = 'none'; return; }
-    // Prefer Bottom Bar subnav in Generate for faster navigation
-    let subnav = activePane.querySelector('#bottombartabcollection') || activePane.querySelector('.swarm-gen-tab-subnav');
-    if (!subnav) { bar.style.display = 'none'; return; }
-    let links = subnav.querySelectorAll('a.nav-link');
-    if (!links || links.length === 0) { bar.style.display = 'none'; return; }
-    for (let a of links) {
-        let li = document.createElement('li');
-        li.className = 'nav-item';
-        let link = document.createElement('a');
-        link.className = 'nav-link' + (a.classList.contains('active') ? ' active' : '');
-        link.href = a.getAttribute('href');
-        link.textContent = a.textContent;
-        link.addEventListener('click', (e) => {
-            setTimeout(mirrorSubnavFromContent, 50);
-        });
-        li.appendChild(link);
-        list.appendChild(li);
+    if (!activePane) {
+        bar.style.display = 'none';
+        return;
     }
-    bar.style.display = '';
+    
+    // Check for sub-navigation items based on the active tab
+    let subnavItems = [];
+    
+    switch(activePane.id) {
+        case 'Text2Image':
+            // Generate tab sub-navigation
+            const bottomBar = document.getElementById('bottombartabcollection');
+            if (bottomBar) {
+                const links = bottomBar.querySelectorAll('a.nav-link');
+                links.forEach(link => {
+                    subnavItems.push({
+                        text: link.textContent,
+                        href: link.getAttribute('href'),
+                        active: link.classList.contains('active')
+                    });
+                });
+            }
+            break;
+            
+        case 'utilities_tab':
+            // Utilities tab sub-navigation
+            const utilsList = document.getElementById('utilitiestablist');
+            if (utilsList) {
+                const links = utilsList.querySelectorAll('a.nav-link');
+                links.forEach(link => {
+                    subnavItems.push({
+                        text: link.textContent,
+                        href: link.getAttribute('href'),
+                        active: link.classList.contains('active')
+                    });
+                });
+            }
+            break;
+            
+        case 'user_tab':
+            // User settings tab sub-navigation
+            const userList = document.getElementById('usertablist');
+            if (userList) {
+                const links = userList.querySelectorAll('a.nav-link');
+                links.forEach(link => {
+                    subnavItems.push({
+                        text: link.textContent,
+                        href: link.getAttribute('href'),
+                        active: link.classList.contains('active')
+                    });
+                });
+            }
+            break;
+    }
+    
+    // Populate the sub-navigation bar
+    if (subnavItems.length > 0) {
+        subnavItems.forEach(item => {
+            const li = document.createElement('li');
+            li.className = 'nav-item';
+            
+            const link = document.createElement('a');
+            link.className = 'nav-link' + (item.active ? ' active' : '');
+            link.href = item.href;
+            link.textContent = item.text;
+            
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                // Find and click the original link
+                const originalLink = document.querySelector(`a[href="${item.href}"]`);
+                if (originalLink && originalLink !== link) {
+                    originalLink.click();
+                    // Update sub-nav after a delay
+                    setTimeout(updateSubNavBar, 50);
+                }
+            });
+            
+            li.appendChild(link);
+            list.appendChild(li);
+        });
+        
+        bar.style.display = '';
+    } else {
+        bar.style.display = 'none';
+    }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
     try {
-        // Add click handlers to main navigation to integrate with existing routing system
+        // Add click handlers to main navigation to integrate with tab system
         const mainNavLinks = document.querySelectorAll('#navbarNav .nav-link');
         mainNavLinks.forEach(link => {
             link.addEventListener('click', (e) => {
-                e.preventDefault();
-                
-                // Get the target hash from href
+                // Don't prevent default if it's an external link
                 const href = link.getAttribute('href');
                 if (!href || !href.includes('#')) return;
                 
+                e.preventDefault();
+                
                 const targetHash = href.substring(href.indexOf('#'));
                 
-                // Map main nav to legacy tab IDs for proper routing
-                const legacyTabMap = {
+                // Map main nav to tab button IDs
+                const tabMap = {
                     '#Generate': 'text2imagetabbutton',
                     '#Simple': 'simpletabbutton',
                     '#Utilities': 'utilitiestabbutton', 
                     '#Settings': 'usersettingstabbutton',
-                    '#Server': 'servertabbutton'
+                    '#Server': 'servertabbutton',
+                    '#Comfy': null // Special handling for ComfyUI if present
                 };
                 
-                const tabButtonId = legacyTabMap[targetHash];
-                console.log('Navigation:', { targetHash, tabButtonId });
+                const tabButtonId = tabMap[targetHash];
                 
                 if (tabButtonId) {
                     const tabButton = document.getElementById(tabButtonId);
-                    console.log('Found tab button:', tabButton);
                     if (tabButton) {
-                        // First update the hash
+                        // Update the hash
                         window.location.hash = targetHash;
-                        console.log('Updated hash to:', targetHash);
-                        // Then click the legacy tab button to trigger proper content switching
-                        setTimeout(() => {
-                            console.log('Clicking tab button:', tabButtonId);
-                            tabButton.click();
-                            
-                            // Ensure the tab content is properly shown
-                            setTimeout(() => {
-                                const targetHref = tabButton.getAttribute('href');
-                                if (targetHref) {
-                                    const targetPane = document.querySelector(targetHref);
-                                    if (targetPane) {
-                                        console.log('Ensuring tab pane is visible:', targetHref);
-                                        
-                                        // Remove active and show classes from all panes
-                                        document.querySelectorAll('.tab-pane').forEach(pane => {
-                                            pane.classList.remove('show', 'active');
-                                            // Also remove any inline display:none that might interfere
-                                            if (pane.style.display === 'none') {
-                                                pane.style.removeProperty('display');
-                                            }
-                                        });
-                                        
-                                        // Add active and show classes to target pane
-                                        targetPane.classList.add('show', 'active');
-                                        
-                                        // Remove any inline display:none from the target pane
-                                        if (targetPane.style.display === 'none') {
-                                            targetPane.style.removeProperty('display');
-                                        }
-                                        
-                                        console.log('Tab pane classes after activation:', targetPane.classList.toString());
-                                    }
-                                }
-                            }, 50);
-                        }, 10);
+                        
+                        // Use Bootstrap's tab API to show the tab
+                        const tab = bootstrap.Tab.getOrCreateInstance(tabButton);
+                        tab.show();
+                        
+                        // Update active states
+                        mainNavLinks.forEach(navLink => navLink.classList.remove('active'));
+                        link.classList.add('active');
+                    }
+                } else if (targetHash === '#Comfy') {
+                    // Special handling for ComfyUI tab if it exists
+                    const comfyTab = document.querySelector('#toptablist a[href*="Comfy"]');
+                    if (comfyTab) {
+                        window.location.hash = targetHash;
+                        const tab = bootstrap.Tab.getOrCreateInstance(comfyTab);
+                        tab.show();
+                        
+                        // Show ComfyUI nav item
+                        const comfyNavItem = document.getElementById('main_nav_comfy_item');
+                        if (comfyNavItem) comfyNavItem.style.display = '';
+                        
+                        // Update active states
+                        mainNavLinks.forEach(navLink => navLink.classList.remove('active'));
+                        link.classList.add('active');
                     }
                 } else {
                     // For other cases, just update the hash
-                    console.log('No tab mapping, updating hash to:', targetHash);
                     window.location.hash = targetHash;
                 }
             });
@@ -387,37 +441,96 @@ document.addEventListener('DOMContentLoaded', () => {
         const currentHash = window.location.hash || '#Generate';
         setActiveMainNavByHash(currentHash);
         
-        // Ensure the top tab list is visible
-        const ensureTabListVisible = () => {
+        // Initialize tab system visibility
+        const initializeTabSystem = () => {
+            // Ensure the top tab list is always visible
             const topTabList = document.getElementById('toptablist');
-            if (topTabList && topTabList.style.display === 'none') {
-                console.log('Making toptablist visible');
+            if (topTabList) {
                 topTabList.style.display = '';
+                topTabList.classList.remove('d-none');
+            }
+            
+            // Initialize Bootstrap tabs properly
+            const tabTriggers = document.querySelectorAll('#toptablist a[data-bs-toggle="tab"]');
+            tabTriggers.forEach(trigger => {
+                const tabTrigger = new bootstrap.Tab(trigger);
+                
+                trigger.addEventListener('shown.bs.tab', event => {
+                    // Update main nav active state when tab is shown
+                    const targetPane = document.querySelector(event.target.getAttribute('href'));
+                    if (targetPane) {
+                        updateMainNavForTab(targetPane.id);
+                        // Update sub-navigation bar
+                        setTimeout(updateSubNavBar, 50);
+                    }
+                });
+            });
+            
+            // Ensure proper initial state for all tab panes
+            const tabPanes = document.querySelectorAll('.tab-pane');
+            tabPanes.forEach(pane => {
+                // Remove any inline display styles
+                pane.style.removeProperty('display');
+                
+                // Ensure Bootstrap's show/active classes are properly managed
+                if (!pane.classList.contains('show') && !pane.classList.contains('active')) {
+                    // Tab panes that aren't active should not have display:none inline
+                    // Bootstrap handles visibility via classes
+                }
+            });
+            
+            // Set initial active tab based on hash or default
+            const currentHash = window.location.hash || '#Generate';
+            activateTabFromHash(currentHash);
+        };
+        
+        // Helper function to update main nav based on active tab
+        const updateMainNavForTab = (tabId) => {
+            const map = {
+                'Text2Image': 'main_nav_generate',
+                'Simple': 'main_nav_simple',
+                'utilities_tab': 'main_nav_utilities',
+                'user_tab': 'main_nav_settings',
+                'server_tab': 'main_nav_server'
+            };
+            
+            // Remove active from all main nav links
+            document.querySelectorAll('#navbarNav .nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            // Add active to the corresponding main nav
+            const navId = map[tabId];
+            if (navId) {
+                const navLink = document.getElementById(navId);
+                if (navLink) navLink.classList.add('active');
             }
         };
         
-        // Fix tab panes by removing inline display:none styles that prevent content from showing
-        const fixTabPanes = () => {
-            const tabPanes = document.querySelectorAll('.tab-pane[style*="display: none"]');
-            tabPanes.forEach(pane => {
-                console.log('Removing inline display:none from tab pane:', pane.id);
-                pane.style.removeProperty('display');
-            });
+        // Helper function to activate a tab based on hash
+        const activateTabFromHash = (hash) => {
+            const cleanHash = hash.replace('#', '');
+            const tabMap = {
+                'Generate': 'text2imagetabbutton',
+                'Simple': 'simpletabbutton',
+                'Utilities': 'utilitiestabbutton',
+                'Settings': 'usersettingstabbutton',
+                'Server': 'servertabbutton'
+            };
+            
+            const tabButtonId = tabMap[cleanHash];
+            if (tabButtonId) {
+                const tabButton = document.getElementById(tabButtonId);
+                if (tabButton) {
+                    // Use Bootstrap's tab API to show the tab
+                    const tab = bootstrap.Tab.getOrCreateInstance(tabButton);
+                    tab.show();
+                }
+            }
         };
         
-        // Make tab list visible and fix tab panes immediately
-        ensureTabListVisible();
-        fixTabPanes();
-        
-        // Also check after a short delay to ensure everything is fixed after page load
-        setTimeout(() => {
-            ensureTabListVisible();
-            fixTabPanes();
-        }, 100);
-        setTimeout(() => {
-            ensureTabListVisible();
-            fixTabPanes();
-        }, 500);
+        // Initialize the tab system
+        initializeTabSystem();
         
         // Add diagnostic function for checking page state
         window.checkPageState = () => {
@@ -457,7 +570,19 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Handle hash changes from other sources (like direct URL changes)
         window.addEventListener('hashchange', () => {
-            setActiveMainNavByHash(window.location.hash);
+            const hash = window.location.hash || '#Generate';
+            setActiveMainNavByHash(hash);
+            activateTabFromHash(hash);
+        });
+        
+        // Handle initial page load with hash
+        window.addEventListener('load', () => {
+            // Allow a small delay for the page to fully initialize
+            setTimeout(() => {
+                const hash = window.location.hash || '#Generate';
+                setActiveMainNavByHash(hash);
+                activateTabFromHash(hash);
+            }, 100);
         });
 
 // On tab change, just toggle Comfy-only visibility (no header subnav)

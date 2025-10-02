@@ -1,7 +1,12 @@
-/* Legacy CSS variables - most moved to design-tokens.css */
+/* ========================================
+   LEGACY VARIABLES
+   These variables are maintained for backward compatibility
+   with existing slider implementations.
+   TODO: Refactor slider components to use design tokens directly
+   ======================================== */
 :root {
     /* Legacy range controls - to be refactored */
-    --range-height: var(--space-6_5);
+    --range-height: var(--space-7);  /* Fixed: was using non-existent --space-6_5 */
     --range-value-color: var(--bs-primary);
     --range-track-background: var(--bs-tertiary-bg);
     --range-thumb-color-hover: rgba(var(--bs-primary-rgb), .25);
@@ -16,7 +21,7 @@
     --toggle-thumb-active-hover: rgba(var(--bs-primary-rgb), .25);
     --font-monospace: var(--bs-font-monospace);
 
-    /* Legacy status bar colors - will be moved to design tokens */
+    /* Legacy status bar colors - will be moved to design tokens in future release */
     --status-bar-text-color: var(--bs-body-bg);
     --status-bar-warn-color-start-end: #ede68a;
     --status-bar-warn-color-middle: #c4b800;
@@ -25,7 +30,7 @@
     --status-bar-soft-color: #c4b800;
 
     /* Toggle styles */
-    --toggle-background: #ccc;
+    --toggle-background: var(--bs-border-color);  /* Fixed: was hardcoded #ccc */
     --toggle-thumb-color: var(--bs-border-color);
 }
 .modal-content {

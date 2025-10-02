@@ -33,11 +33,32 @@ main#main {
 
 /* Ensure tab content is visible */
 .tab-content {
-    display: block;
+    display: block !important;
 }
 
 .tab-pane {
     min-height: 400px;
+}
+
+/* Fix tab visibility issues */
+#toptablist {
+    display: flex !important;
+    flex-wrap: wrap;
+    visibility: visible !important;
+}
+
+/* Bootstrap tab overrides for proper display */
+.tab-pane {
+    display: none;
+}
+
+.tab-pane.show.active {
+    display: block !important;
+}
+
+/* Ensure the first tab is visible by default */
+.tab-pane:first-of-type {
+    display: block;
 }
 .modal-body {
     white-space: normal;
@@ -659,10 +680,7 @@ main#main {
 .genpage-bottom-tab .browser_container {
     flex: 1;
 }
-.browser-folder-tree-part {
-    display: block;
-    position: relative;
-}
+
 
 /* File Explorer Layout Improvements */
 .browser_container {
@@ -688,16 +706,20 @@ main#main {
     border-radius: 0.25rem;
     cursor: pointer;
     user-select: none;
-    transition: background-color 0.15s ease-in-out;
+    transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out;
+    position: relative;
 }
 
 .browser-folder-tree-part:hover {
     background-color: var(--bs-secondary-bg);
+    color: var(--bs-primary);
+    text-decoration: underline;
 }
 
 .browser-folder-tree-part.selected {
     background-color: var(--bs-primary);
-    color: var(--bs-primary-text);
+    color: var(--bs-primary-text) !important;
+    text-decoration: none;
 }
 
 /* Model blocks in file explorer view */
@@ -835,16 +857,8 @@ main#main {
 
 .bottom-info-bar-component {
     font-size: 0.875rem;
-}
     width: fit-content;
     cursor: pointer;
-}
-.browser-folder-tree-part:hover {
-    color: var(--bs-primary);
-    text-decoration: underline;
-}
-.browser-folder-tree-part-selected {
-    color: rgba(var(--bs-primary-rgb), 0.7);
 }
 .browser-folder-tree-part-symbol {
     position: relative;
@@ -1060,12 +1074,12 @@ main#main {
 .alt-prompt-image-container:hover .alt-prompt-image-container-remove-button {
     opacity: 1.0;
     background-color: rgba(var(--bs-danger-rgb), 0.5);
-    border: 1px solid var(--red);
+    border: 1px solid var(--bs-danger);
 }
 
 .alt-prompt-image-container-remove-button:hover {
     opacity: 1.0;
-    background-color: rgba(var(--red-rgb), 0.7) !important;
+    background-color: rgba(var(--bs-danger-rgb), 0.7) !important;
     border: 1px solid black;
     cursor: pointer;
 }
@@ -1652,110 +1666,7 @@ main#main {
     height: 1.6em;
     padding-top: 0 !important;
 }
-.log-line-error {
-    background-color: rgba(200, 0, 0, 1) !important;
-}
 
-.log-line-sub-error {
-    background-color: rgba(255, 0, 0, 0.3);
-}
-.log-line-sub-warn {
-    background-color: rgba(255, 255, 0, 0.3);
-}
-.log-line-sub-good {
-    background-color: rgba(0, 255, 0, 0.3);
-}
-.log-line-sub-info {
-    color: var(--bs-secondary-color);
-}
-.log-line-sub-info::before {
-    color: var(--bs-secondary-color);
-}
-.log-line-sub-info::after {
-    color: var(--bs-secondary-color);
-}
-.log-line-debug {
-    display: none;
-}
-.log-line {
-    white-space: pre-wrap;
-    font-family: var(--font-monospace);
-    font-size: 90%;
-}
-.log-line-content {
-    display: inline;
-    max-width: 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-.log-line-time {
-    opacity: 0.7;
-    padding-right: 0.5rem;
-}
-.log-line-level {
-    font-weight: bold;
-    padding-right: 0.5rem;
-}
-.log-line-message {
-    display: inline;
-    max-width: calc(100% - 10rem);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-.log-line-error {
-    background-color: rgba(200, 0, 0, 1) !important;
-}
-
-.log-line-sub-error {
-    background-color: rgba(255, 0, 0, 0.3);
-}
-.log-line-sub-warn {
-    background-color: rgba(255, 255, 0, 0.3);
-}
-.log-line-sub-good {
-    background-color: rgba(0, 255, 0, 0.3);
-}
-.log-line-sub-info {
-    color: var(--bs-secondary-color);
-}
-.log-line-sub-info::before {
-    color: var(--bs-secondary-color);
-}
-.log-line-sub-info::after {
-    color: var(--bs-secondary-color);
-}
-.log-line-debug {
-    display: none;
-}
-.log-line {
-    white-space: pre-wrap;
-    font-family: var(--font-monospace);
-    font-size: 90%;
-}
-.log-line-content {
-    display: inline;
-    max-width: 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-.log-line-time {
-    opacity: 0.7;
-    padding-right: 0.5rem;
-}
-.log-line-level {
-    font-weight: bold;
-    padding-right: 0.5rem;
-}
-.log-line-message {
-    display: inline;
-    max-width: calc(100% - 10rem);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
 .backend-list-entry-unavailable {
     opacity: 0.5;
     background-color: rgba(var(--bs-body-bg-rgb), 0.2);

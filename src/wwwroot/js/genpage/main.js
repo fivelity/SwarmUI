@@ -1027,7 +1027,21 @@ function updateWorkspaceButtons() {
 }
 
 function genpageLoad() {
-    getRequiredElementById('toptablist').addEventListener('shown.bs.tab', function (e) {
+    // Ensure tab list is visible on page load
+    const topTabList = getRequiredElementById('toptablist');
+    if (topTabList) {
+        topTabList.style.display = '';
+        topTabList.classList.remove('d-none');
+        
+        // Initialize Bootstrap tabs
+        const tabTriggers = topTabList.querySelectorAll('a[data-bs-toggle="tab"]');
+        tabTriggers.forEach(trigger => {
+            // Ensure Bootstrap knows about each tab
+            const tab = new bootstrap.Tab(trigger);
+        });
+    }
+    
+    topTabList.addEventListener('shown.bs.tab', function (e) {
         let versionDisp = getRequiredElementById('version_display');
         if (e.target.id == 'maintab_comfyworkflow') {
             versionDisp.style.display = 'none';
