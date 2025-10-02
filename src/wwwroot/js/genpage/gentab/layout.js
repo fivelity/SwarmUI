@@ -148,6 +148,15 @@ class GenTabLayout {
             this.leftShut = true;
             this.rightSectionBarPos = 0;
         }
+        
+        // Ensure sidebars are visible by default (force show if they were accidentally hidden)
+        // This helps after layout changes or updates
+        if (!this.isSmallWindow && !localStorage.getItem('layout_sidebars_manually_set')) {
+            this.leftShut = false;
+            this.bottomShut = false;
+            localStorage.setItem('barspot_leftShut', 'false');
+            localStorage.setItem('barspot_midForceToBottom', 'false');
+        }
     }
 
     /** Resets the entire page layout to default, and removes all stored browser layout state info. */
@@ -172,12 +181,14 @@ class GenTabLayout {
     setBottomShut(val) {
         this.bottomShut = val;
         localStorage.setItem('barspot_midForceToBottom', `${this.bottomShut}`);
+        localStorage.setItem('layout_sidebars_manually_set', 'true');
     }
 
     /** Sets whether the left section should be shut (does not trigger rerendering). */
     setLeftShut(val) {
         this.leftShut = val;
         localStorage.setItem('barspot_leftShut', `${this.leftShut}`);
+        localStorage.setItem('layout_sidebars_manually_set', 'true');
     }
     
     /** Signal a possible update to the size of the prompt box. */

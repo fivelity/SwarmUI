@@ -642,9 +642,9 @@ function applyWorkspaceRoute(hash) {
     let top = parts[0].toLowerCase();
     let sub = parts.length > 1 ? parts.slice(1).join('/') : '';
     
-    // Hide all tab panes first
-    const allPanes = document.querySelectorAll('.tab-pane');
-    allPanes.forEach(pane => {
+    // Hide only TOP-LEVEL tab panes (direct children of .tab-content), not nested ones
+    const topLevelPanes = document.querySelectorAll('.tab-content.tab-hundred > .tab-pane');
+    topLevelPanes.forEach(pane => {
         pane.style.display = 'none';
         pane.classList.remove('show', 'active');
     });
@@ -958,13 +958,14 @@ function updateWorkspaceButtons() {
 }
 
 function genpageLoad() {
-    // Ensure tab list is visible on page load
+    // Keep tab list hidden - it's only for routing, navigation is in the main header
     const topTabList = getRequiredElementById('toptablist');
     if (topTabList) {
-        topTabList.style.display = '';
-        topTabList.classList.remove('d-none');
+        // Don't make it visible - keep it hidden
+        // topTabList.style.display = '';
+        // topTabList.classList.remove('d-none');
         
-        // Initialize Bootstrap tabs
+        // Initialize Bootstrap tabs (even though hidden, needed for routing)
         const tabTriggers = topTabList.querySelectorAll('a[data-bs-toggle="tab"]');
         tabTriggers.forEach(trigger => {
             // Ensure Bootstrap knows about each tab

@@ -41,7 +41,7 @@
     }
 </script>
 
-<div class="container-fluid mt-2">
+<div class="container-fluid">
     <!-- Hidden tab buttons for routing system - visual navigation is in main header -->
     <ul class="nav nav-pills gap-2" role="tablist" id="toptablist" style="display: none !important;">
         <li class="nav-item" role="presentation" data-requiredpermission="comfy_dynamic_custom_workflows">
@@ -61,7 +61,7 @@
             <a class="nav-link translate" data-bs-toggle="tab" href="#server_tab" id="servertabbutton" aria-selected="false" tabindex="-1" role="tab">Server</a>
         </li>
     </ul>
-    <div class="tab-content tab-hundred mt-2">
+    <div class="tab-content tab-hundred">
         <div class="tab-pane tab-pane-vw" id="Simple" role="tabpanel">
             @await Html.PartialAsync("_Generate/SimpleTab.cshtml", pageModel)
         </div>

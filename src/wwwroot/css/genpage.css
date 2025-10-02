@@ -26,9 +26,9 @@ body {
     padding: 0;
 }
 
-/* Ensure main content area is visible */
+/* Ensure main content area is visible but not overly tall */
 main#main {
-    min-height: calc(100vh - 200px);
+    min-height: auto;
 }
 
 /* Ensure tab content is visible */
@@ -37,7 +37,7 @@ main#main {
 }
 
 .tab-pane {
-    min-height: 400px;
+    min-height: 200px;
 }
 
 /* Fix tab visibility issues */
@@ -50,9 +50,10 @@ main#main {
     display: block !important;
 }
 
-/* Ensure the first tab is visible by default */
-.tab-pane:first-of-type {
-    display: block;
+/* Ensure nested tab panes (inside the Generate tab) remain visible if active */
+.genpage-bottom-tab.show.active,
+.tab-pane.show.active .tab-pane.show.active {
+    display: block !important;
 }
 .modal-body {
     white-space: normal;

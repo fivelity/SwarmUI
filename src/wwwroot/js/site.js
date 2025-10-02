@@ -249,9 +249,13 @@ function setActiveMainNavByHash(hash) {
         '#Text2Image': 'main_nav_generate', 
         '#Simple': 'main_nav_simple',
         '#Comfy': 'main_nav_comfy',
+        '#comfyworkflow': 'main_nav_comfy',
         '#Utilities': 'main_nav_utilities',
+        '#utilities_tab': 'main_nav_utilities',
         '#Settings': 'main_nav_settings',
-        '#Server': 'main_nav_server'
+        '#user_tab': 'main_nav_settings',
+        '#Server': 'main_nav_server',
+        '#server_tab': 'main_nav_server'
     };
     
     // Remove active from all main nav links
@@ -268,11 +272,19 @@ function setActiveMainNavByHash(hash) {
     // Show/hide ComfyUI nav item based on usage
     const comfyNavItem = document.getElementById('main_nav_comfy_item');
     if (comfyNavItem) {
-        if (hash && hash.toLowerCase().includes('comfy')) {
+        if (hash && (hash.toLowerCase().includes('comfy') || hash === '#Comfy')) {
             comfyNavItem.style.display = '';
         } else {
             comfyNavItem.style.display = 'none';
         }
+    }
+}
+
+// Activate tab from hash - integrates with genpage routing system
+function activateTabFromHash(hash) {
+    // If applyWorkspaceRoute exists (on Text2Image page), use it
+    if (typeof applyWorkspaceRoute !== 'undefined') {
+        applyWorkspaceRoute(hash);
     }
 }
 
@@ -293,26 +305,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const mainNavLinks = document.querySelectorAll('#navbarNav .nav-link');
         mainNavLinks.forEach(link => {
             link.addEventListener('click', (e) => {
-                // Don't prevent default if it's an external link
+                // Don't prevent default if it's an external link (Account, Logout, etc.)
                 const href = link.getAttribute('href');
                 if (!href || !href.includes('#')) return;
                 
-                e.preventDefault();
+                // Allow the hash navigation to work naturally
+                // The hashchange event will handle the routing
                 
-                const targetHash = href.substring(href.indexOf('#'));
-                
-                // Update the hash - the routing system in genpage/main.js will handle showing the correct tab
-                window.location.hash = targetHash;
-                
-                // Update active states
+                // Update active states immediately for responsiveness
                 mainNavLinks.forEach(navLink => navLink.classList.remove('active'));
                 link.classList.add('active');
-                
-                // Show ComfyUI nav item if accessing Comfy
-                if (targetHash === '#Comfy') {
-                    const comfyNavItem = document.getElementById('main_nav_comfy_item');
-                    if (comfyNavItem) comfyNavItem.style.display = '';
-                }
             });
         });
         
