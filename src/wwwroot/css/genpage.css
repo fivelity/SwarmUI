@@ -50,10 +50,36 @@ main#main {
     display: block !important;
 }
 
-/* Ensure nested tab panes (inside the Generate tab) remain visible if active */
+/* Ensure nested tab panes (inside any tab) remain visible if active */
 .genpage-bottom-tab.show.active,
-.tab-pane.show.active .tab-pane.show.active {
+.tab-pane.show.active .tab-pane.show.active,
+.tab-pane .tab-pane.show.active {
     display: block !important;
+}
+
+/* Server tab and other top-level tabs need proper layout */
+#server_tab,
+#user_tab,
+#utilities_tab {
+    overflow: visible;
+    min-height: 400px;
+    padding: 1rem;
+}
+
+/* Nested tab content within server/user/utilities tabs */
+#server_tab > .tab-content,
+#user_tab > .tab-content,
+#utilities_tab > .tab-content {
+    display: block !important;
+    min-height: 400px;
+}
+
+/* Sub-navigation within tabs should be visible */
+.swarm-gen-tab-subnav {
+    display: flex !important;
+    flex-wrap: wrap;
+    gap: var(--space-2, 0.5rem);
+    margin-bottom: 1rem;
 }
 .modal-body {
     white-space: normal;
@@ -108,6 +134,27 @@ main#main {
     overflow-y: auto;
     overflow-x: hidden;
     padding: 0.5rem;
+    /* Ensure scrollbar is visible */
+    scrollbar-width: thin; /* Firefox */
+    scrollbar-color: var(--bs-border-color) transparent; /* Firefox */
+}
+
+/* Webkit scrollbar styling for Chrome/Safari/Edge */
+#main_inputs_area::-webkit-scrollbar {
+    width: 8px;
+}
+
+#main_inputs_area::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+#main_inputs_area::-webkit-scrollbar-thumb {
+    background-color: var(--bs-border-color);
+    border-radius: 4px;
+}
+
+#main_inputs_area::-webkit-scrollbar-thumb:hover {
+    background-color: var(--bs-secondary-color);
 }
 
 /* Ensure the filter stays at top and advanced checkbox at bottom */

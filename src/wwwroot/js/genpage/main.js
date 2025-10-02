@@ -700,6 +700,7 @@ function applyWorkspaceRoute(hash) {
             }, 1);
             return true;
         case 'settings':
+        case 'user':
             showPane('user_tab');
             setMainNavActive('main_nav_settings');
             click('usersettingstabbutton');
@@ -719,6 +720,13 @@ function applyWorkspaceRoute(hash) {
             setMainNavActive('main_nav_server');
             click('servertabbutton');
             updateSubNavigation('server');
+            // Ensure the first sub-tab is activated
+            setTimeout(() => {
+                const firstSubTab = document.querySelector('#servertablist .nav-link');
+                if (firstSubTab && !document.querySelector('#servertablist .nav-link.active')) {
+                    firstSubTab.click();
+                }
+            }, 10);
             return true;
         case 'comfy':
             // Try common comfy anchors injected by @WebServer.T2ITabHeader
