@@ -34,6 +34,7 @@ main#main {
 /* Generate page root container */
 .d-flex.flex-column.h-100 {
     min-height: calc(100vh - 120px);
+    height: 100vh;
 }
 
 /* Ensure tab content is visible */
@@ -208,12 +209,13 @@ main#main {
     object-position: top left;
 }
 #current_image_batch_wrapper {
-    min-height: 200px;
-    max-height: 300px;
+    min-height: 250px;
+    max-height: 400px;
     display: flex;
     flex-direction: column;
     flex-shrink: 0;
     overflow: hidden;
+    padding: 0.5rem;
 }
 
 .current_image_batch_core {
@@ -221,10 +223,14 @@ main#main {
     overflow-y: auto;
     height: auto;
     white-space: normal;
-    min-height: 150px;
-    max-height: 300px;
+    min-height: 200px;
+    max-height: 350px;
     padding: 0.25rem;
     flex-shrink: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    align-items: flex-start;
 }
 .current-image-extras-wrapper {
     min-width: 20rem;
@@ -931,9 +937,9 @@ main#main {
     flex-shrink: 0;
     display: block !important;
     visibility: visible !important;
-    min-height: 200px !important;
+    min-height: 250px !important;
     height: auto !important;
-    max-height: 35vh !important;
+    max-height: 40vh !important;
     overflow: visible !important;
 }
 
@@ -962,8 +968,8 @@ main#main {
 
 /* Bottom bar content area */
 #t2i_bottom_bar_content {
-    min-height: 200px;
-    max-height: calc(35vh);
+    min-height: 250px;
+    max-height: calc(40vh);
 }
 
 /* Bottom info bar styling */
