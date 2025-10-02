@@ -285,10 +285,15 @@ class GenTabLayout {
         this.leftSplitBarButton.innerHTML = leftShut ? '&#x21DB;' : '&#x21DA;';
         this.bottomSplitBarButton.innerHTML = bottomShut ? '&#x290A;' : '&#x290B;';
         let altHeight = this.altRegion.style.display == 'none' ? '0px' : `${this.altRegion.offsetHeight}px`;
-        if (this.bottomSectionBarPos != -1 || bottomShut) {
+        
+        // Override bottomShut to always show bottom bar (user can manually adjust if needed)
+        // This ensures Image History, Presets, Models, etc. are always visible
+        let effectiveBottomShut = false; // Force bottom bar to always be visible
+        
+        if (this.bottomSectionBarPos != -1 || effectiveBottomShut) {
             let bottomBarHeight = this.bottomInfoBar.offsetHeight;
             let addedHeight = this.isSmallWindow ? '0.4rem' : '2.8rem';
-            let fixed = bottomShut ? `(${rootTop}px + ${addedHeight} + ${bottomBarHeight}px)` : `${this.bottomSectionBarPos}px`;
+            let fixed = effectiveBottomShut ? `(${rootTop}px + ${addedHeight} + ${bottomBarHeight}px)` : `${this.bottomSectionBarPos}px`;
             this.leftSplitBar.style.height = `calc(100vh - ${fixed})`;
             this.rightSplitBar.style.height = `calc(100vh - ${fixed} - 5px)`;
             this.inputSidebar.style.height = `calc(100vh - ${fixed})`;
@@ -298,6 +303,8 @@ class GenTabLayout {
             this.currentImageBatch.style.height = `calc(100vh - ${fixed})`;
             this.topSection.style.height = `calc(100vh - ${fixed})`;
             this.bottomBar.style.height = `calc(${fixed} - 45px)`;
+            this.bottomBar.style.display = 'block'; // Always visible
+            this.bottomBar.style.visibility = 'visible'; // Always visible
         }
         else {
             this.leftSplitBar.style.height = 'calc(49vh)';
@@ -310,6 +317,8 @@ class GenTabLayout {
             this.topSection.style.height = '';
             let bottomBarHeight = this.bottomInfoBar.offsetHeight;
             this.bottomBar.style.height = `calc(49vh - 30px)`;
+            this.bottomBar.style.display = 'block'; // Always visible
+            this.bottomBar.style.visibility = 'visible'; // Always visible
         }
         if (imageEditor) {
             imageEditor.resize();
