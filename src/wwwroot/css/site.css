@@ -455,15 +455,21 @@ textarea, input, select {
     border-radius: 0.5rem;
     border: 1px solid rgba(var(--bs-primary-rgb), 0.6);
     color: rgba(var(--bs-primary-rgb), 0.6);
+    cursor: pointer;
+    display: inline-block;
+    user-select: none;
 }
 .auto-input-qbutton:hover {
     background-color: var(--bs-primary);
     color: var(--bs-light) !important;
 }
+.auto-input-qbutton:active {
+    transform: scale(0.95);
+}
 .sui-popover {
     background-color: var(--bs-tertiary-bg);
     color: var(--bs-body-color);
-    border: 1px solid gray;
+    border: 1px solid var(--bs-border-color);
     border-radius: 0.5rem;
     padding: 0.5rem;
     visibility: hidden;
@@ -471,6 +477,9 @@ textarea, input, select {
     position: fixed;
     left: 0;
     top: 0;
+    z-index: 1060;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    pointer-events: none;
     width: fit-content;
     z-index: 10000;
     transition: visibility 0s, opacity 0.3s linear;
@@ -483,6 +492,7 @@ textarea, input, select {
     visibility: visible;
     opacity: 1;
     transition: visibility 0s, opacity 0.3s linear;
+    pointer-events: auto;
 }
 .sui-popover-notransition {
     transition: none;
@@ -528,13 +538,16 @@ textarea, input, select {
     display: flex;
     max-width: calc(100% - 6px);
     padding-left: 0.5rem;
+    padding-right: 0.5rem;
     width: 100%;
     flex-wrap: wrap;
+    gap: 0.25rem;
 }
 .input-group-content > div {
     padding: 5px;
-    flex: 1 0 0;
-    min-width: 17rem;
+    flex: 1 1 100%;
+    min-width: min(17rem, 100%);
+    max-width: 100%;
  }
 .input-group-header {
     position: relative;

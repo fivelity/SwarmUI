@@ -94,6 +94,30 @@ main#main {
     display: none;
     visibility: hidden;
 }
+
+/* Main inputs area should be scrollable and not overflow */
+#main_inputs_area_wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+}
+
+#main_inputs_area {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 0.5rem;
+}
+
+/* Ensure the filter stays at top and advanced checkbox at bottom */
+.input_filter_container {
+    flex-shrink: 0;
+}
+
+.advanced_input_checkbox {
+    flex-shrink: 0;
+}
 .current_image {
     border: 1px solid var(--bs-border-color);
     width: 100%;
