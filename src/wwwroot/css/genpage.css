@@ -131,14 +131,16 @@ main#main {
     display: flex;
     flex-direction: column;
     height: 100%;
+    min-height: 0; /* Critical for flex scrolling in parent */
     overflow: hidden;
 }
 
 #main_inputs_area {
-    flex: 1;
+    flex: 1 1 auto;
     overflow-y: auto;
     overflow-x: hidden;
     padding: 0.5rem;
+    min-height: 0; /* Critical for flex scrolling */
     /* Ensure scrollbar is visible */
     scrollbar-width: thin; /* Firefox */
     scrollbar-color: var(--bs-border-color) transparent; /* Firefox */
@@ -165,10 +167,12 @@ main#main {
 /* Ensure the filter stays at top and advanced checkbox at bottom */
 .input_filter_container {
     flex-shrink: 0;
+    min-height: auto; /* Prevent flex shrinking issues */
 }
 
 .advanced_input_checkbox {
     flex-shrink: 0;
+    min-height: auto; /* Prevent flex shrinking issues */
 }
 .current_image {
     border: 1px solid var(--bs-border-color);
