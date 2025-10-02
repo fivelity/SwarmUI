@@ -5,7 +5,7 @@
     string doCheckForUpdates = Program.ServerSettings.Maintenance.CheckForUpdates ? "true" : "false";
 }
 @section Header {
-    <link rel="stylesheet" href="css/genpage.css?vary=@Utilities.VaryID" />
+    <link rel="stylesheet" href="~/css/genpage.css?vary=@Utilities.VaryID" />
 }
 
 @if (!Program.ServerSettings.IsInstalled)
@@ -42,8 +42,26 @@
 </script>
 
 <div class="container-fluid mt-2">
-    <!-- Navigation moved to main header in _Layout.cshtml -->
-    <div class="tab-content tab-hundred">
+    <!-- Hidden tab buttons for routing system - visual navigation is in main header -->
+    <ul class="nav nav-pills gap-2" role="tablist" id="toptablist" style="display: none !important;">
+        <li class="nav-item" role="presentation" data-requiredpermission="comfy_dynamic_custom_workflows">
+            <a class="nav-link translate" data-bs-toggle="tab" href="#Simple" id="simpletabbutton" aria-selected="false" tabindex="-1" role="tab">Simple</a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link active translate" data-bs-toggle="tab" href="#Text2Image" id="text2imagetabbutton" aria-selected="true" role="tab">Generate</a>
+        </li>
+        @WebServer.T2ITabHeader
+        <li class="nav-item" role="presentation">
+            <a class="nav-link translate" data-bs-toggle="tab" href="#utilities_tab" id="utilitiestabbutton" aria-selected="false" tabindex="-1" role="tab">Utilities</a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link translate" data-bs-toggle="tab" href="#user_tab" id="usersettingstabbutton" aria-selected="false" tabindex="-1" role="tab">User</a>
+        </li>
+        <li class="nav-item" role="presentation" data-requiredpermission="view_server_tab">
+            <a class="nav-link translate" data-bs-toggle="tab" href="#server_tab" id="servertabbutton" aria-selected="false" tabindex="-1" role="tab">Server</a>
+        </li>
+    </ul>
+    <div class="tab-content tab-hundred mt-2">
         <div class="tab-pane tab-pane-vw" id="Simple" role="tabpanel">
             @await Html.PartialAsync("_Generate/SimpleTab.cshtml", pageModel)
         </div>
