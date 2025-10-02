@@ -41,12 +41,6 @@ main#main {
 }
 
 /* Fix tab visibility issues */
-#toptablist {
-    display: flex !important;
-    flex-wrap: wrap;
-    visibility: visible !important;
-}
-
 /* Bootstrap tab overrides for proper display */
 .tab-pane {
     display: none;
@@ -76,7 +70,9 @@ main#main {
 }
 /* Sub-navigation within pages (in-content subnav) */
 .swarm-gen-tab-subnav {
-    display: block;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
 }
 .advanced_input_checkbox {
     cursor: pointer;

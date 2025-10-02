@@ -388,51 +388,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 const targetHash = href.substring(href.indexOf('#'));
                 
-                // Map main nav to tab button IDs
-                const tabMap = {
-                    '#Generate': 'text2imagetabbutton',
-                    '#Simple': 'simpletabbutton',
-                    '#Utilities': 'utilitiestabbutton', 
-                    '#Settings': 'usersettingstabbutton',
-                    '#Server': 'servertabbutton',
-                    '#Comfy': null // Special handling for ComfyUI if present
-                };
+                // Update the hash - the routing system in genpage/main.js will handle showing the correct tab
+                window.location.hash = targetHash;
                 
-                const tabButtonId = tabMap[targetHash];
+                // Update active states
+                mainNavLinks.forEach(navLink => navLink.classList.remove('active'));
+                link.classList.add('active');
                 
-                if (tabButtonId) {
-                    const tabButton = document.getElementById(tabButtonId);
-                    if (tabButton) {
-                        // Update the hash
-                        window.location.hash = targetHash;
-                        
-                        // Use Bootstrap's tab API to show the tab
-                        const tab = bootstrap.Tab.getOrCreateInstance(tabButton);
-                        tab.show();
-                        
-                        // Update active states
-                        mainNavLinks.forEach(navLink => navLink.classList.remove('active'));
-                        link.classList.add('active');
-                    }
-                } else if (targetHash === '#Comfy') {
-                    // Special handling for ComfyUI tab if it exists
-                    const comfyTab = document.querySelector('#toptablist a[href*="Comfy"]');
-                    if (comfyTab) {
-                        window.location.hash = targetHash;
-                        const tab = bootstrap.Tab.getOrCreateInstance(comfyTab);
-                        tab.show();
-                        
-                        // Show ComfyUI nav item
-                        const comfyNavItem = document.getElementById('main_nav_comfy_item');
-                        if (comfyNavItem) comfyNavItem.style.display = '';
-                        
-                        // Update active states
-                        mainNavLinks.forEach(navLink => navLink.classList.remove('active'));
-                        link.classList.add('active');
-                    }
-                } else {
-                    // For other cases, just update the hash
-                    window.location.hash = targetHash;
+                // Show ComfyUI nav item if accessing Comfy
+                if (targetHash === '#Comfy') {
+                    const comfyNavItem = document.getElementById('main_nav_comfy_item');
+                    if (comfyNavItem) comfyNavItem.style.display = '';
                 }
             });
         });
@@ -443,29 +409,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Initialize tab system visibility
         const initializeTabSystem = () => {
-            // Ensure the top tab list is always visible
-            const topTabList = document.getElementById('toptablist');
-            if (topTabList) {
-                topTabList.style.display = '';
-                topTabList.classList.remove('d-none');
-            }
-            
-            // Initialize Bootstrap tabs properly
-            const tabTriggers = document.querySelectorAll('#toptablist a[data-bs-toggle="tab"]');
-            tabTriggers.forEach(trigger => {
-                const tabTrigger = new bootstrap.Tab(trigger);
-                
-                trigger.addEventListener('shown.bs.tab', event => {
-                    // Update main nav active state when tab is shown
-                    const targetPane = document.querySelector(event.target.getAttribute('href'));
-                    if (targetPane) {
-                        updateMainNavForTab(targetPane.id);
-                        // Update sub-navigation bar
-                        setTimeout(updateSubNavBar, 50);
-                    }
-                });
-            });
-            
+            // Tab navigation is now handled by main header navigation
             // Ensure proper initial state for all tab panes
             const tabPanes = document.querySelectorAll('.tab-pane');
             tabPanes.forEach(pane => {
@@ -479,54 +423,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
             
-            // Set initial active tab based on hash or default
+            // Set initial active state
             const currentHash = window.location.hash || '#Generate';
-            activateTabFromHash(currentHash);
-        };
-        
-        // Helper function to update main nav based on active tab
-        const updateMainNavForTab = (tabId) => {
-            const map = {
-                'Text2Image': 'main_nav_generate',
-                'Simple': 'main_nav_simple',
-                'utilities_tab': 'main_nav_utilities',
-                'user_tab': 'main_nav_settings',
-                'server_tab': 'main_nav_server'
-            };
-            
-            // Remove active from all main nav links
-            document.querySelectorAll('#navbarNav .nav-link').forEach(link => {
-                link.classList.remove('active');
-            });
-            
-            // Add active to the corresponding main nav
-            const navId = map[tabId];
-            if (navId) {
-                const navLink = document.getElementById(navId);
-                if (navLink) navLink.classList.add('active');
-            }
-        };
-        
-        // Helper function to activate a tab based on hash
-        const activateTabFromHash = (hash) => {
-            const cleanHash = hash.replace('#', '');
-            const tabMap = {
-                'Generate': 'text2imagetabbutton',
-                'Simple': 'simpletabbutton',
-                'Utilities': 'utilitiestabbutton',
-                'Settings': 'usersettingstabbutton',
-                'Server': 'servertabbutton'
-            };
-            
-            const tabButtonId = tabMap[cleanHash];
-            if (tabButtonId) {
-                const tabButton = document.getElementById(tabButtonId);
-                if (tabButton) {
-                    // Use Bootstrap's tab API to show the tab
-                    const tab = bootstrap.Tab.getOrCreateInstance(tabButton);
-                    tab.show();
-                }
-            }
+            setActiveMainNavByHash(currentHash);
         };
         
         // Initialize the tab system
