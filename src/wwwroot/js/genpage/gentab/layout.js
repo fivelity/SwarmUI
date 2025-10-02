@@ -151,11 +151,19 @@ class GenTabLayout {
         
         // Ensure sidebars are visible by default (force show if they were accidentally hidden)
         // This helps after layout changes or updates
-        if (!this.isSmallWindow && !localStorage.getItem('layout_sidebars_manually_set')) {
-            this.leftShut = false;
-            this.bottomShut = false;
-            localStorage.setItem('barspot_leftShut', 'false');
-            localStorage.setItem('barspot_midForceToBottom', 'false');
+        // ALWAYS show bottom bar on desktop by default (user can manually hide if desired)
+        if (!this.isSmallWindow) {
+            if (!localStorage.getItem('layout_sidebars_manually_set')) {
+                this.leftShut = false;
+                this.bottomShut = false;
+                localStorage.setItem('barspot_leftShut', 'false');
+                localStorage.setItem('barspot_midForceToBottom', 'false');
+            }
+            // Force bottom bar visible if it somehow got shut
+            if (this.bottomShut && !localStorage.getItem('user_closed_bottom_bar')) {
+                this.bottomShut = false;
+                localStorage.setItem('barspot_midForceToBottom', 'false');
+            }
         }
     }
 
@@ -182,6 +190,12 @@ class GenTabLayout {
         this.bottomShut = val;
         localStorage.setItem('barspot_midForceToBottom', `${this.bottomShut}`);
         localStorage.setItem('layout_sidebars_manually_set', 'true');
+        // Track if user manually closed the bottom bar
+        if (val) {
+            localStorage.setItem('user_closed_bottom_bar', 'true');
+        } else {
+            localStorage.removeItem('user_closed_bottom_bar');
+        }
     }
 
     /** Sets whether the left section should be shut (does not trigger rerendering). */
