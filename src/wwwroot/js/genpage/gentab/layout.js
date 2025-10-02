@@ -302,7 +302,11 @@ class GenTabLayout {
             this.editorSizebar.style.height = `calc(100vh - ${fixed} - ${altHeight})`;
             this.currentImageBatch.style.height = `calc(100vh - ${fixed})`;
             this.topSection.style.height = `calc(100vh - ${fixed})`;
-            this.bottomBar.style.height = `calc(${fixed} - 45px)`;
+            // Don't set a bad height calculation
+            // this.bottomBar.style.height = `calc(${fixed} - 45px)`;
+            this.bottomBar.style.minHeight = '400px';
+            this.bottomBar.style.maxHeight = '50vh';
+            this.bottomBar.style.height = 'auto';
             this.bottomBar.style.display = 'block'; // Always visible
             this.bottomBar.style.visibility = 'visible'; // Always visible
         }
@@ -316,7 +320,10 @@ class GenTabLayout {
             this.currentImageBatch.style.height = '';
             this.topSection.style.height = '';
             let bottomBarHeight = this.bottomInfoBar.offsetHeight;
-            this.bottomBar.style.height = `calc(49vh - 30px)`;
+            // Use a safe height calculation
+            this.bottomBar.style.minHeight = '400px';
+            this.bottomBar.style.maxHeight = '50vh';
+            this.bottomBar.style.height = 'auto';
             this.bottomBar.style.display = 'block'; // Always visible
             this.bottomBar.style.visibility = 'visible'; // Always visible
         }

@@ -1062,7 +1062,10 @@ let modal = new bootstrap.Modal(getRequiredElementById('sam2_installer'));
             bottomBar.style.display = 'block';
             bottomBar.style.visibility = 'visible';
             bottomBar.style.minHeight = '400px';
-            bottomBar.style.height = 'auto'; // Let it size naturally
+            bottomBar.style.maxHeight = '50vh';
+            // Remove the problematic calc height and use a fixed good value
+            bottomBar.style.height = ''; // Clear the bad calc
+            bottomBar.style.height = 'auto'; // Let it size naturally with min-height
         }
     }
     

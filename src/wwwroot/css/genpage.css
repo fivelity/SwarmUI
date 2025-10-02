@@ -31,6 +31,11 @@ main#main {
     min-height: auto;
 }
 
+/* Generate page root container */
+.d-flex.flex-column.h-100 {
+    min-height: calc(100vh - 120px);
+}
+
 /* Ensure tab content is visible */
 .tab-content {
     display: block !important;
@@ -896,7 +901,10 @@ main#main {
     flex-shrink: 0;
     display: block !important;
     visibility: visible !important;
-    min-height: 400px;
+    min-height: 400px !important;
+    height: auto !important;
+    max-height: 50vh !important;
+    overflow: visible !important;
 }
 
 /* Bottom bar tabs and content styling */
