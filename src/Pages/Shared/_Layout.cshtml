@@ -5,7 +5,7 @@
         themeId = themeCookie;
     }
     WebServer.ThemeData theme = Program.Web.RegisteredThemes[themeId];
-    string bsUrl = "~/css/bootstrap.min.css";
+    string bsUrl = Url.Content("~/css/bootstrap.min.css");
 }
 <!DOCTYPE html>
 <html lang="en" data-bs-theme="@(theme.IsDark ? "dark" : "light")" data-theme="@themeId">

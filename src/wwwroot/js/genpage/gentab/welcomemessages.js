@@ -13,9 +13,14 @@ function resetWelcomeMessage(override = null) {
     automaticWelcomeMessage(override);
 }
 
-let extraWelcomeDiv = getRequiredElementById('extra_welcome_message');
-let extraWelcomeHtml = extraWelcomeDiv.innerHTML.trim();
-extraWelcomeDiv.remove();
+// Guard against duplicate execution
+if (typeof window.welcomemessagesLoaded === 'undefined') {
+    window.welcomemessagesLoaded = true;
+    
+    let extraWelcomeDiv = getRequiredElementById('extra_welcome_message');
+    let extraWelcomeHtml = extraWelcomeDiv.innerHTML.trim();
+    extraWelcomeDiv.remove();
+}
 
 /** (Only if there is no pre-existing welcome message and the current_image area is empty) automatically chooses a welcome message to display and applies it. */
 function automaticWelcomeMessage(override = null) {

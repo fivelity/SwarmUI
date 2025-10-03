@@ -53,10 +53,11 @@ class ThemeSwitcher {
      */
     applyTheme(themeId) {
         // Get theme data from the server (this would need to be available via API)
-        const theme = this.getThemeData(themeId);
+        let theme = this.getThemeData(themeId);
         if (!theme) {
             console.warn(`Theme ${themeId} not found, falling back to modern_dark`);
             themeId = 'modern_dark';
+            theme = this.getThemeData(themeId);
         }
 
         // Update HTML attributes
@@ -90,9 +91,18 @@ class ThemeSwitcher {
             'midnight_dystopia': { isDark: true, name: 'Midnight Dystopia' },
             'sentinel': { isDark: true, name: 'Sentinel' },
             'solarized': { isDark: false, name: 'Solarized Light' },
-            'eyesear_white': { isDark: false, name: 'Eyesear White' }
+            'eyesear_white': { isDark: false, name: 'Eyesear White' },
+            // Legacy themes
+            'dark_dreams': { isDark: true, name: 'Dark Dreams (Legacy)' },
+            'gravity_blue': { isDark: true, name: 'Gravity Blue (Legacy)' },
+            'cyber_swarm': { isDark: true, name: 'Cyber Swarm (Legacy)' },
+            'punked': { isDark: true, name: 'Punked (Legacy)' },
+            'swarmpunk': { isDark: true, name: 'Swarm Punk' },
+            'beweish': { isDark: true, name: 'Beweish' },
+            'custom-theme': { isDark: true, name: 'Synthwave' },
+            'terminal-shock': { isDark: true, name: 'Terminal Shock' }
         };
-        return themes[themeId];
+        return themes[themeId] || null;
     }
 
     /**
@@ -166,7 +176,16 @@ class ThemeSwitcher {
             { id: 'midnight_dystopia', name: 'Midnight Dystopia', isDark: true },
             { id: 'sentinel', name: 'Sentinel', isDark: true },
             { id: 'solarized', name: 'Solarized Light', isDark: false },
-            { id: 'eyesear_white', name: 'Eyesear White', isDark: false }
+            { id: 'eyesear_white', name: 'Eyesear White', isDark: false },
+            // Legacy themes
+            { id: 'dark_dreams', name: 'Dark Dreams (Legacy)', isDark: true },
+            { id: 'gravity_blue', name: 'Gravity Blue (Legacy)', isDark: true },
+            { id: 'cyber_swarm', name: 'Cyber Swarm (Legacy)', isDark: true },
+            { id: 'punked', name: 'Punked (Legacy)', isDark: true },
+            { id: 'swarmpunk', name: 'Swarm Punk', isDark: true },
+            { id: 'beweish', name: 'Beweish', isDark: true },
+            { id: 'custom-theme', name: 'Synthwave', isDark: true },
+            { id: 'terminal-shock', name: 'Terminal Shock', isDark: true }
         ];
     }
 
