@@ -63,6 +63,12 @@ class ThemeSwitcher {
         // Update HTML attributes
         document.documentElement.setAttribute('data-bs-theme', theme.isDark ? 'dark' : 'light');
         document.documentElement.setAttribute('data-theme', themeId);
+        
+        // Force a CSS refresh by toggling a class
+        document.documentElement.classList.add('theme-refresh');
+        setTimeout(() => {
+            document.documentElement.classList.remove('theme-refresh');
+        }, 10);
 
         // Update cookie
         this.setCookie('sui_theme_id', themeId);
@@ -159,6 +165,11 @@ class ThemeSwitcher {
             newTheme = currentTheme.replace('_light', '_dark');
         } else {
             // For themes without _dark/_light suffix, toggle the base theme
+            newTheme = isDark ? 'modern_light' : 'modern_dark';
+        }
+
+        // Check if the new theme exists, if not fall back to modern_dark/modern_light
+        if (!this.getThemeData(newTheme)) {
             newTheme = isDark ? 'modern_light' : 'modern_dark';
         }
 

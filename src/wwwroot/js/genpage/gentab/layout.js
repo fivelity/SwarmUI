@@ -329,7 +329,10 @@ class GenTabLayout {
         if (imageEditor) {
             imageEditor.resize();
         }
-        alignImageDataFormat();
+        // Make sure alignImageDataFormat is available
+        if (typeof alignImageDataFormat === 'function') {
+            alignImageDataFormat();
+        }
         for (let collection of this.tabCollections) {
             collection.style.display = [...collection.querySelectorAll('.nav-link')].length > 1 ? '' : 'none';
         }

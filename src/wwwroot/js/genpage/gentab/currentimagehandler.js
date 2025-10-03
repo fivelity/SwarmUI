@@ -645,7 +645,8 @@ function setCurrentImage(src, metadata = '', batchId = '', previewGrow = false, 
         image.src = src;
         return;
     }
-    let curImg = getRequiredElementById('current_image');
+    // Reuse the existing curImg variable instead of redeclaring it
+    curImg = getRequiredElementById('current_image');
     if (isPlaceholder) {
         curImg.classList.add('current_image_placeholder');
     }

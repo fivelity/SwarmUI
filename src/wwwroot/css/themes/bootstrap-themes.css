@@ -1,6 +1,11 @@
 /* Bootstrap 5.3.8 Enhanced Theme System */
 /* This file provides CSS custom property overrides for multiple dark/light themes */
 
+/* Force theme refresh */
+.theme-refresh {
+  transition: none !important;
+}
+
 /* ========================================
    DARK THEMES
    ======================================== */
@@ -8,6 +13,9 @@
 /* Modern Dark - Default Bootstrap dark theme */
 [data-bs-theme="dark"][data-theme="modern_dark"] {
   /* Uses Bootstrap's default dark theme variables */
+  --bs-body-bg: #212529;
+  --bs-body-color: #dee2e6;
+  --bs-emphasis-color: #fff;
 }
 
 /* Cyber Noir - Dark theme with cyberpunk colors */
@@ -88,6 +96,9 @@
 /* Modern Light - Default Bootstrap light theme */
 [data-bs-theme="light"][data-theme="modern_light"] {
   /* Uses Bootstrap's default light theme variables */
+  --bs-body-bg: #ffffff;
+  --bs-body-color: #212529;
+  --bs-emphasis-color: #000;
 }
 
 /* Solarized Light - Light theme with solarized colors */

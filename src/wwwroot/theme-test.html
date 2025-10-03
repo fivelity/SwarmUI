@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark" data-theme="modern_dark">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SwarmUI Theme Test</title>
+    <link rel="stylesheet" id="bs_theme_header" href="/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" id="sitecssheader" href="/css/main.css" />
+    <link rel="stylesheet" id="themecssheader" href="/css/theme.css" />
+    <link class="theme_sheet_header" rel="stylesheet" href="/css/themes/bootstrap-themes.css" />
+    <link id="favicon" rel="shortcut icon" href="/favicon.ico" />
+    <script src="/js/util.js"></script>
+    <script src="/js/translator.js"></script>
+    <style>
+        .component-example {
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border: 1px solid var(--bs-border-color);
+            border-radius: var(--bs-border-radius);
+        }
+        .component-title {
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg bg-body-tertiary border-bottom navbar-dark">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="#">
+                    <img src="/favicon.ico" alt="SwarmUI Logo" width="24" height="24" class="d-inline-block align-text-top">
+                    SwarmUI Theme Test
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Features</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Settings</a>
+                        </li>
+                    </ul>
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="btn-group" role="group" aria-label="Theme toggles">
+                            <button id="theme_toggle_button" class="btn btn-outline-secondary btn-sm" type="button" title="Toggle theme">
+                                <i class="bi bi-moon" id="theme_toggle_icon"></i>
+                            </button>
+                        </div>
+                        <div class="dropdown">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-person-circle"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="#">Account</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="#">Logout</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <main id="main" role="main" class="container-fluid mt-4">
+        <div class="row">
+            <div class="col-12">
+                <h1>SwarmUI Theme Test</h1>
+                <p class="lead">This page tests various Bootstrap components with the SwarmUI theme system.</p>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-12">
+                <h2>Theme Selector</h2>
+                <div class="mb-3">
+                    <label for="theme-selector" class="form-label">Select Theme</label>
+                    <select id="theme-selector" class="form-select" style="max-width: 300px;">
+                        <!-- Populated by JavaScript -->
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="component-example">
+                    <div class="component-title">Buttons</div>
+                    <button type="button" class="btn btn-primary">Primary</button>
+                    <button type="button" class="btn btn-secondary">Secondary</button>
+                    <button type="button" class="btn btn-success">Success</button>
+                    <button type="button" class="btn btn-danger">Danger</button>
+                    <button type="button" class="btn btn-warning">Warning</button>
+                    <button type="button" class="btn btn-info">Info</button>
+                    <button type="button" class="btn btn-light">Light</button>
+                    <button type="button" class="btn btn-dark">Dark</button>
+                </div>
+                
+                <div class="component-example">
+                    <div class="component-title">Outline Buttons</div>
+                    <button type="button" class="btn btn-outline-primary">Primary</button>
+                    <button type="button" class="btn btn-outline-secondary">Secondary</button>
+                    <button type="button" class="btn btn-outline-success">Success</button>
+                    <button type="button" class="btn btn-outline-danger">Danger</button>
+                </div>
+                
+                <div class="component-example">
+                    <div class="component-title">Alerts</div>
+                    <div class="alert alert-primary" role="alert">Primary alert</div>
+                    <div class="alert alert-secondary" role="alert">Secondary alert</div>
+                    <div class="alert alert-success" role="alert">Success alert</div>
+                    <div class="alert alert-danger" role="alert">Danger alert</div>
+                </div>
+                
+                <div class="component-example">
+                    <div class="component-title">Cards</div>
+                    <div class="card">
+                        <div class="card-header">Card Header</div>
+                        <div class="card-body">
+                            <h5 class="card-title">Card Title</h5>
+                            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                            <a href="#" class="btn btn-primary">Go somewhere</a>
+                        </div>
+                        <div class="card-footer text-muted">Card Footer</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="component-example">
+                    <div class="component-title">Forms</div>
+                    <div class="mb-3">
+                        <label for="exampleFormControlInput1" class="form-label">Email address</label>
+                        <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="name@example.com">
+                    </div>
+                    <div class="mb-3">
+                        <label for="exampleFormControlTextarea1" class="form-label">Example textarea</label>
+                        <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                        <label class="form-check-label" for="exampleCheck1">Check me out</label>
+                    </div>
+                </div>
+                
+                <div class="component-example">
+                    <div class="component-title">Badges</div>
+                    <span class="badge bg-primary">Primary</span>
+                    <span class="badge bg-secondary">Secondary</span>
+                    <span class="badge bg-success">Success</span>
+                    <span class="badge bg-danger">Danger</span>
+                    <span class="badge bg-warning text-dark">Warning</span>
+                    <span class="badge bg-info text-dark">Info</span>
+                    <span class="badge bg-light text-dark">Light</span>
+                    <span class="badge bg-dark">Dark</span>
+                </div>
+                
+                <div class="component-example">
+                    <div class="component-title">Progress</div>
+                    <div class="progress mb-2">
+                        <div class="progress-bar" role="progressbar" style="width: 25%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">25%</div>
+                    </div>
+                    <div class="progress mb-2">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: 40%;" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100">40%</div>
+                    </div>
+                    <div class="progress">
+                        <div class="progress-bar bg-info" role="progressbar" style="width: 60%;" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100">60%</div>
+                    </div>
+                </div>
+                
+                <div class="component-example">
+                    <div class="component-title">Modal</div>
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                        Launch demo modal
+                    </button>
+                    
+                    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    This is a test modal to verify theme styling.
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    <button type="button" class="btn btn-primary">Save changes</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <footer class="footer mt-5 py-3 bg-light">
+        <div class="container">
+            <span class="text-muted">SwarmUI Theme Test</span>
+        </div>
+    </footer>
+    
+    <script src="/js/lib/bootstrap.bundle.min.js"></script>
+    <script src="/js/theme-switcher.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize theme switcher
+            window.themeSwitcher = new ThemeSwitcher();
+            
+            // Populate theme selector
+            const themeSelector = document.getElementById('theme-selector');
+            const themes = window.themeSwitcher.getAvailableThemes();
+            
+            themes.forEach(theme => {
+                const option = document.createElement('option');
+                option.value = theme.id;
+                option.textContent = theme.name;
+                if (theme.id === window.themeSwitcher.currentTheme) {
+                    option.selected = true;
+                }
+                themeSelector.appendChild(option);
+            });
+            
+            // Add event listener to theme selector
+            themeSelector.addEventListener('change', function() {
+                window.themeSwitcher.applyTheme(this.value);
+            });
+            
+            // Add event listener to theme toggle button
+            document.getElementById('theme_toggle_button').addEventListener('click', function() {
+                window.themeSwitcher.toggleLightDark();
+                updateThemeToggleIcon();
+            });
+            
+            // Update theme toggle icon based on current theme
+            function updateThemeToggleIcon() {
+                const isDark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
+                const icon = document.getElementById('theme_toggle_icon');
+                
+                if (isDark) {
+                    icon.className = 'bi bi-moon';
+                } else {
+                    icon.className = 'bi bi-sun';
+                }
+            }
+            
+            // Initialize icon
+            updateThemeToggleIcon();
+        });
+    </script>
+</body>
+</html>
