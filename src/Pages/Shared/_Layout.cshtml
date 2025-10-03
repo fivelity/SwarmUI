@@ -34,6 +34,50 @@
     <div class="center-toast toast-error-box" id="center_toast">
         @WebUtil.Toast("error_toast_box", "Error", "", "error_toast_content", "", false)
     </div>
+    <!-- Main Navigation Header -->
+    <nav class="navbar navbar-expand-lg bg-body-tertiary border-bottom">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/Text2Image">
+                <img src="~/imgs/logo_icon.svg" alt="SwarmUI Logo" width="30" height="24" class="d-inline-block align-text-top">
+                SwarmUI
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link translate" id="main_nav_generate" href="/Text2Image#Generate">Generate</a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link translate" id="main_nav_simple" href="/Text2Image#Simple">Simple</a>
+                    </li>
+                    <li class="nav-item" role="presentation" id="main_nav_comfy_item" style="display:none;">
+                        <a class="nav-link translate" id="main_nav_comfy" href="/Text2Image#Comfy">Comfy</a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link translate" id="main_nav_utilities" href="/Text2Image#Utilities">Utilities</a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link translate" id="main_nav_settings" href="/Text2Image#Settings">User</a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link translate" id="main_nav_server" href="/Text2Image#Server">Server</a>
+                    </li>
+                </ul>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="navbar-text small">@Program.ServerSettings.UserAuthorization.InstanceTitle</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <!-- Sub-navigation Bar (optional, currently disabled via JS) -->
+    <div class="bg-body-tertiary border-bottom" id="subnav_bar" style="display:none;">
+        <div class="container-fluid py-1">
+            <ul class="nav nav-pills nav-sm" id="subnav_list"></ul>
+            <div class="ms-auto small text-secondary" id="subnav_hint"></div>
+        </div>
+    </div>
     @RenderBody()
     <script src="~/js/lib/bootstrap.bundle.min.js"></script>
     <script src="~/js/theme-switcher.js?vary=@Utilities.VaryID"></script>
