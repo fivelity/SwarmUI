@@ -18,6 +18,7 @@ Properties/
 tmp/
 /src/Extensions
 /dlbackend
+.REF_src/
 *.debug
 custom-launch-docker.sh
 dotnet-install.sh
