@@ -119,15 +119,15 @@ public class WebServer
         RegisterTheme(new("solarized", "Solarized Light (Bootstrap 5.3.8)", ["css/themes/bootstrap-themes.css"], false));
         RegisterTheme(new("eyesear_white", "Eyesear White (Bootstrap 5.3.8)", ["css/themes/bootstrap-themes.css"], false));
         
-        // Legacy Themes (keep for backward compatibility)
-        RegisterTheme(new("dark_dreams", "Dark Dreams (Legacy)", ["css/themes/dark_dreams.css"], true));
-        RegisterTheme(new("gravity_blue", "Gravity Blue (Legacy)", ["css/themes/gravity_blue.css"], true));
-        RegisterTheme(new("cyber_swarm", "Cyber Swarm (Legacy)", ["css/themes/cyber_swarm.css"], true));
-        RegisterTheme(new("punked", "Punked (Legacy)", ["css/themes/punked.css"], true));
-        RegisterTheme(new("swarmpunk", "Swarm Punk", ["css/themes/modern.css", "css/themes/swarmpunk.css"], true));
-        RegisterTheme(new("beweish", "Beweish", ["css/themes/modern.css", "css/themes/beweish.css"], true));
-        RegisterTheme(new("custom-theme", "Synthwave", ["css/themes/custom-theme.css"], true));
-        RegisterTheme(new("terminal-shock", "Terminal Shock", ["css/themes/terminal-shock.css"], true));
+        // Legacy Themes (keep for backward compatibility - commented out if CSS files don't exist)
+        // RegisterTheme(new("dark_dreams", "Dark Dreams (Legacy)", ["css/themes/dark_dreams.css"], true));
+        // RegisterTheme(new("gravity_blue", "Gravity Blue (Legacy)", ["css/themes/gravity_blue.css"], true));
+        // RegisterTheme(new("cyber_swarm", "Cyber Swarm (Legacy)", ["css/themes/cyber_swarm.css"], true));
+        // RegisterTheme(new("punked", "Punked (Legacy)", ["css/themes/punked.css"], true));
+        // RegisterTheme(new("swarmpunk", "Swarm Punk", ["css/themes/modern.css", "css/themes/swarmpunk.css"], true));
+        // RegisterTheme(new("beweish", "Beweish", ["css/themes/modern.css", "css/themes/beweish.css"], true));
+        // RegisterTheme(new("custom-theme", "Synthwave", ["css/themes/custom-theme.css"], true));
+        // RegisterTheme(new("terminal-shock", "Terminal Shock", ["css/themes/terminal-shock.css"], true));
     }
 
     /// <summary>Main prep, called by <see cref="Program"/>, generally should not be touched externally.</summary>

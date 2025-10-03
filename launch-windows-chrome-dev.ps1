@@ -1,10 +1,10 @@
 # Ensure correct local path.
 $thisPath = Split-Path $MyInvocation.MyCommand.Path -Parent
-cd $thisPath
+Set-Location $thisPath
 
 # Visual Studio likes to generate invalid files here for some reason, so autonuke it
 if (Test-Path "src/Properties/launchSettings.json") {
-    rm src/Properties/launchSettings.json
+    Remove-Item src/Properties/launchSettings.json
 }
 
 # Nuke build files to ensure our build is fresh and won't skip past errors
@@ -28,8 +28,13 @@ if (-not (Test-Path ".\src\bin\live_release\SwarmUI.exe")) {
 $Env:ASPNETCORE_ENVIRONMENT = "Development"
 $Env:ASPNETCORE_URLS = "http://*:7801"
 
-# Actual runner.
-Start-Process -FilePath "powershell.exe" -ArgumentList "-NoExit", "-Command", ".\src\bin\live_release\SwarmUI.exe --environment dev @args"
+# Actual runner - Build the command with arguments
+$swarmArgs = "--environment dev"
+if ($args.Count -gt 0) {
+    $swarmArgs = "--environment dev " + ($args -join " ")
+}
+$command = "cd '$thisPath'; .\src\bin\live_release\SwarmUI.exe $swarmArgs"
+Start-Process -FilePath "powershell.exe" -ArgumentList "-NoExit", "-Command", $command
 
 # Wait for the server to be ready
 Write-Host "Waiting for SwarmUI to start..."
@@ -57,11 +62,11 @@ else {
 Write-Host "Main script is now waiting for SwarmUI process to close..."
 $process = Get-Process -Name "SwarmUI" -ErrorAction SilentlyContinue
 if ($process) {
-    $exitCode = Wait-Process -Id $process.Id -PassThru
-    Write-Host "SwarmUI exited with code $exitCode"
+    $processResult = Wait-Process -Id $process.Id -PassThru
+    Write-Host "SwarmUI exited with code $($processResult.ExitCode)"
     # Exit code 42 means restart, anything else = don't.
-    if ($exitCode -eq 42) {
-        .\launch-windows-chrome-dev.ps1 @args
+    if ($processResult.ExitCode -eq 42) {
+        & "$PSCommandPath" @args
     }
 }
 else {

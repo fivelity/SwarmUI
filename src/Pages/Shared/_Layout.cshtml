@@ -34,11 +34,14 @@
     <div class="center-toast toast-error-box" id="center_toast">
         @WebUtil.Toast("error_toast_box", "Error", "", "error_toast_content", "", false)
     </div>
+    <div class="center-toast toast-success-box" id="center_toast_success" style="top: 80px;">
+        @WebUtil.Toast("success_toast_box", "Success", "", "success_toast_content", "", false)
+    </div>
     <!-- Main Navigation Header -->
     <nav class="navbar navbar-expand-lg bg-body-tertiary border-bottom">
         <div class="container-fluid">
             <a class="navbar-brand" href="/Text2Image">
-                <img src="~/imgs/logo_icon.svg" alt="SwarmUI Logo" width="30" height="24" class="d-inline-block align-text-top">
+                <i class="bi bi-lightning-charge-fill"></i>
                 SwarmUI
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
