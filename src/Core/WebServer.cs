@@ -110,14 +110,20 @@ public class WebServer
     public void PreInit()
     {
         RegisteredThemes.Clear();
-        RegisterTheme(new("modern_dark", "Modern Dark", ["css/themes/modern.css", "css/themes/modern_dark.css"], true));
-        RegisterTheme(new("modern_light", "Modern Light", ["css/themes/modern.css", "css/themes/modern_light.css"], false));
-        RegisterTheme(new("solarized", "Solarized Light", ["css/themes/modern.css", "css/themes/solarized.css"], false));
+        // Bootstrap 5.3.8 Enhanced Themes
+        RegisterTheme(new("modern_dark", "Modern Dark (Bootstrap 5.3.8)", ["css/themes/bootstrap-themes.css"], true));
+        RegisterTheme(new("modern_light", "Modern Light (Bootstrap 5.3.8)", ["css/themes/bootstrap-themes.css"], false));
+        RegisterTheme(new("cyber_noir", "Cyber Noir (Bootstrap 5.3.8)", ["css/themes/bootstrap-themes.css"], true));
+        RegisterTheme(new("midnight_dystopia", "Midnight Dystopia (Bootstrap 5.3.8)", ["css/themes/bootstrap-themes.css"], true));
+        RegisterTheme(new("sentinel", "Sentinel (Bootstrap 5.3.8)", ["css/themes/bootstrap-themes.css"], true));
+        RegisterTheme(new("solarized", "Solarized Light (Bootstrap 5.3.8)", ["css/themes/bootstrap-themes.css"], false));
+        RegisterTheme(new("eyesear_white", "Eyesear White (Bootstrap 5.3.8)", ["css/themes/bootstrap-themes.css"], false));
+        
+        // Legacy Themes (keep for backward compatibility)
         RegisterTheme(new("dark_dreams", "Dark Dreams (Legacy)", ["css/themes/dark_dreams.css"], true));
         RegisterTheme(new("gravity_blue", "Gravity Blue (Legacy)", ["css/themes/gravity_blue.css"], true));
         RegisterTheme(new("cyber_swarm", "Cyber Swarm (Legacy)", ["css/themes/cyber_swarm.css"], true));
         RegisterTheme(new("punked", "Punked (Legacy)", ["css/themes/punked.css"], true));
-        RegisterTheme(new("eyesear_white", "Eyesear White (Legacy)", ["css/themes/eyesear_white.css"], false));
         RegisterTheme(new("swarmpunk", "Swarm Punk", ["css/themes/modern.css", "css/themes/swarmpunk.css"], true));
         RegisterTheme(new("beweish", "Beweish", ["css/themes/modern.css", "css/themes/beweish.css"], true));
         RegisterTheme(new("custom-theme", "Synthwave", ["css/themes/custom-theme.css"], true));

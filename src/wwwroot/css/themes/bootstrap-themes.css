@@ -1,0 +1,200 @@
+/* Bootstrap 5.3.8 Enhanced Theme System */
+/* This file provides CSS custom property overrides for multiple dark/light themes */
+
+/* ========================================
+   DARK THEMES
+   ======================================== */
+
+/* Modern Dark - Default Bootstrap dark theme */
+[data-bs-theme="dark"][data-theme="modern_dark"] {
+  /* Uses Bootstrap's default dark theme variables */
+}
+
+/* Cyber Noir - Dark theme with cyberpunk colors */
+[data-bs-theme="dark"][data-theme="cyber_noir"] {
+  --bs-primary: #00ff41;
+  --bs-secondary: #ff0080;
+  --bs-success: #00ff41;
+  --bs-info: #00ffff;
+  --bs-warning: #ffff00;
+  --bs-danger: #ff0040;
+  --bs-light: #0a0a0a;
+  --bs-dark: #00ff41;
+  --bs-body-bg: #0a0a0a;
+  --bs-body-color: #00ff41;
+  --bs-emphasis-color: #ffffff;
+  --bs-secondary-color: #00ff41;
+  --bs-tertiary-color: #ff0080;
+  --bs-border-color: #00ff41;
+  --bs-border-color-translucent: rgba(0, 255, 65, 0.15);
+  --bs-heading-color: #00ff41;
+  --bs-link-color: #00ffff;
+  --bs-link-hover-color: #00ff41;
+  --bs-code-color: #ff0080;
+  --bs-highlight-bg: #00ff41;
+  --bs-highlight-color: #0a0a0a;
+}
+
+/* Midnight Dystopia - Dark theme with purple/blue tones */
+[data-bs-theme="dark"][data-theme="midnight_dystopia"] {
+  --bs-primary: #8b5cf6;
+  --bs-secondary: #06b6d4;
+  --bs-success: #10b981;
+  --bs-info: #06b6d4;
+  --bs-warning: #f59e0b;
+  --bs-danger: #ef4444;
+  --bs-body-bg: #0f0f23;
+  --bs-body-color: #e5e7eb;
+  --bs-emphasis-color: #ffffff;
+  --bs-secondary-color: #9ca3af;
+  --bs-tertiary-color: #6b7280;
+  --bs-border-color: #374151;
+  --bs-border-color-translucent: rgba(55, 65, 81, 0.15);
+  --bs-heading-color: #ffffff;
+  --bs-link-color: #8b5cf6;
+  --bs-link-hover-color: #a78bfa;
+  --bs-code-color: #f59e0b;
+  --bs-highlight-bg: #8b5cf6;
+  --bs-highlight-color: #0f0f23;
+}
+
+/* Sentinel - Dark theme with blue/gray tones */
+[data-bs-theme="dark"][data-theme="sentinel"] {
+  --bs-primary: #3b82f6;
+  --bs-secondary: #64748b;
+  --bs-success: #22c55e;
+  --bs-info: #06b6d4;
+  --bs-warning: #f59e0b;
+  --bs-danger: #ef4444;
+  --bs-body-bg: #0f172a;
+  --bs-body-color: #cbd5e1;
+  --bs-emphasis-color: #ffffff;
+  --bs-secondary-color: #94a3b8;
+  --bs-tertiary-color: #64748b;
+  --bs-border-color: #334155;
+  --bs-border-color-translucent: rgba(51, 65, 85, 0.15);
+  --bs-heading-color: #ffffff;
+  --bs-link-color: #3b82f6;
+  --bs-link-hover-color: #60a5fa;
+  --bs-code-color: #f59e0b;
+  --bs-highlight-bg: #3b82f6;
+  --bs-highlight-color: #0f172a;
+}
+
+/* ========================================
+   LIGHT THEMES
+   ======================================== */
+
+/* Modern Light - Default Bootstrap light theme */
+[data-bs-theme="light"][data-theme="modern_light"] {
+  /* Uses Bootstrap's default light theme variables */
+}
+
+/* Solarized Light - Light theme with solarized colors */
+[data-bs-theme="light"][data-theme="solarized"] {
+  --bs-primary: #268bd2;
+  --bs-secondary: #93a1a1;
+  --bs-success: #859900;
+  --bs-info: #2aa198;
+  --bs-warning: #b58900;
+  --bs-danger: #dc322f;
+  --bs-body-bg: #fdf6e3;
+  --bs-body-color: #586e75;
+  --bs-emphasis-color: #073642;
+  --bs-secondary-color: #93a1a1;
+  --bs-tertiary-color: #839496;
+  --bs-border-color: #eee8d5;
+  --bs-border-color-translucent: rgba(238, 232, 213, 0.15);
+  --bs-heading-color: #073642;
+  --bs-link-color: #268bd2;
+  --bs-link-hover-color: #1e6ba8;
+  --bs-code-color: #d33682;
+  --bs-highlight-bg: #fdf6e3;
+  --bs-highlight-color: #073642;
+}
+
+/* Eyesear White - Clean light theme */
+[data-bs-theme="light"][data-theme="eyesear_white"] {
+  --bs-primary: #2563eb;
+  --bs-secondary: #6b7280;
+  --bs-success: #059669;
+  --bs-info: #0891b2;
+  --bs-warning: #d97706;
+  --bs-danger: #dc2626;
+  --bs-body-bg: #ffffff;
+  --bs-body-color: #1f2937;
+  --bs-emphasis-color: #111827;
+  --bs-secondary-color: #6b7280;
+  --bs-tertiary-color: #9ca3af;
+  --bs-border-color: #e5e7eb;
+  --bs-border-color-translucent: rgba(229, 231, 235, 0.15);
+  --bs-heading-color: #111827;
+  --bs-link-color: #2563eb;
+  --bs-link-hover-color: #1d4ed8;
+  --bs-code-color: #dc2626;
+  --bs-highlight-bg: #f3f4f6;
+  --bs-highlight-color: #111827;
+}
+
+/* ========================================
+   THEME-SPECIFIC COMPONENT OVERRIDES
+   ======================================== */
+
+/* Cyber Noir specific component styles */
+[data-bs-theme="dark"][data-theme="cyber_noir"] .navbar {
+  background: linear-gradient(90deg, #0a0a0a 0%, #1a1a1a 100%) !important;
+  border-bottom: 1px solid #00ff41 !important;
+}
+
+[data-bs-theme="dark"][data-theme="cyber_noir"] .btn-primary {
+  background: linear-gradient(45deg, #00ff41, #00ffff);
+  border: 1px solid #00ff41;
+  color: #0a0a0a;
+  font-weight: bold;
+}
+
+[data-bs-theme="dark"][data-theme="cyber_noir"] .btn-primary:hover {
+  background: linear-gradient(45deg, #00ffff, #00ff41);
+  transform: translateY(-1px);
+  box-shadow: 0 0 10px #00ff41;
+}
+
+/* Midnight Dystopia specific component styles */
+[data-bs-theme="dark"][data-theme="midnight_dystopia"] .navbar {
+  background: linear-gradient(90deg, #0f0f23 0%, #1e1b4b 100%) !important;
+  border-bottom: 1px solid #8b5cf6 !important;
+}
+
+[data-bs-theme="dark"][data-theme="midnight_dystopia"] .btn-primary {
+  background: linear-gradient(45deg, #8b5cf6, #06b6d4);
+  border: 1px solid #8b5cf6;
+  color: #ffffff;
+}
+
+/* Solarized Light specific component styles */
+[data-bs-theme="light"][data-theme="solarized"] .navbar {
+  background: linear-gradient(90deg, #fdf6e3 0%, #eee8d5 100%) !important;
+  border-bottom: 1px solid #93a1a1 !important;
+}
+
+[data-bs-theme="light"][data-theme="solarized"] .btn-primary {
+  background: #268bd2;
+  border: 1px solid #268bd2;
+  color: #fdf6e3;
+}
+
+/* ========================================
+   RESPONSIVE THEME ADJUSTMENTS
+   ======================================== */
+
+@media (prefers-color-scheme: light) {
+  [data-bs-theme="auto"][data-theme="modern_light"] {
+    /* Auto theme respects system preference */
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  [data-bs-theme="auto"][data-theme="modern_dark"] {
+    /* Auto theme respects system preference */
+  }
+}

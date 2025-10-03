@@ -59,7 +59,7 @@ class InstallerClass {
             return;
         }
         let siteHeader = getRequiredElementById('sitecssheader');
-        getRequiredElementById('bs_theme_header').href = isDark ? '/css/bootstrap.min.css' : '/css/bootstrap_light.min.css';
+        document.documentElement.setAttribute('data-bs-theme', isDark ? 'dark' : 'light');
         themeCss.forEach(x => x.remove());
         let newTheme = css_paths.map(path => `<link class="theme_sheet_header" rel="stylesheet" href="${path}?${siteHeader.href.split('?')[1]}" />`).join('\n');
         document.head.insertAdjacentHTML('beforeend', newTheme);

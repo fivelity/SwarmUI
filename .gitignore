@@ -19,6 +19,7 @@ tmp/
 /src/Extensions
 /dlbackend
 .REF_src/
+bootstrap-5.3.8-dist/
 *.debug
 custom-launch-docker.sh
 dotnet-install.sh
