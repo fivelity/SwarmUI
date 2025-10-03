@@ -16,10 +16,10 @@ function resetWelcomeMessage(override = null) {
 // Guard against duplicate execution
 if (typeof window.extraWelcomeHtml === 'undefined') {
     window.extraWelcomeHtml = '';
-    const extraWelcomeDivTemp = document.getElementById('extra_welcome_message');
-    if (extraWelcomeDivTemp) {
-        window.extraWelcomeHtml = extraWelcomeDivTemp.innerHTML.trim();
-        extraWelcomeDivTemp.remove();
+    const element = document.getElementById('extra_welcome_message');
+    if (element) {
+        window.extraWelcomeHtml = element.innerHTML.trim();
+        element.remove();
     }
 }
 
