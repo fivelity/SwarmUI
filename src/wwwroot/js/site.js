@@ -269,15 +269,7 @@ function setActiveMainNavByHash(hash) {
         target.classList.add('active');
     }
     
-    // Show/hide ComfyUI nav item based on usage
-    const comfyNavItem = document.getElementById('main_nav_comfy_item');
-    if (comfyNavItem) {
-        if (hash && (hash.toLowerCase().includes('comfy') || hash === '#Comfy')) {
-            comfyNavItem.style.display = '';
-        } else {
-            comfyNavItem.style.display = 'none';
-        }
-    }
+    // ComfyUI nav item is always visible - removed conditional hiding
 }
 
 // Activate tab from hash - integrates with genpage routing system
