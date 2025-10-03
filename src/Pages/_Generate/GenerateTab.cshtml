@@ -2,10 +2,10 @@
 
 <div class="d-flex flex-column h-100" style="min-height: 100vh;">
     <div id="t2i_top_bar" class="mb-2"></div>
-    <div class="row g-3 flex-grow-1" style="flex-shrink: 0;">
-        <!-- Parameter Sidebar -->
-        <div class="col-lg-3 col-md-4 border-end" id="input_sidebar">
-            <div class="p-3 h-100 d-flex flex-column">
+    <div class="row g-3 flex-grow-1 align-items-stretch" style="flex-shrink: 0;">
+        <!-- Left Column: Parameter Sidebar -->
+        <div class="col-xl-3 col-lg-4 col-md-12 d-flex flex-column" id="input_sidebar">
+            <div class="p-3 h-100 d-flex flex-column border-end">
                 <ul class="nav nav-tabs swarm-gen-tab-subnav mb-2" data-title="Left Sidebar" data-content="inputsidebartab_content" role="tablist" id="inputsidebartabcollection">
                     <li class="nav-item" role="presentation">
                         <a class="nav-link active translate" data-bs-toggle="tab" href="#Input-Sidebar-Main-Tab" aria-selected="true" role="tab">Inputs</a>
@@ -14,7 +14,7 @@
                 <div class="tab-content flex-grow-1 overflow-hidden" id="inputsidebartab_content">
                     <div class="tab-pane show active genpage-bottom-tab h-100 d-flex flex-column" id="Input-Sidebar-Main-Tab" role="tabpanel">
                         <span class="interrupt_line"></span>
-                        <div class="main_inputs_area_wrapper flex-grow-1 d-flex flex-column overflow-hidden" id="main_inputs_area_wrapper">
+                        <div class="main_inputs_area_wrapper flex-grow-1 d-flex flex-column overflow-auto" id="main_inputs_area_wrapper">
                             <div class="input_filter_container p-2">
                                 <div class="input-group">
                                     <input type="text" class="form-control auto-text" id="main_inputs_filter" oninput="hideUnsupportableParams()" placeholder="Filter parameters..." />
@@ -34,127 +34,123 @@
             </div>
         </div>
 
-        <!-- Main Content Area -->
-        <div class="col-lg-6 col-md-8 d-flex flex-column">
-            <div class="row g-0 flex-grow-1">
-                <!-- Image Result -->
-                <div class="col-lg-8 col-md-12 border-end" id="main_image_area">
-                    <div class="d-flex flex-column h-100">
-<ul class="nav nav-tabs swarm-gen-tab-subnav mb-2" data-title="Center Area" data-content="currentimagecontent" role="tablist" id="currentimagecollection">
-                            <li class="nav-item" role="presentation">
-                                <a class="nav-link active translate" data-bs-toggle="tab" href="#Image-Result-Tab" aria-selected="true" role="tab">Image</a>
-                            </li>
-                        </ul>
-                <div class="tab-content flex-grow-1" id="currentimagecontent">
-                    <div class="tab-pane show active genpage-bottom-tab h-100" id="Image-Result-Tab" role="tabpanel">
+        <!-- Center Column: Image Generation Area -->
+        <div class="col-xl-6 col-lg-4 col-md-12 d-flex flex-column" id="main_image_area">
+            <div class="p-2 h-100 d-flex flex-column border-end">
+                <ul class="nav nav-tabs swarm-gen-tab-subnav mb-2" data-title="Center Area" data-content="currentimagecontent" role="tablist" id="currentimagecollection">
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link active translate" data-bs-toggle="tab" href="#Image-Result-Tab" aria-selected="true" role="tab">Image</a>
+                    </li>
+                </ul>
+                <div class="tab-content flex-grow-1 overflow-hidden" id="currentimagecontent">
+                    <div class="tab-pane show active genpage-bottom-tab h-100 d-flex flex-column" id="Image-Result-Tab" role="tabpanel">
                         <div class="image_editor_input" id="image_editor_input" style="display:none;"></div>
                         <div id="image_editor_sizebar" style="display:none;"></div>
-                        <div id="current_image_wrapbox">
+                        <div id="current_image_wrapbox" class="flex-grow-1 overflow-auto">
                             <div class="current_image drag_image_target" id="current_image">
                                 <div id="welcome_message" class="welcome_message">@(new HtmlString(Program.VersionUpdateMessage ?? (Program.ServerSettings.ShowExperimentalFeatures ? "Experimental Features are enabled. Issue reports will not be accepted." : Program.ServerSettings.UI.OverrideWelcomeMessage)))</div>
                             </div>
                         </div>
+                        <div id="extra_welcome_message">@(new HtmlString(Program.ServerSettings.UI.ExtraWelcomeInfo))</div>
                     </div>
-                    <div id="extra_welcome_message">@(new HtmlString(Program.ServerSettings.UI.ExtraWelcomeInfo))</div>
                 </div>
-                        <!-- Prompt Bar -->
-<div class="alt_prompt_region drag_image_target bg-body-tertiary border-top border-bottom shadow-sm" id="alt_prompt_region">
-                            <div id="alt_prompt_extra_area" class="alt_prompt_extra_area p-2">
-                                <button class="btn btn-sm btn-danger image-clear-button translate" style="display: none;" id="alt_prompt_image_clear_button"><i class="bi bi-trash me-1"></i>Clear Images</button>
-                                <div class="added-image-area alt-prompt-added-image-area" id="alt_prompt_image_area"></div>
+                <!-- Prompt Bar -->
+                <div class="alt_prompt_region drag_image_target bg-body-tertiary border-top shadow-sm mt-auto" id="alt_prompt_region">
+                    <div id="alt_prompt_extra_area" class="alt_prompt_extra_area p-2">
+                        <button class="btn btn-sm btn-danger image-clear-button translate" style="display: none;" id="alt_prompt_image_clear_button"><i class="bi bi-trash me-1"></i>Clear Images</button>
+                        <div class="added-image-area alt-prompt-added-image-area" id="alt_prompt_image_area"></div>
+                    </div>
+                    <div class="p-3">
+                        <div class="alt_prompt_main_line d-flex gap-2 mb-2">
+                            <button class="btn btn-outline-primary alt-text-add-button" id="alt_text_add_button" title="Add prompt helper" aria-label="Add prompt helper"><i class="bi bi-plus-lg"></i></button>
+                            <div class="d-flex flex-column gap-1">
+                                <span class="auto-input-prompt-tokencount alt-text-tokencount small text-muted">
+                                    <span id="alt_text_tokencount" title="Prompt's Text-Encoder token count / chunk-size">0/75</span><span id="alt_negtext_tokencount" style="display:none" title="Negative prompt's Text-Encoder token count / chunk-size">Neg: 0/75</span>
+                                </span>
                             </div>
-                            <div class="p-3">
-                                <div class="alt_prompt_main_line d-flex gap-2 mb-2">
-                                    <button class="btn btn-outline-primary alt-text-add-button" id="alt_text_add_button" title="Add prompt helper" aria-label="Add prompt helper"><i class="bi bi-plus-lg"></i></button>
-                                    <div class="d-flex flex-column gap-1">
-                                        <span class="auto-input-prompt-tokencount alt-text-tokencount small text-muted">
-                                            <span id="alt_text_tokencount" title="Prompt's Text-Encoder token count / chunk-size">0/75</span><span id="alt_negtext_tokencount" style="display:none" title="Negative prompt's Text-Encoder token count / chunk-size">Neg: 0/75</span>
-                                        </span>
-                                    </div>
-                                    <div class="flex-grow-1">
-                                        <textarea id="alt_prompt_textbox" class="form-control alt_prompt_textbox translate mb-2" rows="2" placeholder="Type your prompt here... (or, drag/paste an image in to use Image Prompting)" onpaste="imagePromptImagePaste(arguments[0])"></textarea>
-                                        <textarea id="alt_negativeprompt_textbox" class="form-control alt_prompt_textbox translate" rows="1" placeholder="Optionally, type a negative prompt here..."></textarea>
-                                    </div>
-                                    <div class="d-flex flex-column gap-1">
-                                        <button class="btn btn-success alt-prompt-generate-button translate" id="alt_generate_button" title="Generate" aria-label="Generate" oncontextmenu="doPopover('generate'); return false;" onclick="mainGenHandler.doGenerateButton(event)"><i class="bi bi-play-fill me-1"></i>Generate</button>
-                                        <div class="d-flex gap-1">
-                                            <button class="btn btn-secondary btn-sm alt-prompt-center-button" id="alt_center_button" title="Generate options" aria-label="Generate options" oncontextmenu="doPopover('generate_center'); return false;" onclick="doPopover('generate_center')"><i class="bi bi-three-dots-vertical"></i></button>
-                                            <button class="btn btn-danger btn-sm alt-interrupt" id="alt_interrupt_button" title="Interrupt" aria-label="Interrupt" oncontextmenu="doPopover('interrupt'); return false;" onclick="mainGenHandler.doInterrupt()"><i class="bi bi-x-lg"></i></button>
-                                        </div>
-                                    </div>
+                            <div class="flex-grow-1">
+                                <textarea id="alt_prompt_textbox" class="form-control alt_prompt_textbox translate mb-2" rows="2" placeholder="Type your prompt here... (or, drag/paste an image in to use Image Prompting)" onpaste="imagePromptImagePaste(arguments[0])"></textarea>
+                                <textarea id="alt_negativeprompt_textbox" class="form-control alt_prompt_textbox translate" rows="1" placeholder="Optionally, type a negative prompt here..."></textarea>
+                            </div>
+                            <div class="d-flex flex-column gap-1">
+                                <button class="btn btn-success alt-prompt-generate-button translate" id="alt_generate_button" title="Generate" aria-label="Generate" oncontextmenu="doPopover('generate'); return false;" onclick="mainGenHandler.doGenerateButton(event)"><i class="bi bi-play-fill me-1"></i>Generate</button>
+                                <div class="d-flex gap-1">
+                                    <button class="btn btn-secondary btn-sm alt-prompt-center-button" id="alt_center_button" title="Generate options" aria-label="Generate options" oncontextmenu="doPopover('generate_center'); return false;" onclick="doPopover('generate_center')"><i class="bi bi-three-dots-vertical"></i></button>
+                                    <button class="btn btn-danger btn-sm alt-interrupt" id="alt_interrupt_button" title="Interrupt" aria-label="Interrupt" oncontextmenu="doPopover('interrupt'); return false;" onclick="mainGenHandler.doInterrupt()"><i class="bi bi-x-lg"></i></button>
                                 </div>
-                            </div>
-                            <!-- Popovers for generate actions -->
-                            <div class="sui-popover sui_popover_model" id="popover_generate_center">
-                                <div class="sui_popover_model_button translate" onclick="mainGenHandler.doGenerate()"><i class="bi bi-play-fill me-2"></i>Generate</div>
-                                <div class="sui_popover_model_button translate" id="generate_forever_button" onclick="toggleGenerateForever()"><i class="bi bi-infinity me-2"></i>Generate Forever</div>
-                                <div class="sui_popover_model_button translate" id="generate_previews_button" onclick="toggleGeneratePreviews()"><i class="bi bi-eye me-2"></i>Generate Previews</div>
-                                <div class="sui_popover_model_button translate" onclick="mainGenHandler.doInterrupt()"><i class="bi bi-stop-circle me-2"></i>Interrupt Current Session</div>
-                                <div class="sui_popover_model_button translate" onclick="mainGenHandler.doInterrupt(true)"><i class="bi bi-stop-circle-fill me-2"></i>Interrupt All Sessions</div>
-                                <div class="sui_popover_model_button translate" onclick="mainGenHandler.doInterruptAndGen()" title="Alt+Click the Generate button to do this"><i class="bi bi-arrow-repeat me-2"></i>Interrupt And Generate</div>
-                                <div class="sui_popover_model_button translate" onclick="showPromptTokenizen('alt_prompt_textbox')"><i class="bi bi-code-square me-2"></i>Show Prompt Tokenization</div>
-                                <div class="sui_popover_model_button translate" style="display:none" id="clear_selected_tool_button_popup" onclick="disableSelectedTool()"><i class="bi bi-x-circle me-2"></i>Clear Selected Tool</div>
-                            </div>
-                            <div class="sui-popover sui_popover_model" id="popover_generate">
-                                <div class="sui_popover_model_button translate" onclick="mainGenHandler.doGenerate()"><i class="bi bi-play-fill me-2"></i>Generate</div>
-                                <div class="sui_popover_model_button translate" id="generate_forever_button_alt" onclick="toggleGenerateForever()"><i class="bi bi-infinity me-2"></i>Generate Forever</div>
-                                <div class="sui_popover_model_button translate" id="generate_previews_button_alt" onclick="toggleGeneratePreviews()"><i class="bi bi-eye me-2"></i>Generate Previews</div>
-                                <div class="sui_popover_model_button translate" onclick="mainGenHandler.doInterruptAndGen()" title="Alt+Click the Generate button to do this"><i class="bi bi-arrow-repeat me-2"></i>Interrupt And Generate</div>
-                            </div>
-                            <div class="sui-popover sui_popover_model" id="popover_interrupt">
-                                <div class="sui_popover_model_button translate" onclick="mainGenHandler.doInterrupt()"><i class="bi bi-stop-circle me-2"></i>Interrupt Current Session</div>
-                                <div class="sui_popover_model_button translate" onclick="mainGenHandler.doInterrupt(true)"><i class="bi bi-stop-circle-fill me-2"></i>Interrupt All Sessions</div>
                             </div>
                         </div>
                     </div>
+                    <!-- Popovers for generate actions -->
+                    <div class="sui-popover sui_popover_model" id="popover_generate_center">
+                        <div class="sui_popover_model_button translate" onclick="mainGenHandler.doGenerate()"><i class="bi bi-play-fill me-2"></i>Generate</div>
+                        <div class="sui_popover_model_button translate" id="generate_forever_button" onclick="toggleGenerateForever()"><i class="bi bi-infinity me-2"></i>Generate Forever</div>
+                        <div class="sui_popover_model_button translate" id="generate_previews_button" onclick="toggleGeneratePreviews()"><i class="bi bi-eye me-2"></i>Generate Previews</div>
+                        <div class="sui_popover_model_button translate" onclick="mainGenHandler.doInterrupt()"><i class="bi bi-stop-circle me-2"></i>Interrupt Current Session</div>
+                        <div class="sui_popover_model_button translate" onclick="mainGenHandler.doInterrupt(true)"><i class="bi bi-stop-circle-fill me-2"></i>Interrupt All Sessions</div>
+                        <div class="sui_popover_model_button translate" onclick="mainGenHandler.doInterruptAndGen()" title="Alt+Click the Generate button to do this"><i class="bi bi-arrow-repeat me-2"></i>Interrupt And Generate</div>
+                        <div class="sui_popover_model_button translate" onclick="showPromptTokenizen('alt_prompt_textbox')"><i class="bi bi-code-square me-2"></i>Show Prompt Tokenization</div>
+                        <div class="sui_popover_model_button translate" style="display:none" id="clear_selected_tool_button_popup" onclick="disableSelectedTool()"><i class="bi bi-x-circle me-2"></i>Clear Selected Tool</div>
+                    </div>
+                    <div class="sui-popover sui_popover_model" id="popover_generate">
+                        <div class="sui_popover_model_button translate" onclick="mainGenHandler.doGenerate()"><i class="bi bi-play-fill me-2"></i>Generate</div>
+                        <div class="sui_popover_model_button translate" id="generate_forever_button_alt" onclick="toggleGenerateForever()"><i class="bi bi-infinity me-2"></i>Generate Forever</div>
+                        <div class="sui_popover_model_button translate" id="generate_previews_button_alt" onclick="toggleGeneratePreviews()"><i class="bi bi-eye me-2"></i>Generate Previews</div>
+                        <div class="sui_popover_model_button translate" onclick="mainGenHandler.doInterruptAndGen()" title="Alt+Click the Generate button to do this"><i class="bi bi-arrow-repeat me-2"></i>Interrupt And Generate</div>
+                    </div>
+                    <div class="sui-popover sui_popover_model" id="popover_interrupt">
+                        <div class="sui_popover_model_button translate" onclick="mainGenHandler.doInterrupt()"><i class="bi bi-stop-circle me-2"></i>Interrupt Current Session</div>
+                        <div class="sui_popover_model_button translate" onclick="mainGenHandler.doInterrupt(true)"><i class="bi bi-stop-circle-fill me-2"></i>Interrupt All Sessions</div>
+                    </div>
                 </div>
-                <!-- Batch Sidebar -->
-                <div class="col-lg-4 col-md-12">
-                    <div class="d-flex flex-column h-100">
-<ul class="nav nav-tabs swarm-gen-tab-subnav mb-2" data-title="Right Sidebar" data-content="rightsidebarcontent" role="tablist" id="rightsidebarcollection">
-                            <li class="nav-item" role="presentation">
-                                <a class="nav-link active translate" data-bs-toggle="tab" href="#Image-Batch-Tab" aria-selected="true" role="tab">Batch</a>
-                            </li>
-                        </ul>
-                        <div class="tab-content flex-grow-1" id="rightsidebarcontent">
-                            <div class="tab-pane show active genpage-bottom-tab h-100" id="Image-Batch-Tab" role="tabpanel">
-                                <div class="position-relative">
-                                    <button class="btn btn-sm btn-outline-secondary batch-gear-button" onclick="doPopover('batchgear')" title="Batch options"><i class="bi bi-gear"></i></button>
-                                </div>
-                                <div class="sui-popover sui_popover_model" id="popover_batchgear">
-                                    <div class="batchgear-toggler" title="Clears the batch view.">
-                                        <button class="btn btn-sm btn-danger interrupt-button translate" id="clear_batch_button" onclick="clearBatch()"><i class="bi bi-trash me-1"></i>Clear Batch</button>
-                                    </div>
-                                    <div class="batchgear-toggler" title="If enabled, automatically clears out the image batch when generating a new one. If disabled, leaves history to grow until you refresh the page.">
-                                        <span class="form-check form-switch display-inline-block">
-                                            <input type="checkbox" class="form-check-input" id="auto_clear_batch_checkbox_ui" onchange="toggleAutoClearBatch()"> <label class="form-check-label translate" for="auto_clear_batch_checkbox_ui">Auto Clear Batch</label>
-                                        </span>
-                                    </div>
-                                    <div class="batchgear-toggler" title="If enabled, automatically swaps to previews of new images the moment they're available, before the image itself is done generating.">
-                                        <span class="form-check form-switch display-inline-block">
-                                            <input type="checkbox" class="form-check-input" id="auto_load_previews_checkbox_ui" onchange="toggleAutoLoadPreviews()"> <label class="form-check-label translate" for="auto_load_previews_checkbox_ui">Auto Swap To Previews</label>
-                                        </span>
-                                    </div>
-                                    <div class="batchgear-toggler" title="If enabled, automatically swaps to new images the moment they're done generating.">
-                                        <span class="form-check form-switch display-inline-block">
-                                            <input type="checkbox" class="form-check-input" id="auto_load_images_checkbox_ui" onchange="toggleAutoLoadImages()" checked="true"> <label class="form-check-label translate" for="auto_load_images_checkbox_ui">Auto Swap To Images</label>
-                                        </span>
-                                    </div>
-                                    <div class="batchgear-toggler" title="If enabled, display loading spinners and failed generation crosses.">
-                                        <span class="form-check form-switch display-inline-block">
-                                            <input type="checkbox" class="form-check-input" id="show_load_spinners_checkbox_ui" onchange="toggleShowLoadSpinners()" checked="true"> <label class="form-check-label translate" for="show_load_spinners_checkbox_ui">Show Load Spinners</label>
-                                        </span>
-                                    </div>
-                                    <div class="batchgear-toggler" title="If enabled, images in generation batches will be in sections together (ie if you generate multiple batches at once, the separate batches won't mix).">
-                                        <span class="form-check form-switch display-inline-block">
-                                            <input type="checkbox" class="form-check-input" id="separate_batches_checkbox_ui" onchange="toggleSeparateBatches()"> <label class="form-check-label translate" for="separate_batches_checkbox_ui">Separate Batches</label>
-                                        </span>
-                                    </div>
-                                </div>
-                                <div id="current_image_batch_wrapper">
-                                    <div id="current_image_batch" class="current_image_batch_core"></div>
-                                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Batch Sidebar -->
+        <div class="col-xl-3 col-lg-4 col-md-12 d-flex flex-column" id="current_image_batch_wrapper">
+            <div class="p-3 h-100 d-flex flex-column">
+                <ul class="nav nav-tabs swarm-gen-tab-subnav mb-2" data-title="Right Sidebar" data-content="rightsidebarcontent" role="tablist" id="rightsidebarcollection">
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link active translate" data-bs-toggle="tab" href="#Image-Batch-Tab" aria-selected="true" role="tab">Batch</a>
+                    </li>
+                </ul>
+                <div class="tab-content flex-grow-1 overflow-hidden" id="rightsidebarcontent">
+                    <div class="tab-pane show active genpage-bottom-tab h-100 d-flex flex-column" id="Image-Batch-Tab" role="tabpanel">
+                        <div class="position-relative mb-2">
+                            <button class="btn btn-sm btn-outline-secondary batch-gear-button" onclick="doPopover('batchgear')" title="Batch options"><i class="bi bi-gear"></i></button>
+                        </div>
+                        <div class="sui-popover sui_popover_model" id="popover_batchgear">
+                            <div class="batchgear-toggler" title="Clears the batch view.">
+                                <button class="btn btn-sm btn-danger interrupt-button translate" id="clear_batch_button" onclick="clearBatch()"><i class="bi bi-trash me-1"></i>Clear Batch</button>
                             </div>
+                            <div class="batchgear-toggler" title="If enabled, automatically clears out the image batch when generating a new one. If disabled, leaves history to grow until you refresh the page.">
+                                <span class="form-check form-switch display-inline-block">
+                                    <input type="checkbox" class="form-check-input" id="auto_clear_batch_checkbox_ui" onchange="toggleAutoClearBatch()"> <label class="form-check-label translate" for="auto_clear_batch_checkbox_ui">Auto Clear Batch</label>
+                                </span>
+                            </div>
+                            <div class="batchgear-toggler" title="If enabled, automatically swaps to previews of new images the moment they're available, before the image itself is done generating.">
+                                <span class="form-check form-switch display-inline-block">
+                                    <input type="checkbox" class="form-check-input" id="auto_load_previews_checkbox_ui" onchange="toggleAutoLoadPreviews()"> <label class="form-check-label translate" for="auto_load_previews_checkbox_ui">Auto Swap To Previews</label>
+                                </span>
+                            </div>
+                            <div class="batchgear-toggler" title="If enabled, automatically swaps to new images the moment they're done generating.">
+                                <span class="form-check form-switch display-inline-block">
+                                    <input type="checkbox" class="form-check-input" id="auto_load_images_checkbox_ui" onchange="toggleAutoLoadImages()" checked="true"> <label class="form-check-label translate" for="auto_load_images_checkbox_ui">Auto Swap To Images</label>
+                                </span>
+                            </div>
+                            <div class="batchgear-toggler" title="If enabled, display loading spinners and failed generation crosses.">
+                                <span class="form-check form-switch display-inline-block">
+                                    <input type="checkbox" class="form-check-input" id="show_load_spinners_checkbox_ui" onchange="toggleShowLoadSpinners()" checked="true"> <label class="form-check-label translate" for="show_load_spinners_checkbox_ui">Show Load Spinners</label>
+                                </span>
+                            </div>
+                            <div class="batchgear-toggler" title="If enabled, images in generation batches will be in sections together (ie if you generate multiple batches at once, the separate batches won't mix).">
+                                <span class="form-check form-switch display-inline-block">
+                                    <input type="checkbox" class="form-check-input" id="separate_batches_checkbox_ui" onchange="toggleSeparateBatches()"> <label class="form-check-label translate" for="separate_batches_checkbox_ui">Separate Batches</label>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 overflow-auto">
+                            <div id="current_image_batch" class="current_image_batch_core"></div>
                         </div>
                     </div>
                 </div>
