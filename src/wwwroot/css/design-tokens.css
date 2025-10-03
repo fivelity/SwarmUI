@@ -176,10 +176,12 @@
   --duration-100: 100ms;
   --duration-150: 150ms;
   --duration-200: 200ms;
+  --duration-250: 250ms;
   --duration-300: 300ms;
   --duration-500: 500ms;
   --duration-700: 700ms;
   --duration-1000: 1000ms;
+  --duration-5000: 5000ms;
 
   /* Timing functions */
   --ease-linear: linear;
@@ -247,6 +249,13 @@
   --modal-backdrop-opacity: 0.5;
   --modal-radius: var(--radius-xl);
   --modal-padding: var(--space-6);
+  
+  /* Container size tokens */
+  --container-max-width: 1320px;
+  --container-sm: 540px;
+  --container-md: 720px;
+  --container-lg: 960px;
+  --container-xl: 1140px;
 }
 
 /* ========================================

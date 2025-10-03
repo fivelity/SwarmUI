@@ -31,6 +31,113 @@ main#main {
     min-height: auto;
 }
 
+/* ========================================
+   SPLIT BAR SYSTEM
+   Draggable dividers for layout sections
+   ======================================== */
+
+.splitter-bar {
+    display: inline-block;
+    background-color: var(--light-border);
+    margin: 0px;
+    transition: background-color var(--duration-200) var(--ease-in-out);
+}
+
+.large-window .splitter-bar:hover {
+    background-color: var(--emphasis);
+    box-shadow:
+      -0.5rem 0 0.5rem 0 color-mix(in srgb, transparent 50%, var(--emphasis)),
+      0.5rem 0 0.5rem 0 color-mix(in srgb, transparent 50%, var(--emphasis));
+}
+
+/* Vertical split bars (left and right sidebars) */
+.t2i-top-split-bar,
+#t2i-top-split-bar,
+#t2i-top-2nd-split-bar {
+    display: inline-block !important;
+    height: 50vh;
+    width: 5px;
+    cursor: col-resize;
+    background-color: var(--light-border);
+    margin: 0px;
+    vertical-align: top;
+    transition: background-color var(--duration-200) var(--ease-in-out);
+}
+
+#t2i-top-split-bar:hover,
+#t2i-top-2nd-split-bar:hover {
+    background-color: var(--emphasis);
+}
+
+/* Horizontal split bar (bottom section) */
+.t2i-mid-split-bar,
+#t2i-mid-split-bar {
+    display: block !important;
+    width: 100vw;
+    height: 5px;
+    cursor: row-resize;
+    background-color: var(--light-border);
+    margin: 0px;
+    transition: background-color var(--duration-200) var(--ease-in-out);
+}
+
+#t2i-mid-split-bar:hover {
+    background-color: var(--emphasis);
+    box-shadow:
+      0 -0.5rem 0.5rem 0 color-mix(in srgb, transparent 50%, var(--emphasis)),
+      0 0.5rem 0.5rem 0 color-mix(in srgb, transparent 50%, var(--emphasis));
+}
+
+/* Split bar toggle buttons */
+.t2i-split-quickbutton {
+    position: relative;
+    font-size: 200%;
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    padding: 0 var(--space-1);
+    transition: background-color var(--duration-150) var(--ease-in-out);
+}
+
+.t2i-split-quickbutton:hover {
+    background-color: var(--item-hover);
+}
+
+.small-window .t2i-split-quickbutton {
+    display: none;
+}
+
+#t2i-top-split-quickbutton,
+.t2i-top-split-quickbutton {
+    float: right;
+    vertical-align: top;
+    top: 0rem;
+    left: 0.6rem;
+}
+
+#t2i-mid-split-quickbutton,
+.t2i-mid-split-quickbutton {
+    float: right;
+    vertical-align: top;
+    top: 0rem;
+    right: 2rem;
+}
+
+/* Image editor split bar */
+.t2i-top-imageeditor-bar,
+#image_editor_sizebar {
+    width: 5px;
+    height: 50vh;
+    cursor: col-resize;
+    vertical-align: top;
+    background-color: var(--light-border);
+    transition: background-color var(--duration-200) var(--ease-in-out);
+}
+
+#image_editor_sizebar:hover {
+    background-color: var(--emphasis);
+}
+
 /* Generate page root container */
 .d-flex.flex-column.h-100 {
     min-height: calc(100vh - 120px);
@@ -658,12 +765,13 @@ main#main {
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: flex-start;
-    border-bottom: 1px solid var(--light-border);
+    /* Removed problematic border-bottom that was causing horizontal line artifacts */
 }
 .bottom-info-bar-component {
     padding-left: 0.2rem;
     padding-right: 0.2rem;
-    border-left: 1px solid var(--light-border);
+    /* Reduced border opacity to minimize visual artifacts */
+    border-left: 1px solid color-mix(in srgb, var(--light-border) 30%, transparent);
 }
 .num_jobs_span {
     vertical-align: middle;
@@ -739,9 +847,17 @@ main#main {
     vertical-align: top;
 }
 .browser-folder-tree-splitter {
-    width: 7px;
+    display: inline-block;
+    width: 5px;
     height: calc(max(10rem, 100%));
     cursor: col-resize;
+    background-color: var(--light-border);
+    vertical-align: top;
+    transition: background-color var(--duration-200) var(--ease-in-out);
+}
+
+.browser-folder-tree-splitter:hover {
+    background-color: var(--emphasis);
 }
 .browser-header-bar {
     width: calc(100% - 1rem);
@@ -975,13 +1091,14 @@ main#main {
 /* Bottom info bar styling */
 .bottom-info-bar-container {
     background-color: var(--bs-tertiary-bg);
-    border-bottom: 1px solid var(--bs-border-color);
+    /* Removed border-bottom to prevent horizontal line artifacts */
 }
 
 .bottom-info-bar-component {
     font-size: 0.875rem;
     width: fit-content;
     cursor: pointer;
+    /* Border already defined above with reduced opacity */
 }
 .browser-folder-tree-part-symbol {
     position: relative;

@@ -20,12 +20,11 @@
         <link rel="stylesheet" id="themecssheader" href="~/css/theme.css?vary=@Utilities.VaryID" />
         @RenderSection("Header", required: false)
         @WebServer.PageHeaderExtra
-        foreach (string path in theme.CSSPaths)
+        @foreach (string path in theme.CSSPaths)
         {
             string themeUrl = $"{path}?vary={Utilities.VaryID}";
             <link class="theme_sheet_header" rel="stylesheet" href="@themeUrl" />
         }
-    }
     <link id="favicon" rel="shortcut icon" href="~/favicon.ico" />
     <script src="~/js/util.js?vary=@Utilities.VaryID"></script>
     <script src="~/js/translator.js?vary=@Utilities.VaryID"></script>
