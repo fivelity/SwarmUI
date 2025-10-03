@@ -280,34 +280,8 @@
   --warning-bg: rgba(var(--bs-warning-rgb), 0.1);
   --warning-border: var(--bs-warning);
   
-  /* Legacy color variable compatibility mappings */
-  --light-border: var(--bs-border-color);
-  --light-border-rgb: var(--bs-border-color-rgb, 128, 128, 128);
-  --emphasis: var(--bs-primary);
-  --background: var(--bs-body-bg);
-  --background-rgb: var(--bs-body-bg-rgb, 255, 255, 255);
-  --background-soft: var(--bs-tertiary-bg);
-  --text: var(--bs-body-color);
-  --text-soft: var(--bs-secondary-color);
-  --text-strong: var(--bs-emphasis-color);
-  
-  /* Legacy button color mappings */
-  --button-background: var(--btn-primary-bg);
-  --button-text: var(--btn-primary-color);
-  --button-border: var(--btn-primary-border);
-  --button-background-hover: var(--btn-primary-hover-bg);
-  --button-foreground-hover: var(--btn-primary-color);
-  --button-background-disabled: var(--bs-secondary-bg);
-  --button-foreground-disabled: var(--bs-secondary-color);
-  
-  /* Legacy danger button mappings */
-  --danger-button-background: var(--btn-danger-bg);
-  --danger-button-foreground: var(--btn-danger-color);
-  --danger-button-border: var(--btn-danger-bg);
-  --danger-button-background-hover: var(--bs-danger);
-  --danger-button-foreground-hover: var(--btn-danger-color);
-  
-  /* Backend status colors for legacy compatibility */
+  /* Semantic color aliases for specific UI components */
+  /* These provide semantic meaning while using Bootstrap variables */
   --backend-errored: var(--bs-danger);
   --backend-disabled: var(--bs-warning);
   --backend-running: var(--bs-success);
@@ -315,7 +289,7 @@
   --backend-loading: var(--orange-500);
   --backend-waiting: var(--orange-500);
   
-  /* Misc legacy colors */
+  /* UI-specific semantic colors */
   --star: var(--yellow-400);
   --star-rgb: 250, 204, 21;
   --batch-0: rgba(var(--bs-primary-rgb), 0.1);
