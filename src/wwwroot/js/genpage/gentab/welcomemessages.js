@@ -16,14 +16,12 @@ function resetWelcomeMessage(override = null) {
 // Guard against duplicate execution
 if (typeof window.extraWelcomeHtml === 'undefined') {
     window.extraWelcomeHtml = '';
-    
-    let extraWelcomeDiv = document.getElementById('extra_welcome_message');
-    if (extraWelcomeDiv) {
-        window.extraWelcomeHtml = extraWelcomeDiv.innerHTML.trim();
-        extraWelcomeDiv.remove();
+    const extraWelcomeDivTemp = document.getElementById('extra_welcome_message');
+    if (extraWelcomeDivTemp) {
+        window.extraWelcomeHtml = extraWelcomeDivTemp.innerHTML.trim();
+        extraWelcomeDivTemp.remove();
     }
 }
-let extraWelcomeHtml = window.extraWelcomeHtml;
 
 /** (Only if there is no pre-existing welcome message and the current_image area is empty) automatically chooses a welcome message to display and applies it. */
 function automaticWelcomeMessage(override = null) {
@@ -34,7 +32,7 @@ function automaticWelcomeMessage(override = null) {
     if (div.innerHTML.trim() != '') {
         return;
     }
-    let prefix = `Welcome to <b>${getRequiredElementById('version_display').innerText} - ${window.instanceTitle}</b>!\n${extraWelcomeHtml}`;
+    let prefix = `Welcome to <b>${getRequiredElementById('version_display').innerText} - ${window.instanceTitle}</b>!\n${window.extraWelcomeHtml}`;
     let curModelElem = getRequiredElementById('current_model');
     if (!curModelElem.value) {
         if (allModels.length == 0) {
