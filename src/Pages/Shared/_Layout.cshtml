@@ -1,28 +1,28 @@
+@{
+    string themeId = "modern_dark";
+    // TODO: Identify user by auth header and use their settings to determine theme
+    if (ViewContext.HttpContext.Request.Cookies.TryGetValue("sui_theme_id", out string themeCookie) && Program.Web.RegisteredThemes.ContainsKey(themeCookie)) {
+        themeId = themeCookie;
+    }
+    WebServer.ThemeData theme = Program.Web.RegisteredThemes[themeId];
+    string bsUrl = "~/css/bootstrap.min.css";
+}
 <!DOCTYPE html>
 <html lang="en" data-bs-theme="@(theme.IsDark ? "dark" : "light")" data-theme="@themeId">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title id="page_title">@ViewData["Title"] - SwarmUI - @Program.ServerSettings.UserAuthorization.InstanceTitle</title>
-    @{
-        string themeId = "modern_dark";
-        // TODO: Identify user by auth header and use their settings to determine theme
-        if (ViewContext.HttpContext.Request.Cookies.TryGetValue("sui_theme_id", out string themeCookie) && Program.Web.RegisteredThemes.ContainsKey(themeCookie)) {
-            themeId = themeCookie;
-        }
-        WebServer.ThemeData theme = Program.Web.RegisteredThemes[themeId];
-        string bsUrl = "~/css/bootstrap.min.css";
-        <link rel="stylesheet" id="bs_theme_header" href="@bsUrl" />
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-        <link rel="stylesheet" id="sitecssheader" href="~/css/main.css?vary=@Utilities.VaryID" />
-        <link rel="stylesheet" id="themecssheader" href="~/css/theme.css?vary=@Utilities.VaryID" />
-        @RenderSection("Header", required: false)
-        @WebServer.PageHeaderExtra
-        foreach (string path in theme.CSSPaths)
-        {
-            string themeUrl = $"{path}?vary={Utilities.VaryID}";
-            <link class="theme_sheet_header" rel="stylesheet" href="@themeUrl" />
-        }
+    <link rel="stylesheet" id="bs_theme_header" href="@bsUrl" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" id="sitecssheader" href="~/css/main.css?vary=@Utilities.VaryID" />
+    <link rel="stylesheet" id="themecssheader" href="~/css/theme.css?vary=@Utilities.VaryID" />
+    @RenderSection("Header", required: false)
+    @WebServer.PageHeaderExtra
+    @foreach (string path in theme.CSSPaths)
+    {
+        string themeUrl = $"{path}?vary={Utilities.VaryID}";
+        <link class="theme_sheet_header" rel="stylesheet" href="@themeUrl" />
     }
     <link id="favicon" rel="shortcut icon" href="~/favicon.ico" />
     <script src="~/js/util.js?vary=@Utilities.VaryID"></script>

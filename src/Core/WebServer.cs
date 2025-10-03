@@ -127,9 +127,6 @@ public class WebServer
         RegisterTheme(new("swarmpunk", "Swarm Punk", ["css/themes/modern.css", "css/themes/swarmpunk.css"], true));
         RegisterTheme(new("beweish", "Beweish", ["css/themes/modern.css", "css/themes/beweish.css"], true));
         RegisterTheme(new("custom-theme", "Synthwave", ["css/themes/custom-theme.css"], true));
-        RegisterTheme(new("midnight-dystopia", "Midnight Dystopia", ["css/themes/midnight-dystopia.css"], true));
-        RegisterTheme(new("cyber-noir", "Cyber Noir", ["css/themes/cyber-noir.css"], true));
-        RegisterTheme(new("sentinel", "Sentinel", ["css/themes/sentinel.css"], true));
         RegisterTheme(new("terminal-shock", "Terminal Shock", ["css/themes/terminal-shock.css"], true));
     }
 
