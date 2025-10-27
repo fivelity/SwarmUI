@@ -1,0 +1,148 @@
+/* ========================================
+   CRITICAL LAYOUT FIXES FOR NAVIGATION AND SPACING
+   These fixes address the content appending and spacing issues
+   ======================================== */
+
+/* Ensure navbar doesn't add extra spacing */
+.navbar {
+    margin-bottom: 0 !important;
+}
+
+/* Container fluid should fill available space */
+.container-fluid {
+    height: 100%;
+    min-height: 0;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+/* All other page tabs (Server, User, Utilities) should fill space */
+#server_tab,
+#user_tab,
+#utilities_tab {
+    height: 100% !important;
+    padding: 1rem !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+}
+
+/* Simple tab layout */
+#Simple {
+    height: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    padding: 1rem !important;
+    overflow: hidden !important;
+}
+
+/* Remove excessive margins from cards and containers */
+.card {
+    margin-bottom: 0.75rem !important;
+}
+
+.card:last-child {
+    margin-bottom: 0 !important;
+}
+
+/* Compact spacing for form groups */
+.mb-3 {
+    margin-bottom: 0.75rem !important;
+}
+
+.mb-4 {
+    margin-bottom: 1rem !important;
+}
+
+/* Fix spacing in settings sections */
+.settings-section {
+    margin-bottom: 1rem !important;
+    padding: 0.75rem !important;
+}
+
+/* Reduce padding in accordion items */
+.accordion-body {
+    padding: 0.75rem !important;
+}
+
+.accordion-item {
+    margin-bottom: 0.5rem !important;
+}
+
+.accordion-button {
+    padding: 0.75rem 1rem !important;
+}
+
+/* Make lists more compact */
+.list-group-item {
+    padding: 0.5rem 0.75rem !important;
+}
+
+/* Tighter form controls */
+.form-control,
+.form-select {
+    margin-bottom: 0.5rem !important;
+}
+
+/* Reduce gap in flex containers */
+.gap-3 {
+    gap: 0.75rem !important;
+}
+
+.gap-4 {
+    gap: 1rem !important;
+}
+
+/* Navigation tabs spacing */
+.nav-pills {
+    margin-bottom: 0.75rem !important;
+}
+
+.nav-tabs {
+    margin-bottom: 0 !important;
+}
+
+/* Backend cards and server info */
+.backend-card {
+    margin-bottom: 0.75rem !important;
+    padding: 0.75rem !important;
+}
+
+/* Utility sections */
+.utility-section {
+    margin-bottom: 1rem !important;
+}
+
+/* Remove excessive padding from tab panes */
+.tab-pane {
+    padding: 0 !important;
+}
+
+/* Table spacing */
+.table {
+    margin-bottom: 0.75rem !important;
+}
+
+/* Alert spacing */
+.alert {
+    margin-bottom: 0.75rem !important;
+    padding: 0.75rem !important;
+}
+
+/* Button group spacing */
+.btn-group {
+    margin-bottom: 0.5rem !important;
+}
+
+/* Modal content spacing */
+.modal-body {
+    padding: 1rem !important;
+}
+
+.modal-header {
+    padding: 0.75rem 1rem !important;
+}
+
+.modal-footer {
+    padding: 0.75rem 1rem !important;
+}
+

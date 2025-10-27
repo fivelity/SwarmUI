@@ -18,6 +18,7 @@
         <link rel="stylesheet" id="sitecssheader" href="~/css/site.css?vary=@Utilities.VaryID" />
         <link rel="stylesheet" href="~/css/main.css?vary=@Utilities.VaryID" />
         <link rel="stylesheet" id="themecssheader" href="~/css/theme.css?vary=@Utilities.VaryID" />
+        <link rel="stylesheet" href="~/css/layout-fixes.css?vary=@Utilities.VaryID" />
         @RenderSection("Header", required: false)
         @WebServer.PageHeaderExtra
         @foreach (string path in theme.CSSPaths)
@@ -50,22 +51,22 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item" role="presentation">
-                        <a class="nav-link translate" id="main_nav_generate" href="/Text2Image#Generate">Generate</a>
+                        <a class="nav-link translate" id="main_nav_generate" href="#Generate">Generate</a>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <a class="nav-link translate" id="main_nav_simple" href="/Text2Image#Simple">Simple</a>
+                        <a class="nav-link translate" id="main_nav_simple" href="#Simple">Simple</a>
                     </li>
                     <li class="nav-item" role="presentation" id="main_nav_comfy_item">
-                        <a class="nav-link translate" id="main_nav_comfy" href="/Text2Image#Comfy">Comfy Workflow</a>
+                        <a class="nav-link translate" id="main_nav_comfy" href="#Comfy">Comfy Workflow</a>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <a class="nav-link translate" id="main_nav_utilities" href="/Text2Image#Utilities">Utilities</a>
+                        <a class="nav-link translate" id="main_nav_utilities" href="#Utilities">Utilities</a>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <a class="nav-link translate" id="main_nav_settings" href="/Text2Image#Settings">User</a>
+                        <a class="nav-link translate" id="main_nav_settings" href="#Settings">User</a>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <a class="nav-link translate" id="main_nav_server" href="/Text2Image#Server">Server</a>
+                        <a class="nav-link translate" id="main_nav_server" href="#Server">Server</a>
                     </li>
                 </ul>
                 <div class="d-flex align-items-center gap-2">
