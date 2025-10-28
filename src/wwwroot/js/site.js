@@ -297,16 +297,24 @@ document.addEventListener('DOMContentLoaded', () => {
         const mainNavLinks = document.querySelectorAll('#navbarNav .nav-link');
         mainNavLinks.forEach(link => {
             link.addEventListener('click', (e) => {
-                // Don't prevent default if it's an external link (Account, Logout, etc.)
-                const href = link.getAttribute('href');
-                if (!href || !href.includes('#')) return;
-                
-                // Allow the hash navigation to work naturally
-                // The hashchange event will handle the routing
-                
-                // Update active states immediately for responsiveness
+                const href = link.getAttribute('href') || '';
+                // Only handle in-app hash routes here
+                if (!href.startsWith('#')) return;
+                // Prevent default so nothing opens in a new tab/window
+                e.preventDefault();
+                e.stopPropagation();
+                // Update active state for responsiveness
                 mainNavLinks.forEach(navLink => navLink.classList.remove('active'));
                 link.classList.add('active');
+                // Update the URL and trigger routing
+                if (window.location.hash !== href) {
+                    window.location.hash = href;
+                } else {
+                    // If already on the same hash, explicitly activate
+                    if (typeof activateTabFromHash === 'function') {
+                        activateTabFromHash(href);
+                    }
+                }
             });
         });
         
@@ -378,6 +386,14 @@ document.addEventListener('DOMContentLoaded', () => {
         window.addEventListener('hashchange', () => {
             const hash = window.location.hash || '#Generate';
             setActiveMainNavByHash(hash);
+            // Guard: ensure only one pane remains active
+            const panes = document.querySelectorAll('.tab-content.tab-hundred > .tab-pane');
+            panes.forEach(p => {
+                p.style.removeProperty('display');
+                if (!p.id || !hash.toLowerCase().includes(p.id.toLowerCase())) {
+                    p.classList.remove('show', 'active');
+                }
+            });
             activateTabFromHash(hash);
         });
         
@@ -387,6 +403,8 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 const hash = window.location.hash || '#Generate';
                 setActiveMainNavByHash(hash);
+                // Clear any stray actives, then apply
+                document.querySelectorAll('.tab-content.tab-hundred > .tab-pane').forEach(p => p.classList.remove('show', 'active'));
                 activateTabFromHash(hash);
             }, 100);
         });

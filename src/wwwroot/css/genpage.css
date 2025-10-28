@@ -59,6 +59,19 @@ limitations under the License.
     --btn-secondary-color: var(--bs-body-color);
     --btn-secondary-border: var(--bs-border-color);
     
+    /* Danger button colors */
+    --danger-button-background: var(--bs-danger);
+    --danger-button-foreground: var(--bs-white);
+    --danger-button-border: var(--bs-danger);
+    --danger-button-background-hover: var(--bs-danger);
+    --danger-button-foreground-hover: var(--bs-white);
+    
+    /* Model colors */
+    --model-img-border-color-hover: var(--bs-primary);
+    
+    /* Monospace font */
+    --font-monospace: 'Courier New', Courier, monospace;
+    
     /* Background colors */
     --background-rgb: var(--bs-body-bg-rgb);
     --popup-back: var(--bs-tertiary-bg);
@@ -77,8 +90,8 @@ body {
     overflow-x: hidden;
 }
 
-/* Ensure main content area fills viewport properly */
-main#main {
+/* Main content container should fill viewport - target the actual page container */
+.container-fluid:has(.tab-content.tab-hundred) {
     min-height: 100vh;
     height: 100vh;
     overflow: hidden;
@@ -118,7 +131,6 @@ main#main {
     display: inline-block;
     background-color: var(--bs-border-color);
     margin: 0px;
-    transition: background-color var(--duration-200) var(--ease-in-out);
 }
 
 .large-window .splitter-bar:hover {
@@ -132,14 +144,9 @@ main#main {
 .t2i-top-split-bar,
 #t2i-top-split-bar,
 #t2i-top-2nd-split-bar {
-    display: inline-block !important;
     height: 50vh;
     width: 5px;
     cursor: col-resize;
-    background-color: var(--bs-border-color);
-    margin: 0px;
-    vertical-align: top;
-    transition: background-color var(--duration-200) var(--ease-in-out);
 }
 
 #t2i-top-split-bar:hover,
@@ -150,13 +157,9 @@ main#main {
 /* Horizontal split bar (bottom section) */
 .t2i-mid-split-bar,
 #t2i-mid-split-bar {
-    display: block !important;
     width: 100vw;
     height: 5px;
     cursor: row-resize;
-    background-color: var(--bs-border-color);
-    margin: 0px;
-    transition: background-color var(--duration-200) var(--ease-in-out);
 }
 
 #t2i-mid-split-bar:hover {
@@ -171,14 +174,12 @@ main#main {
     position: relative;
     font-size: 200%;
     cursor: pointer;
-    border-radius: var(--radius-sm);
-    color: var(--text);
-    padding: 0 var(--space-1);
-    transition: background-color var(--duration-150) var(--ease-in-out);
+    border-radius: 0.2rem;
+    color: var(--bs-body-color);
 }
 
 .t2i-split-quickbutton:hover {
-    background-color: var(--item-hover);
+    background-color: var(--bs-primary);
 }
 
 .small-window .t2i-split-quickbutton {
@@ -208,8 +209,6 @@ main#main {
     height: 50vh;
     cursor: col-resize;
     vertical-align: top;
-    background-color: var(--bs-border-color);
-    transition: background-color var(--duration-200) var(--ease-in-out);
 }
 
 #image_editor_sizebar:hover {
@@ -303,6 +302,14 @@ main#main {
     overflow-y: auto !important;
     overflow-x: hidden !important;
     padding: 1rem;
+    /* Do NOT force display here; visibility is controlled by tab active state */
+}
+
+/* When active, these top-level panes should be flex containers */
+.tab-content.tab-hundred > #server_tab.show.active,
+.tab-content.tab-hundred > #user_tab.show.active,
+.tab-content.tab-hundred > #utilities_tab.show.active,
+.tab-content.tab-hundred > #Simple.show.active {
     display: flex !important;
     flex-direction: column;
 }
@@ -330,11 +337,52 @@ main#main {
 }
 .prompt-box {
     width: 100%;
-    border-radius: var(--radius-lg);
+    border-radius: 0.5rem;
+}
+.generate-button {
+    background-color: var(--bs-primary);
+    color: var(--bs-white);
+    border: 1px solid var(--bs-primary);
+    font-size: 150%;
+    font-weight: bold;
+    padding-top: 0.2rem;
+    padding-bottom: 0.2rem;
+    text-align: center;
+    border-radius: 1rem;
+    width: calc(90% - 2rem);
+    margin-left: 5%;
+    margin-bottom: 0.5rem;
+    margin-top: 0.5rem;
+}
+.legacy-interrupt {
+    font-size: 150%;
+    font-weight: bold;
+    padding-top: 0.2rem;
+    padding-bottom: 0.2rem;
+    margin-bottom: 0.5rem;
+    margin-top: 0.5rem;
+}
+.generate-button:hover {
+    background-color: var(--bs-primary-border-subtle);
+    color: var(--bs-white);
+}
+.interrupt-button {
+    background-color: var(--bs-danger);
+    color: var(--bs-white);
+    border: 1px solid var(--bs-danger);
+    font-weight: bold;
+    padding: 0.2rem;
+    border-radius: 0.7rem;
+    min-width: 2rem;
+    margin-left: 0;
 }
 .interrupt-button-none {
-    background-color: rgba(var(--bs-danger-rgb), 0.2);
+    background-color: color-mix(in srgb, transparent 80%, var(--bs-danger));
     opacity: 0.4;
+}
+.interrupt-button:hover {
+    background-color: var(--bs-danger);
+    color: var(--bs-white);
 }
 .tab-content {
     white-space: normal;
@@ -346,16 +394,16 @@ main#main {
     gap: var(--space-2);
 }
 .advanced_input_checkbox {
-    cursor: pointer;
-    width: calc(100% - var(--space-8));
-    margin-left: var(--space-4);
-    margin-right: var(--space-4);
+    width: calc(100% - 2rem);
+    margin-left: 1rem;
+    margin-right: 1rem;
     text-align: center;
     background-color: var(--bs-tertiary-bg);
-    margin-top: var(--space-2);
-    margin-bottom: var(--space-2);
-    padding: var(--space-2);
-    border-top: var(--input-border-width) solid var(--bs-border-color);
+    margin-top: 1rem;
+    margin-bottom: 1.5rem;
+    cursor: pointer;
+    position: relative;
+    bottom: 2.25rem;
 }
 .advanced_input_checkbox_presets {
     bottom: 0rem;
@@ -372,11 +420,13 @@ main#main {
 /* Main inputs wrapper - fills available space */
 #main_inputs_area_wrapper,
 .main_inputs_area_wrapper {
-    flex: 1 1 auto !important;
-    min-height: 0 !important;
-    display: flex !important;
-    flex-direction: column !important;
-    overflow: hidden !important;
+    overflow-x: hidden;
+    overflow-y: auto;
+    white-space: normal;
+    padding: 0.5rem;
+    padding-right: 1rem;
+    width: 100%;
+    height: 100%;
 }
 
 /* Scrollable inputs area */
@@ -429,25 +479,29 @@ main#main {
 
 /* Current image container */
 .current_image {
+    display: inline-block;
+    padding: 0.5rem;
+    padding-right: 0;
+    border: 1px solid var(--bs-border-color);
     width: 100%;
     height: 100%;
-    overflow: auto;
+    vertical-align: top;
+    overflow-x: hidden;
+    overflow-y: auto;
     object-fit: contain;
-    background-color: var(--bs-secondary-bg);
-    border: 1px solid var(--bs-border-color);
-    border-radius: 0.375rem;
 }
 
 /* Image wrap box - fills space above prompt */
 #current_image_wrapbox {
-    flex: 1 1 auto !important;
-    min-height: 0 !important;
-    display: flex;
-    flex-direction: column;
-    overflow: auto;
+    display: inline-block;
+    width: calc(100vw - (28rem - 5px) - 22rem);
+    height: 49vh;
+    vertical-align: top;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 .current-image-data {
-    white-space: normal;
+    white-space: wrap;
     font-size: 80%;
 }
 .current-image-img {
@@ -497,10 +551,21 @@ main#main {
     width: calc(100% - 10px);
 }
 .batch-gear-button {
+    height: 1.6rem;
     position: absolute;
-    top: 0.5rem;
-    right: 0.5rem;
-    z-index: 10;
+    top: -0.2rem;
+    left: 0;
+    width: fit-content;
+    padding: 0.1rem;
+    color: color-mix(in srgb, var(--text) 70%, var(--background));
+    background-color: color-mix(in srgb, transparent 50%, var(--background));
+    border-radius: 0.4rem;
+    transition: all 0.5s ease-out;
+    cursor: pointer;
+}
+.batch-gear-button:hover {
+    color: var(--text);
+    background-color: var(--emphasis);
 }
 .image-block {
     display: inline-block;
@@ -516,20 +581,53 @@ main#main {
 .current_image_placeholder img {
     filter: blur(10px);
 }
+.image-block-legacy {
+    position: relative;
+    height: 11.5rem;
+    width: 10rem;
+    padding-top: 0.1rem;
+    padding-left: 0.1rem;
+    padding-right: 0.1rem;
+    overflow: hidden;
+    white-space: pre-wrap;
+    word-break: break-all;
+}
+.image-block-small {
+    height: 7rem;
+    width: 7rem;
+}
+.image-block-big {
+    height: 17.5rem;
+    width: 16rem;
+}
+.image-block-giant {
+    height: 27.5rem;
+    width: 26rem;
+}
+.image-block-legacy img {
+    height: 8rem;
+}
+.image-block-small img {
+    height: 5rem;
+}
+.image-block-big img {
+    height: 15rem;
+}
+.image-block-giant img {
+    height: 25rem;
+}
 .image-block-batch {
-    width: calc(8rem + 2px);
+    width: calc(10rem + 2px);
     padding: 1px;
     display: inline-block;
     overflow: hidden;
-    margin: 1px;
-    vertical-align: top;
 }
 .image-block-batch img, .image-block-batch video {
     max-height: 100%;
     width: 100%;
 }
 .image-block:hover {
-    background-color: var(--bs-secondary-bg);
+    background-color: var(--emphasis);
 }
 .image-block-starred {
     box-shadow: 0 0 1px 1px var(--star);
@@ -558,13 +656,16 @@ main#main {
     content: '';
     width: 10rem;
     height: 1rem;
-    background-color: var(--bs-secondary-bg);
+    background-color: var(--emphasis);
 }
 .image-block-failed::before {
     transform: rotate(45deg);
 }
 .image-block-failed::after {
     transform: rotate(-45deg);
+}
+.image-block.image-block-current {
+    outline: 3px solid var(--box-selected-border-stronger);
 }
 .image-batch-0 {
     background-color: var(--batch-0);
@@ -589,44 +690,46 @@ main#main {
     font-size: 90%;
 }
 .image-preview-text {
-    font-family: var(--bs-font-monospace);
+    font-family: var(--font-monospace);
     min-width: 100%;
     max-width: 0;
 }
 .current_model_view {
     display: inline-block;
+    border: 1px dotted var(--light-border);
+    background-color: var(--background-soft);
+    border-radius: 0.3rem;
+    padding-left: 0.2rem;
+    padding-right: 0.2rem;
 }
 .model-block {
-    height: var(--space-40);
+    height: 10rem;
     width: 30rem;
-    margin: var(--space-0_5);
+    margin: 0.2rem;
     display: inline-block;
     overflow: hidden;
     white-space: nowrap;
     vertical-align: top;
     position: relative;
-    border: var(--input-border-width) solid var(--bs-border-color);
-    border-radius: var(--radius-lg);
-    transition: all var(--duration-200) var(--ease-out);
+    border: 1px solid var(--light-border);
 }
 .model-block img {
-    max-height: var(--space-36);
-    width: var(--space-36);
-    height: var(--space-36);
+    max-height: 9rem;
+    width: 9rem;
+    height: 9rem;
     display: inline-block;
-    margin: var(--space-2);
-    margin-bottom: 0;
+    margin: 0.5rem;
+    margin-bottom: 0px;
     vertical-align: top;
     cursor: pointer;
     object-fit: contain;
-    background-color: var(--bs-tertiary-bg);
-    border-radius: var(--radius-md);
-    transition: all var(--duration-200) var(--ease-out);
+    background-color: var(--background-soft);
 }
 .model-descblock {
     width: 19.5rem;
     height: 10rem;
     overflow: hidden;
+    scrollbar-gutter: stable;
     display: inline-block;
     white-space: normal;
     word-break: normal;
@@ -678,36 +781,36 @@ main#main {
     padding-right: 0.2rem;
     border-radius: 0.2rem;
     opacity: 0.7;
-    background-color: rgba(var(--bs-body-bg-rgb), 0.2);
+    background-color: color-mix(in srgb, transparent 80%, var(--background));
     transition: background-color 0.2s ease-out;
 }
 .image-block:hover .model-block-menu-button {
     opacity: 1.0;
-    background-color: rgba(var(--bs-body-bg-rgb), 0.5);
+    background-color: color-mix(in srgb, transparent 50%, var(--background));
 }
 .model-block-menu-button:hover {
     opacity: 1.0;
-    background-color: var(--bs-primary) !important;
+    background-color: var(--emphasis) !important;
     cursor: pointer;
-    border: 1px solid var(--bs-border-color);
-    color: var(--bs-emphasis-color);
+    border: 1px solid var(--button-border);
+    color: var(--text-strong);
 }
 .model-selected {
-    border: 1px solid var(--bs-primary);
-    background-color: var(--bs-secondary-bg);
+    border: 1px solid var(--box-selected-border-stronger);
+    background-color: var(--box-selected-background-stronger);
 }
 .model-loaded {
-    border: 1px solid rgba(var(--bs-primary-rgb), 0.5);
-    background-color: rgba(var(--bs-secondary-bg-rgb), 0.5);
+    border: 1px solid color-mix(in srgb, var(--background) 50%, var(--box-selected-border));
+    background-color: color-mix(in srgb, var(--background) 50%, var(--box-selected-background));
 }
 .model-unavailable {
     opacity: 0.3;
 }
 .model-remote {
-    background-color: var(--bs-tertiary-bg);
+    background-color: var(--background-gray);
 }
 .model-starred img {
-    box-shadow: 0 0 3px 1px rgba(var(--star-rgb), 0.5);
+    box-shadow: 0 0 3px 1px color-mix(in srgb, var(--star) 50%, transparent);
 }
 .sui_popover_model {
     white-space: normal;
@@ -718,7 +821,7 @@ main#main {
     cursor: pointer;
     padding-left: 3px;
     padding-right: 3px;
-    color: var(--bs-body-color);
+    color: var(--text);
     text-decoration: none;
     min-height: 1.3rem;
     line-height: 1.3rem;
@@ -732,23 +835,24 @@ main#main {
     width: 100%;
     padding-left: 3px;
     padding-right: 3px;
-    color: var(--bs-body-color);
+    color: var(--text);
     text-decoration: none;
     margin-bottom: 0.5rem;
     margin-top: 0.5rem;
-    border-bottom: 1px solid var(--bs-border-color);
+    border-bottom: 1px solid var(--light-border);
     height: 1.3rem;
 }
 .sui_popover_model_button_selected {
-    background-color: rgba(var(--bs-primary-rgb), 0.5);
+    background-color: color-mix(in srgb, var(--emphasis) 50%, var(--background));
 }
 .sui_popover_model_button_add_all {
     padding-bottom: 0.1rem;
-    border-bottom: 1px solid var(--bs-border-color);
+    border-bottom: 1px solid var(--light-border);
     margin-bottom: 0.1rem;
 }
 .sui_popover_model_button:hover {
-    background-color: var(--bs-primary);
+    background-color: var(--emphasis);
+    color: var(--emphasis-text);
 }
 .sui-popover-inline-block {
     white-space: nowrap;
@@ -774,23 +878,23 @@ main#main {
 }
 .model_filename {
     font-size: 80%;
-    color: var(--bs-secondary-color);
+    color: var(--text-soft);
 }
 .refresh-button {
     margin: 0.5rem;
-    background-color: var(--btn-primary-bg);
-    color: var(--btn-primary-color);
+    background-color: var(--button-background);
+    color: var(--button-text);
     border-radius: 0.5rem;
-    border: 1px solid var(--btn-primary-border);
+    border: 1px solid var(--button-border);
     min-width: 2rem;
 }
 .refresh-button:hover {
-    background-color: var(--btn-primary-hover-bg);
-    color: var(--btn-primary-color);
+    background-color: var(--button-background-hover);
+    color: var(--button-foreground-hover);
 }
 .refresh-button:disabled {
-    background-color: var(--bs-secondary-bg);
-    color: var(--bs-secondary-color);
+    background-color: var(--button-background-disabled);
+    color: var(--button-foreground-disabled);
 }
 .tool-container .tool {
     display: none;
@@ -804,7 +908,7 @@ main#main {
     width: 95%;
     margin-left: 2.5%;
     padding: 0.5rem;
-    border: 1px solid var(--bs-border-color);
+    border: 1px solid var(--light-border);
 }
 .tool-selector {
     margin-top: 0.5rem;
@@ -812,10 +916,10 @@ main#main {
     margin-left: 5%;
 }
 .modal_error_bottom {
-    color: var(--bs-danger);
+    color: var(--red);
 }
 .modal_success_bottom {
-    color: var(--bs-success);
+    color: var(--green);
 }
 #add_preset_modal {
     max-height: calc(95vh - var(--bs-modal-margin));
@@ -840,8 +944,8 @@ main#main {
     z-index: 1055;
 }
 .preset-block-selected {
-    border: 1px solid var(--bs-primary);
-    background-color: var(--bs-secondary-bg);
+    border: 1px solid var(--box-selected-border);
+    background-color: var(--box-selected-background);
 }
 .preset-descblock {
     width: 20rem;
@@ -851,7 +955,7 @@ main#main {
 }
 .preset-in-list {
     display: inline-block;
-    border: 1px solid var(--bs-border-color);
+    border: 1px solid var(--light-border);
     padding-left: 0.5rem;
     border-radius: 1rem;
     border-right: none;
@@ -861,14 +965,8 @@ main#main {
 }
 .preset-remove-button {
     display: inline-block;
-    color: var(--bs-body-color);
+    color: var(--text);
     font-weight: bold;
-    border: 1px solid var(--bs-danger);
-    border-radius: 0.5rem;
-    margin-left: 0.2rem;
-    padding-left: 0.2rem;
-    padding-right: 0.2rem;
-    cursor: pointer;
 }
 .preset-remove-button:hover {
     background-color: rgba(var(--bs-danger-rgb), 0.7);

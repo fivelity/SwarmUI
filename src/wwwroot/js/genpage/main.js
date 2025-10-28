@@ -77,7 +77,7 @@ function updateCurrentStatusDirect(data) {
         if (num == 0) {
             return '';
         }
-        return `<span class=\"interrupt-line-part\">${num} ${text.replaceAll('%', autoS(num))},</span> `;
+        return `<span class="interrupt-line-part">${num} ${text.replaceAll('%', autoS(num))},</span> `;
     }
     let timeEstimate = '';
     if (total > 0 && mainGenHandler.totalGensThisRun > 0) {
@@ -85,12 +85,9 @@ function updateCurrentStatusDirect(data) {
         let estTime = avgGenTime * total;
         timeEstimate = ` (est. ${durationStringify(estTime)})`;
     }
-    const statusText = total == 0 ? (isGeneratingPreviews ? generatingPreviewsText.get() : '') : `${autoBlock(num_current_gens, 'current generation%')}${autoBlock(num_live_gens, 'running')}${autoBlock(num_backends_waiting, 'queued')}${autoBlock(num_models_loading, waitingOnModelLoadText.get())} ${timeEstimate}...`;
-    elem.innerHTML = statusText;
+    elem.innerHTML = total == 0 ? (isGeneratingPreviews ? generatingPreviewsText.get() : '') : `${autoBlock(num_current_gens, 'current generation%')}${autoBlock(num_live_gens, 'running')}${autoBlock(num_backends_waiting, 'queued')}${autoBlock(num_models_loading, waitingOnModelLoadText.get())} ${timeEstimate}...`;
     let max = Math.max(num_current_gens, num_models_loading, num_live_gens, num_backends_waiting);
     setPageTitle(total == 0 ? curAutoTitle : `(${max} ${generatingText.get()}) ${curAutoTitle}`);
-    const live = document.getElementById('live_status');
-    if (live) { live.textContent = statusText.replace(/<[^>]*>/g, ''); }
 }
 
 let doesHaveGenCountUpdateQueued = false;
@@ -236,9 +233,6 @@ function genToolsList() {
     let altGenerateButtonRawText = altGenerateButton.innerText;
     let altGenerateButtonRawOnClick = altGenerateButton.onclick;
     toolSelector.value = '';
-    // Restore last selected tool
-    let savedTool = localStorage.getItem('sui.selectedTool') || '';
-    if (savedTool) { toolSelector.value = savedTool; }
     // TODO: Dynamic-from-server option list generation
     toolSelector.addEventListener('change', () => {
         for (let opened of toolContainer.getElementsByClassName('tool-open')) {
@@ -250,7 +244,6 @@ function genToolsList() {
             oldGenerateButton.innerText = altGenerateButtonRawText;
         }
         let tool = toolSelector.value;
-        localStorage.setItem('sui.selectedTool', tool || '');
         if (tool == '') {
             getRequiredElementById('clear_selected_tool_button').style.display = 'none';
             return;
@@ -268,8 +261,6 @@ function genToolsList() {
         div.dispatchEvent(new Event('tool-opened'));
         getRequiredElementById('clear_selected_tool_button').style.display = '';
     });
-    // Trigger initial selection application
-    triggerChangeFor(toolSelector);
 }
 
 let toolOverrides = {};
@@ -437,9 +428,6 @@ function doFeatureInstaller(name, button_div_id, alt_confirm, callback = null, d
         if (buttonDiv) {
             buttonDiv.appendChild(createDiv('', null, "Installed! Please wait while backends restart. If it doesn't work, you may need to restart Swarm."));
         }
-        if (typeof showSuccess === 'function') {
-            showSuccess('Feature(s) installed. Backends are restarting...');
-        }
         reviseStatusBar();
         setTimeout(() => {
             if (deleteButton && buttonDiv) {
@@ -455,7 +443,7 @@ function doFeatureInstaller(name, button_div_id, alt_confirm, callback = null, d
         showError(e);
         if (buttonDiv) {
             buttonDiv.appendChild(createDiv('', null, 'Failed to install!'));
-            buttonDiv.querySelector('button').disabled = false;
+            buttonDiv.querySelector('button')._DISABLED = false;
         }
     });
 }
@@ -636,38 +624,33 @@ function clickAnchorIn(listId, hrefId) {
 }
 
 function applyWorkspaceRoute(hash) {
-    // Supports routes like #Generate, #Simple, #Utilities, #Settings, #Settings/API-Keys, #Server, #Comfy (if present)
     if (!hash) return false;
     let parts = hash.replace(/^#/, '').split('/');
     let top = parts[0].toLowerCase();
     let sub = parts.length > 1 ? parts.slice(1).join('/') : '';
-    
-    // Hide only TOP-LEVEL tab panes (direct children of .tab-content), not nested ones
+
     const topLevelPanes = document.querySelectorAll('.tab-content.tab-hundred > .tab-pane');
     topLevelPanes.forEach(pane => {
-        pane.style.display = 'none';
         pane.classList.remove('show', 'active');
     });
-    
-    // Update main navigation active states
+
     const mainNavLinks = document.querySelectorAll('#navbarNav .nav-link');
     mainNavLinks.forEach(link => link.classList.remove('active'));
-    
+
     function showPane(paneId) {
         const pane = document.getElementById(paneId);
         if (pane) {
-            pane.style.display = 'block';
             pane.classList.add('show', 'active');
         }
     }
-    
+
     function setMainNavActive(navId) {
         const navLink = document.getElementById(navId);
         if (navLink) navLink.classList.add('active');
     }
-    
+
     function click(id) { let e = document.getElementById(id); if (e) e.click(); }
-    
+
     switch (top) {
         case 'generate':
         case 'image':
@@ -688,7 +671,6 @@ function applyWorkspaceRoute(hash) {
             setMainNavActive('main_nav_utilities');
             click('utilitiestabbutton');
             updateSubNavigation('utilities', sub);
-            // Allow subroutes like #Utilities/CLIP-Tokenization or #Utilities/LoRA-Extractor
             setTimeout(() => {
                 let subLower = sub.toLowerCase();
                 let matched = false;
@@ -705,7 +687,6 @@ function applyWorkspaceRoute(hash) {
             setMainNavActive('main_nav_settings');
             click('usersettingstabbutton');
             updateSubNavigation('settings', sub);
-            // Subroutes like #Settings/API-Keys, #Settings/User, #Settings/Layout
             setTimeout(() => {
                 let subLower = sub.toLowerCase();
                 let matched = false;
@@ -720,7 +701,6 @@ function applyWorkspaceRoute(hash) {
             setMainNavActive('main_nav_server');
             click('servertabbutton');
             updateSubNavigation('server');
-            // Ensure the first sub-tab is activated
             setTimeout(() => {
                 const firstSubTab = document.querySelector('#servertablist .nav-link');
                 if (firstSubTab && !document.querySelector('#servertablist .nav-link.active')) {
@@ -729,27 +709,23 @@ function applyWorkspaceRoute(hash) {
             }, 10);
             return true;
         case 'comfy':
-            // Try common comfy anchors injected by @WebServer.T2ITabHeader
             let comfy = document.querySelector("a[href*='Comfy']");
             if (comfy) {
                 let paneId = comfy.getAttribute('href').substring(1);
                 showPane(paneId);
                 setMainNavActive('main_nav_comfy');
-                // Make sure ComfyUI nav item is visible
                 const comfyNavItem = document.getElementById('main_nav_comfy_item');
                 if (comfyNavItem) comfyNavItem.style.display = '';
                 comfy.click();
                 updateSubNavigation('comfy');
             }
             else {
-                // Fallback: click any anchor containing 'comfy' text
                 let anchors = [...document.querySelectorAll('#toptablist a')];
                 let found = anchors.find(a => a.textContent.toLowerCase().includes('comfy'));
                 if (found) {
                     let paneId = found.getAttribute('href').substring(1);
                     showPane(paneId);
                     setMainNavActive('main_nav_comfy');
-                    // Make sure ComfyUI nav item is visible
                     const comfyNavItem = document.getElementById('main_nav_comfy_item');
                     if (comfyNavItem) comfyNavItem.style.display = '';
                     found.click();
@@ -777,7 +753,6 @@ function buildWorkspaceHash() {
         let sub = document.querySelector('#utilitiestablist .nav-link.active');
         if (sub) {
             let id = sub.getAttribute('href').substring(1);
-            // Map known utilities to human-friendly names
             const map = {
                 'Utilities-CLIP-Token-Tab': 'CLIP-Tokenization',
                 'Utilities-Pickle2Safetensor-Tab': 'Pickle2Safetensors',
@@ -844,9 +819,28 @@ function normalizeLegacyHash() {
 }
 
 function updateHash() {
-    // Always push simplified workspace route
-    const route = buildWorkspaceHash();
-    history.pushState(null, null, route);
+    let tabList = getRequiredElementById('toptablist');
+    let bottomTabList = getRequiredElementById('bottombartabcollection');
+    let activeTopTab = tabList.querySelector('.active');
+    let activeBottomTab = bottomTabList.querySelector('.active');
+    let activeBottomTabHref = activeBottomTab ? activeBottomTab.href.split('#')[1] : '';
+    let activeTopTabHref = activeTopTab ? activeTopTab.href.split('#')[1] : '';
+    let hash = `#${activeBottomTabHref},${activeTopTabHref}`;
+    let subMapping = hashSubTabMapping[activeTopTabHref];
+    if (subMapping) {
+        let subTabList = getRequiredElementById(subMapping);
+        let activeSubTab = subTabList.querySelector('.active');
+        if (activeSubTab) {
+            hash += `,${activeSubTab.href.split('#')[1]}`;
+        }
+    }
+    else if (activeTopTabHref == 'Simple') {
+        let target = simpleTab.browser.selected || simpleTab.browser.folder;
+        if (target) {
+            hash += `,${encodeURIComponent(target)}`;
+        }
+    }
+    history.pushState(null, null, hash);
     autoTitle();
 }
 
@@ -859,26 +853,6 @@ function loadHashHelper() {
         tabs = tabs.concat([... getRequiredElementById(subMapping).getElementsByTagName('a')]);
     }
     if (location.hash) {
-        if (normalizeLegacyHash()) {
-            // replaced with workspace route; fall through to apply
-        }
-        if (applyWorkspaceRoute(location.hash)) {
-            // handled as workspace route; also allow legacy triplet after a pipe (#Generate|Image-History,Text2Image,Sub)
-            let pipeIdx = location.hash.indexOf('|');
-            if (pipeIdx >= 0) {
-                let legacy = location.hash.substring(pipeIdx + 1);
-                if (legacy.startsWith('#')) legacy = legacy.substring(1);
-                let split = legacy.split(',');
-                // fall through to legacy handling below using temporary variable
-                // emulate original split variable for next block
-                var __legacy_split = split;
-                split = __legacy_split;
-            } else {
-                // Workspace-only route: skip legacy parsing
-                autoTitle();
-                return;
-            }
-        }
         let split = location.hash.substring(1).split(',');
         let bottomTarget = bottomTabList.querySelector(`a[href='#${split[0]}']`);
         if (bottomTarget && bottomTarget.style.display != 'none') {
@@ -905,18 +879,8 @@ function loadHashHelper() {
     for (let tab of tabs) {
         tab.addEventListener('click', (e) => {
             updateHash();
-            updateWorkspaceButtons();
         });
     }
-    window.addEventListener('hashchange', () => {
-        // Normalize any legacy hash, apply route, and sync visuals
-        if (normalizeLegacyHash()) {
-            // normalized; continue with applied route
-        }
-        applyWorkspaceRoute(location.hash);
-        updateWorkspaceButtons();
-    });
-    updateWorkspaceButtons();
 }
 
 function clearParamFilterInput() {
@@ -931,8 +895,6 @@ function clearParamFilterInput() {
 }
 
 function updateSubNavigation(pageType, subRoute = '') {
-    // Sub-navigation is now handled inline within each tab (horizontal layout)
-    // No need to copy to header subnav_bar
     const subnavBar = document.getElementById('subnav_bar');
     if (subnavBar) {
         subnavBar.style.display = 'none';
@@ -940,11 +902,9 @@ function updateSubNavigation(pageType, subRoute = '') {
 }
 
 function updateWorkspaceButtons() {
-    // This function is now simplified since we moved the logic to updateSubNavigation
-    // Just update the sub-navigation based on current active pane
     let activePane = document.querySelector('.tab-content > .tab-pane.show.active');
     if (!activePane) return;
-    
+
     let pageType = '';
     switch (activePane.id) {
         case 'Text2Image': pageType = 'generate'; break;
@@ -953,13 +913,12 @@ function updateWorkspaceButtons() {
         case 'user_tab': pageType = 'settings'; break;
         case 'server_tab': pageType = 'server'; break;
         default:
-            // Check if it's a ComfyUI pane
             if (activePane.id.toLowerCase().includes('comfy')) {
                 pageType = 'comfy';
             }
             break;
     }
-    
+
     if (pageType) {
         updateSubNavigation(pageType);
     }
@@ -1014,8 +973,7 @@ function genpageLoad() {
         }},
         { key: 'Auto Segment Image (SAM2)', action: () => {
             if (!currentBackendFeatureSet.includes('sam2')) {
-let modal = new bootstrap.Modal(getRequiredElementById('sam2_installer'));
-                modal.show();
+                $('#sam2_installer').modal('show');
             }
             else {
                 let img = window.imageEditor.getFinalImageData();
