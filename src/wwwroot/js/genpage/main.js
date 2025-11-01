@@ -710,24 +710,39 @@ function applyWorkspaceRoute(hash) {
             return true;
         case 'comfy':
         case 'comfyworkflow':
-            // Try to find comfy tab in multiple ways
-            let comfyTab = null;
+            // First, check if Comfy tab pane exists directly in the DOM
+            let comfyPane = document.getElementById('Comfy');
             
-            // First, try to find by exact href match
-            comfyTab = document.querySelector("a[href='#Comfy']") || 
-                      document.querySelector("a[href='#comfyworkflow']");
-            
-            // If not found, look for any tab with 'comfy' in href or text
-            if (!comfyTab) {
-                let anchors = [...document.querySelectorAll('#toptablist a')];
-                comfyTab = anchors.find(a => {
-                    const href = a.getAttribute('href') || '';
-                    const text = a.textContent || '';
-                    return href.toLowerCase().includes('comfy') || 
-                           text.toLowerCase().includes('comfy') ||
-                           a.id === 'maintab_comfyworkflow';
-                });
+            if (comfyPane) {
+                // Tab pane exists, show it directly
+                showPane('Comfy');
+                setMainNavActive('main_nav_comfy');
+                const comfyNavItem = document.getElementById('main_nav_comfy_item');
+                if (comfyNavItem) comfyNavItem.style.display = '';
+                
+                // Try to find and click the corresponding tab button if it exists
+                let comfyTab = document.querySelector("a[href='#Comfy']") || 
+                              document.querySelector("a[href='#comfyworkflow']") ||
+                              document.querySelector("#maintab_comfyworkflow") ||
+                              document.querySelector("#toptablist a[href='#Comfy']");
+                if (comfyTab) {
+                    comfyTab.click();
+                }
+                
+                updateSubNavigation('comfy');
+                return true;
             }
+            
+            // Fallback: Try to find comfy tab button in toptablist (for routing purposes)
+            let comfyTab = null;
+            let anchors = [...document.querySelectorAll('#toptablist a')];
+            comfyTab = anchors.find(a => {
+                const href = a.getAttribute('href') || '';
+                const text = a.textContent || '';
+                return href.toLowerCase().includes('comfy') || 
+                       text.toLowerCase().includes('comfy') ||
+                       a.id === 'maintab_comfyworkflow';
+            });
             
             if (comfyTab) {
                 let paneId = comfyTab.getAttribute('href').substring(1);
@@ -737,9 +752,8 @@ function applyWorkspaceRoute(hash) {
                 if (comfyNavItem) comfyNavItem.style.display = '';
                 comfyTab.click();
                 updateSubNavigation('comfy');
-            }
-            else {
-                console.warn('Comfy workflow tab not found');
+            } else {
+                console.warn('Comfy workflow tab not found - tab pane may not be loaded');
             }
             return true;
         default:

@@ -42,11 +42,14 @@ body {
     flex-direction: column;
 }
 
-/* Override genpage.css fixed height for container-fluid */
+/* Override genpage.css fixed height for container-fluid - use flex instead of 100vh */
 .container-fluid:has(.tab-content.tab-hundred) {
     height: auto !important;
     min-height: 0 !important;
     flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
 }
 
 /* All other page tabs (Server, User, Utilities) should fill space */
@@ -54,18 +57,47 @@ body {
 #user_tab,
 #utilities_tab {
     height: 100% !important;
+    display: none !important;
     padding: 1rem !important;
     overflow-y: auto !important;
     overflow-x: hidden !important;
 }
 
+#server_tab.show.active,
+#server_tab.active,
+#user_tab.show.active,
+#user_tab.active,
+#utilities_tab.show.active,
+#utilities_tab.active {
+    display: flex !important;
+    flex-direction: column !important;
+}
+
 /* Simple tab layout */
 #Simple {
     height: 100% !important;
-    display: flex !important;
+    display: none !important;
     flex-direction: column !important;
     padding: 1rem !important;
     overflow: hidden !important;
+}
+
+#Simple.show.active,
+#Simple.active {
+    display: flex !important;
+}
+
+/* Text2Image tab should also use flex */
+#Text2Image {
+    height: 100% !important;
+    display: none !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+}
+
+#Text2Image.show.active,
+#Text2Image.active {
+    display: flex !important;
 }
 
 /* Remove excessive margins from cards and containers */
@@ -196,11 +228,31 @@ body {
 .tab-content.tab-hundred > .tab-pane {
     flex: 1;
     min-height: 0;
-    display: none;
+    display: none !important;
+    overflow: hidden;
 }
 
+/* Active tab panes must use flex display (override genpage.css block display) */
+.tab-content.tab-hundred > .tab-pane.show.active,
 .tab-content.tab-hundred > .tab-pane.active {
-    display: flex;
-    flex-direction: column;
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 !important;
+    min-height: 0 !important;
+}
+
+/* Comfy tab pane specific styling */
+#Comfy {
+    height: 100% !important;
+    display: none !important;
+    overflow: hidden;
+}
+
+#Comfy.show.active,
+#Comfy.active {
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 !important;
+    min-height: 0 !important;
 }
 
