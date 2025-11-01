@@ -709,28 +709,37 @@ function applyWorkspaceRoute(hash) {
             }, 10);
             return true;
         case 'comfy':
-            let comfy = document.querySelector("a[href*='Comfy']");
-            if (comfy) {
-                let paneId = comfy.getAttribute('href').substring(1);
+        case 'comfyworkflow':
+            // Try to find comfy tab in multiple ways
+            let comfyTab = null;
+            
+            // First, try to find by exact href match
+            comfyTab = document.querySelector("a[href='#Comfy']") || 
+                      document.querySelector("a[href='#comfyworkflow']");
+            
+            // If not found, look for any tab with 'comfy' in href or text
+            if (!comfyTab) {
+                let anchors = [...document.querySelectorAll('#toptablist a')];
+                comfyTab = anchors.find(a => {
+                    const href = a.getAttribute('href') || '';
+                    const text = a.textContent || '';
+                    return href.toLowerCase().includes('comfy') || 
+                           text.toLowerCase().includes('comfy') ||
+                           a.id === 'maintab_comfyworkflow';
+                });
+            }
+            
+            if (comfyTab) {
+                let paneId = comfyTab.getAttribute('href').substring(1);
                 showPane(paneId);
                 setMainNavActive('main_nav_comfy');
                 const comfyNavItem = document.getElementById('main_nav_comfy_item');
                 if (comfyNavItem) comfyNavItem.style.display = '';
-                comfy.click();
+                comfyTab.click();
                 updateSubNavigation('comfy');
             }
             else {
-                let anchors = [...document.querySelectorAll('#toptablist a')];
-                let found = anchors.find(a => a.textContent.toLowerCase().includes('comfy'));
-                if (found) {
-                    let paneId = found.getAttribute('href').substring(1);
-                    showPane(paneId);
-                    setMainNavActive('main_nav_comfy');
-                    const comfyNavItem = document.getElementById('main_nav_comfy_item');
-                    if (comfyNavItem) comfyNavItem.style.display = '';
-                    found.click();
-                    updateSubNavigation('comfy');
-                }
+                console.warn('Comfy workflow tab not found');
             }
             return true;
         default:

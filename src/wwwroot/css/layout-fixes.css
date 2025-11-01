@@ -3,17 +3,50 @@
    These fixes address the content appending and spacing issues
    ======================================== */
 
-/* Ensure navbar doesn't add extra spacing */
-.navbar {
-    margin-bottom: 0 !important;
+/* Full-height layout setup for body and html */
+html {
+    height: 100%;
 }
 
-/* Container fluid should fill available space */
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Ensure navbar and other fixed elements don't interfere */
+.navbar {
+    margin-bottom: 0 !important;
+    flex-shrink: 0;
+}
+
+/* Status bar and toasts should be positioned absolutely */
+.top-status-bar-wrapper,
+.center-toast,
+#version_display {
+    position: fixed !important;
+}
+
+/* Subnav bar should not take space if hidden */
+#subnav_bar {
+    flex-shrink: 0;
+}
+
+/* Container fluid should fill available space after navbar */
 .container-fluid {
-    height: 100%;
+    flex: 1;
     min-height: 0;
     padding: 0 !important;
     margin: 0 !important;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Override genpage.css fixed height for container-fluid */
+.container-fluid:has(.tab-content.tab-hundred) {
+    height: auto !important;
+    min-height: 0 !important;
+    flex: 1 !important;
 }
 
 /* All other page tabs (Server, User, Utilities) should fill space */
@@ -144,5 +177,30 @@
 
 .modal-footer {
     padding: 0.75rem 1rem !important;
+}
+
+/* Ensure secondary tab list stays hidden - it's for routing only */
+#toptablist {
+    display: none !important;
+}
+
+/* Ensure tab-hundred fills the remaining space */
+.tab-content.tab-hundred {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Tab panes should fill their container */
+.tab-content.tab-hundred > .tab-pane {
+    flex: 1;
+    min-height: 0;
+    display: none;
+}
+
+.tab-content.tab-hundred > .tab-pane.active {
+    display: flex;
+    flex-direction: column;
 }
 

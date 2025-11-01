@@ -244,6 +244,9 @@ function doGlobalErrorDebug() {
 
 /***** Header/workspace/subnav helpers *****/
 function setActiveMainNavByHash(hash) {
+    // Extract the base hash without sub-routes
+    const baseHash = hash.split('/')[0];
+    
     const map = {
         '#Generate': 'main_nav_generate',
         '#Text2Image': 'main_nav_generate', 
@@ -263,7 +266,16 @@ function setActiveMainNavByHash(hash) {
     mainNavLinks.forEach(link => link.classList.remove('active'));
     
     // Set active based on current hash
-    let targetId = map[hash] || 'main_nav_generate';
+    let targetId = map[baseHash];
+    
+    // If not in map, check if it's a comfy-related hash
+    if (!targetId && baseHash.toLowerCase().includes('comfy')) {
+        targetId = 'main_nav_comfy';
+    }
+    
+    // Default to generate if still not found
+    targetId = targetId || 'main_nav_generate';
+    
     let target = document.getElementById(targetId);
     if (target) {
         target.classList.add('active');
