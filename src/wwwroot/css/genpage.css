@@ -84,19 +84,56 @@ limitations under the License.
     --shadow-current: var(--shadow-sm);
 }
 
+/* Full-height layout setup for body and html */
+html {
+    height: 100%;
+}
+
 body {
     margin: 0;
     padding: 0;
     overflow-x: hidden;
-}
-
-/* Main content container should fill viewport - target the actual page container */
-.container-fluid:has(.tab-content.tab-hundred) {
     min-height: 100vh;
-    height: 100vh;
-    overflow: hidden;
     display: flex;
     flex-direction: column;
+}
+
+/* Ensure navbar and other fixed elements don't interfere */
+.navbar {
+    margin-bottom: 0;
+    flex-shrink: 0;
+}
+
+/* Status bar and toasts should be positioned absolutely */
+.top-status-bar-wrapper,
+.center-toast,
+#version_display {
+    position: fixed;
+}
+
+/* Subnav bar should not take space if hidden */
+#subnav_bar {
+    flex-shrink: 0;
+}
+
+/* Container fluid should fill available space after navbar */
+.container-fluid {
+    flex: 1;
+    min-height: 0;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Main content container should fill viewport - use flex instead of 100vh */
+.container-fluid:has(.tab-content.tab-hundred) {
+    height: auto;
+    min-height: 0;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
 
 /* Top-level tab content container */
@@ -110,16 +147,19 @@ body {
 
 /* All top-level tab panes */
 .tab-content.tab-hundred > .tab-pane {
-    display: none !important;
+    display: none;
     flex: 1;
     min-height: 0;
     overflow: hidden;
 }
 
 /* Only show active tab pane */
-.tab-content.tab-hundred > .tab-pane.show.active {
-    display: flex !important;
+.tab-content.tab-hundred > .tab-pane.show.active,
+.tab-content.tab-hundred > .tab-pane.active {
+    display: flex;
     flex-direction: column;
+    flex: 1;
+    min-height: 0;
 }
 
 /* ========================================
@@ -279,14 +319,38 @@ body {
 }
 
 .tab-pane.show.active {
-    display: block !important;
+    display: block;
+}
+
+/* Remove excessive padding from tab panes - but allow bottom tabs */
+.tab-pane:not(.genpage-bottom-tab) {
+    padding: 0;
 }
 
 /* Ensure nested tab panes (inside any tab) remain visible if active */
 .genpage-bottom-tab.show.active,
 .tab-pane.show.active .tab-pane.show.active,
 .tab-pane .tab-pane.show.active {
-    display: block !important;
+    display: block;
+}
+
+/* Genpage bottom tabs - ensure proper display */
+.genpage-bottom-tab {
+    display: none;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+    flex-direction: column;
+}
+
+.genpage-bottom-tab.show.active,
+.genpage-bottom-tab.active {
+    display: flex;
+}
+
+/* Ensure secondary tab list stays hidden - it's for routing only */
+#toptablist {
+    display: none;
 }
 
 /* ========================================
@@ -417,16 +481,38 @@ body {
    LEFT SIDEBAR - Parameter Inputs
    ======================================== */
 
-/* Main inputs wrapper - fills available space */
+/* Main inputs wrapper - fills available space, scrollable */
 #main_inputs_area_wrapper,
 .main_inputs_area_wrapper {
+    flex: 1;
+    min-height: 0;
     overflow-x: hidden;
     overflow-y: auto;
     white-space: normal;
     padding: 0.5rem;
     padding-right: 1rem;
     width: 100%;
-    height: 100%;
+    /* Smooth scrolling */
+    scrollbar-width: thin;
+    scrollbar-color: var(--bs-border-color) transparent;
+}
+
+/* Webkit scrollbar styling for input sidebar */
+#main_inputs_area_wrapper::-webkit-scrollbar {
+    width: 8px;
+}
+
+#main_inputs_area_wrapper::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+#main_inputs_area_wrapper::-webkit-scrollbar-thumb {
+    background-color: var(--bs-border-color);
+    border-radius: 4px;
+}
+
+#main_inputs_area_wrapper::-webkit-scrollbar-thumb:hover {
+    background-color: var(--bs-secondary-color);
 }
 
 /* Scrollable inputs area */
@@ -468,21 +554,48 @@ body {
 
 /* Advanced checkbox at bottom - fixed height */
 .advanced_input_checkbox {
-    flex: 0 0 auto !important;
+    flex: 0 0 auto;
     min-height: auto;
-    border-top: 1px solid var(--bs-border-color) !important;
+    padding: 0.75rem;
+    border-top: 1px solid var(--bs-border-color);
     background-color: var(--bs-tertiary-bg);
+    margin-top: auto;
 }
 /* ========================================
    CENTER AREA - Image Display
    ======================================== */
 
 /* Current image container */
+.current_image,
+#current_image {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 0.5rem;
+    background-color: var(--bs-secondary-bg);
+    overflow: auto;
+    position: relative;
+}
+
+/* Ensure images don't get clipped */
+#current_image img,
+#current_image video,
+.current_image img,
+.current_image video {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+/* Legacy current_image styling */
 .current_image {
     display: inline-block;
     padding: 0.5rem;
     padding-right: 0;
-    border: 1px solid var(--bs-border-color);
     width: 100%;
     height: 100%;
     vertical-align: top;
@@ -491,7 +604,104 @@ body {
     object-fit: contain;
 }
 
+/* Top bar container should be a flex row */
+.t2i-top-bar-container {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+    padding: 0;
+}
+
+/* Top bar should display children in a row */
+.t2i-top-bar,
+#t2i_top_bar {
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+    align-items: stretch;
+    width: 100%;
+}
+
+/* Input sidebar - left column */
+.input-sidebar,
+#input_sidebar {
+    flex: 0 0 auto;
+    min-width: 300px;
+    max-width: 350px;
+    width: auto;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    height: 100%;
+}
+
+/* Input sidebar tab content - scrollable */
+#input_sidebar .tab-content,
+#inputsidebartab_content {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* Input sidebar tab pane - scrollable */
+#input_sidebar .tab-pane,
+#Input-Sidebar-Main-Tab {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* Split bars - fixed width, no flex */
+.t2i-top-split-bar,
+#t2i-top-split-bar,
+#t2i-top-2nd-split-bar {
+    flex: 0 0 5px;
+    min-width: 5px;
+    max-width: 5px;
+    width: 5px;
+}
+
+/* Main image area - center column, takes remaining space */
+.main-image-area,
+#main_image_area {
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: none;
+    width: auto;
+    display: flex;
+    flex-direction: column;
+    overflow: visible;
+    position: relative;
+}
+
 /* Image wrap box - fills space above prompt */
+#current_image_wrapbox,
+.current_image_wrapbox {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* Image Result Tab should fill its container */
+#Image-Result-Tab {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: visible;
+}
+
+/* Image wrap box - fills space above prompt (legacy) */
 #current_image_wrapbox {
     display: inline-block;
     width: calc(100vw - (28rem - 5px) - 22rem);
@@ -514,28 +724,75 @@ body {
    RIGHT SIDEBAR - Batch Images
    ======================================== */
 
-/* Batch wrapper - fills column */
+/* Batch wrapper - right column, fixed width for gallery */
+.current_image_batch,
 #current_image_batch_wrapper {
-    flex: 1 1 auto !important;
-    min-height: 0 !important;
-    display: flex !important;
-    flex-direction: column !important;
-    overflow: hidden !important;
+    flex: 0 0 350px;
+    min-width: 300px;
+    max-width: 400px;
+    width: 350px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    order: 999; /* Ensure it stays on the right */
 }
 
-/* Batch core - scrollable grid */
-.current_image_batch_core {
-    flex: 1 1 auto !important;
-    overflow-x: hidden !important;
-    overflow-y: auto !important;
-    min-height: 0 !important;
-    padding: 0.5rem;
-    display: flex;
-    flex-wrap: wrap;
+/* Batch core - compact flex grid gallery */
+.current_image_batch_core,
+#current_image_batch {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
     gap: 0.5rem;
-    align-content: flex-start;
+    padding: 0.5rem;
+    overflow-y: auto;
+    overflow-x: hidden;
+    align-content: start;
     background-color: var(--bs-secondary-bg);
     border-radius: 0.375rem;
+    flex-wrap: nowrap;
+    flex: 1;
+    min-height: 0;
+}
+
+/* Image blocks in batch - compact gallery style */
+#current_image_batch .image-block,
+.current_image_batch_core .image-block {
+    width: 100%;
+    aspect-ratio: 1;
+    display: flex;
+    flex-direction: column;
+    border-radius: 0.375rem;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    background-color: var(--bs-tertiary-bg);
+    border: 1px solid var(--bs-border-color);
+}
+
+/* Hover effect for gallery images */
+#current_image_batch .image-block:hover,
+.current_image_batch_core .image-block:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 10;
+}
+
+/* Images in gallery blocks - fill container */
+#current_image_batch .image-block img,
+#current_image_batch .image-block video,
+.current_image_batch_core .image-block img,
+.current_image_batch_core .image-block video {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    flex: 1;
+    display: block;
+}
+
+/* Hide or minimize metadata in gallery view */
+#current_image_batch .image-preview-text,
+.current_image_batch_core .image-preview-text {
+    display: none; /* Hide text metadata in gallery view */
 }
 .current-image-extras-wrapper {
     min-width: 20rem;
@@ -1382,23 +1639,32 @@ body {
 /* Bottom bar tabs - fixed height */
 #bottombartabcollection {
     flex: 0 0 auto;
+    display: flex;
+    flex-wrap: wrap;
     background-color: var(--bs-tertiary-bg);
     border-bottom: 1px solid var(--bs-border-color);
     margin-bottom: 0;
     padding: 0.25rem 0.5rem;
+    gap: 0.25rem;
 }
 
 #bottombartabcollection .nav-link {
-    border-bottom: 2px solid transparent;
-    transition: all 0.15s ease-in-out;
+    display: block;
     padding: 0.5rem 1rem;
+    border-bottom: 2px solid transparent;
     border-radius: 0.375rem 0.375rem 0 0;
+    transition: all 0.15s ease-in-out;
+    cursor: pointer;
+    position: relative;
+    z-index: 1;
+    white-space: nowrap;
 }
 
 #bottombartabcollection .nav-link.active {
     border-bottom-color: var(--bs-primary);
     background-color: var(--bs-body-bg);
     font-weight: 500;
+    color: var(--bs-primary);
 }
 
 #bottombartabcollection .nav-link:hover {
@@ -1411,7 +1677,23 @@ body {
     flex: 1 1 auto;
     min-height: 0;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
     background-color: var(--bs-body-bg);
+}
+
+/* Bottom bar tab panes - ensure they display correctly */
+#t2i_bottom_bar_content .tab-pane {
+    display: none;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+}
+
+#t2i_bottom_bar_content .tab-pane.show.active,
+#t2i_bottom_bar_content .tab-pane.active {
+    display: flex;
+    flex-direction: column;
 }
 
 /* Bottom info bar styling */
@@ -1508,85 +1790,127 @@ body {
     margin-right: 0.5rem;
     border-radius: 0.2rem;
 }
+/* Prompt region - positioned below image, fixed height */
+.alt_prompt_region,
+#alt_prompt_region {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    border-top: 1px solid var(--bs-border-color);
+    background-color: var(--bs-tertiary-bg);
+    margin-top: auto;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Prompt main line - modern layout */
 .alt_prompt_main_line {
     display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
 }
-.alt_prompt_textbox {
-    border-radius: 0.2rem;
-    width: 100%;
-    resize: none;
-}
-#alt_negativeprompt_textbox {
-    margin-top: 6px;
-}
-.alt-negativeprompt-textbox-invalid {
-    background-color: var(--bs-body-bg);
-    border-color: var(--bs-body-bg);
-}
-.alt-negativeprompt-textbox-invalid::placeholder {
-    color: rgba(var(--bs-body-color-rgb), 0.5);
-}
+
+/* Prompt textboxes container */
 .alt_prompt_textboxes {
-    margin-left: 1rem;
-    display: inline-block;
-    flex-grow: 10;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-left: 0;
 }
-.alt-text-tokencount-wrapper {
-    position: relative;
-    width: 0;
-    height: 0;
-    left: calc(100% - 7.2rem);
+
+/* Prompt textareas - modern styling */
+.alt_prompt_textbox,
+#alt_prompt_textbox,
+#alt_negativeprompt_textbox {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 0.5rem;
+    background-color: var(--bs-body-bg);
+    color: var(--bs-body-color);
+    resize: vertical;
+    font-family: inherit;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    box-sizing: border-box;
 }
-.alt-text-tokencount {
-    position: relative;
-    top: -1.5rem;
-    left: 0;
+
+.alt_prompt_textbox:focus,
+#alt_prompt_textbox:focus,
+#alt_negativeprompt_textbox:focus {
+    outline: none;
+    border-color: var(--bs-primary);
+    box-shadow: 0 0 0 0.2rem rgba(var(--bs-primary-rgb), 0.25);
 }
-.alt-text-add-button-wrapper {
-    position: relative;
-    width: 0;
-    height: 0;
-    left: 0;
-    top: 0;
-}
-.alt-text-add-button {
-    position: relative;
-    top: 0;
-    left: -8px;
-    padding: 0px 4px !important;
-    border-radius: 1rem !important;
-}
-.small-window .alt-text-add-button {
-    top: -45px;
-    font-size: 1.5rem;
-    height: 2.5rem;
-}
-.alt-prompt-buttons {
-    vertical-align: top;
-    padding-top: 0.1rem;
-    padding-bottom: 0.2rem;
-    height: 4rem;
-    text-align: center;
-    border-radius: 0.7rem;
-    margin: 0;
-}
+
+/* Prompt buttons wrapper - modern flex layout */
 .alt-prompt-buttons-wrapper {
     display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+    align-items: center;
+    justify-content: flex-start;
 }
-.small-window .alt-prompt-buttons-wrapper {
-    position: absolute;
-    top: -15px;
-    right: 0;
+
+/* Prompt buttons - modern styling */
+.alt-prompt-buttons {
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border: none;
+    cursor: pointer;
 }
-.small-window .alt-prompt-buttons {
-    height: 2.5rem;
+
+.alt-prompt-generate-button {
+    background-color: var(--bs-primary);
+    color: var(--bs-white);
+    flex: 1;
 }
-.small-window .alt_prompt_textboxes {
+
+.alt-prompt-generate-button:hover {
+    background-color: var(--bs-primary-border-subtle);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.alt-prompt-center-button {
+    background-color: var(--bs-secondary);
+    color: var(--bs-white);
+    padding: 0.75rem;
+    min-width: 3rem;
+}
+
+.alt-interrupt {
+    background-color: var(--bs-danger);
+    color: var(--bs-white);
+    padding: 0.75rem;
+    min-width: 3rem;
+}
+
+.alt-interrupt:hover {
+    background-color: var(--bs-danger-border-subtle);
+}
+
+/* Token count - modern badge style */
+.alt-text-tokencount-wrapper {
+    display: flex;
+    align-items: center;
     position: relative;
-    width: 95vw;
-    left: 0vw;
-    padding: 0;
-    margin: 0;
+    width: auto;
+    height: auto;
+    left: auto;
+}
+
+.alt-text-tokencount {
+    padding: 0.25rem 0.5rem;
+    background-color: var(--bs-secondary-bg);
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    color: var(--bs-secondary-color);
+    position: relative;
+    top: auto;
+    left: auto;
 }
 .alt-prompt-generate-button {
     border-top-right-radius: 0 !important;
@@ -2032,78 +2356,118 @@ body {
    Mobile and tablet optimizations
    ======================================== */
 
-/* Tablet and below - stack columns vertically */
-@media screen and (max-width: 1199px) {
-    /* Stack columns on medium screens */
-    .d-flex.flex-column.h-100 > .row.g-3 > div[class*="col-"] {
-        flex: 0 0 100%;
+/* Tablet and below - stack layout */
+@media screen and (max-width: 992px) {
+    /* Top bar becomes vertical stack */
+    .t2i-top-bar,
+    #t2i_top_bar {
+        flex-direction: column;
+    }
+    
+    /* Input sidebar - full width on tablet */
+    .input-sidebar,
+    #input_sidebar {
         max-width: 100%;
-        height: auto;
-        min-height: 300px;
+        width: 100%;
+        flex: 0 0 auto;
+        max-height: 50vh;
     }
     
-    /* Reduce bottom bar height on smaller screens */
-    #t2i_bottom_bar {
-        height: 250px;
-        min-height: 200px;
+    /* Main image area - full width */
+    .main-image-area,
+    #main_image_area {
+        max-width: 100%;
+        width: 100%;
+        flex: 1 1 auto;
     }
     
-    /* Make inputs area shorter when stacked */
-    #main_inputs_area_wrapper {
+    /* Batch wrapper - full width below */
+    .current_image_batch,
+    #current_image_batch_wrapper {
+        max-width: 100%;
+        width: 100%;
+        flex: 0 0 auto;
         max-height: 300px;
+        order: 999; /* Still keep it last */
+    }
+    
+    /* Hide split bars on mobile */
+    .t2i-top-split-bar,
+    #t2i-top-split-bar,
+    #t2i-top-2nd-split-bar {
+        display: none;
     }
 }
 
-/* Mobile - further optimizations */
+/* Mobile - compact layout */
 @media screen and (max-width: 768px) {
-    /* Compact layout for mobile */
-    #main_inputs_area_wrapper {
-        max-height: 250px;
+    /* Input sidebar - compact */
+    .input-sidebar,
+    #input_sidebar {
+        max-height: 40vh;
     }
     
-    /* Smaller bottom bar */
-    #t2i_bottom_bar {
-        height: 200px;
-        min-height: 150px;
+    /* Prompt region - compact */
+    .alt_prompt_region,
+    #alt_prompt_region {
+        padding: 0.75rem;
     }
     
-    /* Stack prompt buttons vertically */
-    .alt_prompt_main_line {
-        flex-direction: column !important;
+    /* Prompt buttons - stack vertically */
+    .alt-prompt-buttons-wrapper {
+        flex-direction: column;
     }
     
-    /* Full width inputs */
-    .alt_prompt_textbox {
-        width: 100% !important;
+    .alt-prompt-buttons {
+        width: 100%;
     }
     
-    /* Adjust batch grid */
-    .current_image_batch_core {
+    /* Batch gallery - smaller grid */
+    .current_image_batch_core,
+    #current_image_batch {
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
         gap: 0.25rem;
+        padding: 0.25rem;
     }
     
-    /* Smaller tabs */
-    #bottombartabcollection .nav-link {
-        padding: 0.25rem 0.5rem;
-        font-size: 0.875rem;
+    /* Reduce padding throughout */
+    .t2i-top-bar-container {
+        padding: 0.25rem;
+    }
+    
+    /* Bottom bar tabs - scrollable on mobile */
+    #bottombartabcollection {
+        overflow-x: auto;
+        overflow-y: hidden;
+        flex-wrap: nowrap;
     }
 }
 
 /* Small mobile - minimal layout */
 @media screen and (max-width: 576px) {
-    /* Very compact */
-    #t2i_bottom_bar {
-        height: 180px;
-        min-height: 150px;
+    /* Very compact sidebar */
+    .input-sidebar,
+    #input_sidebar {
+        max-height: 35vh;
     }
     
-    /* Smaller padding everywhere */
-    .p-3 {
-        padding: 0.5rem !important;
+    /* Compact prompt */
+    .alt_prompt_region,
+    #alt_prompt_region {
+        padding: 0.5rem;
     }
     
-    .p-2 {
-        padding: 0.25rem !important;
+    .alt_prompt_textbox,
+    #alt_prompt_textbox,
+    #alt_negativeprompt_textbox {
+        padding: 0.5rem;
+        font-size: 0.875rem;
+    }
+    
+    /* Smaller batch grid */
+    .current_image_batch_core,
+    #current_image_batch {
+        grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
     }
 }
 .auto-symbol {

@@ -18,7 +18,6 @@
         <link rel="stylesheet" id="sitecssheader" href="~/css/site.css?vary=@Utilities.VaryID" />
         <link rel="stylesheet" href="~/css/main.css?vary=@Utilities.VaryID" />
         <link rel="stylesheet" id="themecssheader" href="~/css/theme.css?vary=@Utilities.VaryID" />
-        <link rel="stylesheet" href="~/css/layout-fixes.css?vary=@Utilities.VaryID" />
         @RenderSection("Header", required: false)
         @WebServer.PageHeaderExtra
         @foreach (string path in theme.CSSPaths)
