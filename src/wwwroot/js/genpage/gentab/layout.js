@@ -317,13 +317,14 @@ class GenTabLayout {
             let bottomBarHeight = this.bottomInfoBar.offsetHeight;
             let addedHeight = this.isSmallWindow ? '0.4rem' : '2.8rem';
             let fixed = effectiveBottomShut ? `(${rootTop}px + ${addedHeight} + ${bottomBarHeight}px)` : `${this.bottomSectionBarPos}px`;
+            // Only set heights for splitter bars - let flexbox handle content areas
             this.leftSplitBar.style.height = `calc(100vh - ${fixed})`;
             this.rightSplitBar.style.height = `calc(100vh - ${fixed} - 5px)`;
-            this.inputSidebar.style.height = `calc(100vh - ${fixed})`;
-            this.mainImageArea.style.height = `calc(100vh - ${fixed})`;
-            this.currentImageWrapbox.style.height = `calc(100vh - ${fixed} - ${altHeight})`;
+            this.inputSidebar.style.height = '';
+            this.mainImageArea.style.height = '';
+            this.currentImageWrapbox.style.height = '';
             this.editorSizebar.style.height = `calc(100vh - ${fixed} - ${altHeight})`;
-            this.currentImageBatch.style.height = `calc(100vh - ${fixed})`;
+            this.currentImageBatch.style.height = '';
             this.topSection.style.height = `calc(100vh - ${fixed})`;
             // Optimize bottom bar height to reduce empty space
             this.bottomBar.style.minHeight = '250px';
@@ -337,7 +338,7 @@ class GenTabLayout {
             this.rightSplitBar.style.height = 'calc(49vh)';
             this.inputSidebar.style.height = '';
             this.mainImageArea.style.height = '';
-            this.currentImageWrapbox.style.height = `calc(49vh - ${altHeight} + 1rem)`;
+            this.currentImageWrapbox.style.height = '';
             this.editorSizebar.style.height = `calc(49vh - ${altHeight})`;
             this.currentImageBatch.style.height = '';
             this.topSection.style.height = '';
