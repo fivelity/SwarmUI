@@ -512,8 +512,8 @@ a.interactive {
 /* Top bar should display children in a row */
 .t2i-top-bar,
 #t2i_top_bar {
-    display: flex;
-    flex-direction: row;
+    display: flex !important;
+    flex-direction: row !important;
     flex: 1;
     min-height: 0;
     overflow: hidden;
@@ -567,12 +567,12 @@ a.interactive {
 /* Main image area - center column, takes remaining space */
 .main-image-area,
 #main_image_area {
-    flex: 1 1 auto;
+    flex: 1 1 auto !important;
     min-width: 0;
     max-width: none;
     width: auto;
-    display: flex;
-    flex-direction: column;
+    display: flex !important;
+    flex-direction: column !important;
     overflow: visible;
     position: relative;
 }
@@ -596,15 +596,7 @@ a.interactive {
     overflow: visible;
 }
 
-/* Image wrap box - fills space above prompt (legacy) */
-#current_image_wrapbox {
-    display: inline-block;
-    width: calc(100vw - (28rem - 5px) - 22rem);
-    height: 49vh;
-    vertical-align: top;
-    overflow-x: hidden;
-    overflow-y: auto;
-}
+/* Legacy inline-block styles removed - breaks flexbox layout */
 .current-image-data {
     white-space: wrap;
     font-size: 80%;
@@ -622,14 +614,16 @@ a.interactive {
 /* Batch wrapper - right column, fixed width for gallery */
 .current_image_batch,
 #current_image_batch_wrapper {
-    flex: 0 0 350px;
+    flex: 0 0 350px !important;
     min-width: 300px;
     max-width: 400px;
     width: 350px;
-    display: flex;
-    flex-direction: column;
+    display: flex !important;
+    flex-direction: column !important;
     overflow: hidden;
     order: 999; /* Ensure it stays on the right */
+    position: relative;
+    visibility: visible !important;
 }
 
 /* Batch core - compact flex grid gallery */
@@ -2329,19 +2323,20 @@ body:not([data-current-tab="server"]) #admin_user_clear_input_icon {
 .lora_extractor_special .image-preview-progress-current {
     top: 3px;
 }
+/* Legacy inline-block layout replaced with flexbox for better responsiveness */
 .manage-users-left, .manage-users-right {
-    display: inline-block;
     height: calc(100vh - 6rem);
     padding: 0.5rem;
-    vertical-align: top;
     overflow-y: auto;
 }
 .manage-users-left {
     margin-left: 0.5rem;
-    width: 20rem;
+    flex: 0 0 20rem;
+    min-width: 20rem;
 }
 .manage-users-right {
-    width: calc(100vw - 22rem - 6px);
+    flex: 1 1 auto;
+    min-width: 0; /* Allow flex item to shrink below content size */
 }
 .manage_user_leftbox_content {
     min-width: 1rem;
@@ -2731,15 +2726,14 @@ body:not([data-current-tab="server"]) #admin_user_clear_input_icon {
     width: 50%;
 }
 .model_downloader_metadatazone {
-    width: 40rem;
-    max-width: calc(100vw - 42rem);
+    width: 100%; /* Use Bootstrap grid width instead of fixed calc() */
+    max-width: none; /* Let Bootstrap grid handle width */
     max-height: 20rem;
     padding: 1rem;
     border: 1px solid var(--bs-border-color);
     border-radius: 0.5rem;
     overflow: auto;
-    display: inline-block;
-    vertical-align: top;
+    display: block; /* Changed from inline-block since it's in Bootstrap grid */
 }
 .model_downloader_imageside {
     display: inline-block;
@@ -2760,11 +2754,11 @@ body:not([data-current-tab="server"]) #admin_user_clear_input_icon {
     margin: auto;
 }
 .model-downloader-main-section {
-    display: inline-block;
-    width: 70rem;
+    display: block; /* Changed from inline-block for better responsiveness */
+    width: 100%;
+    max-width: 70rem; /* Max width but allow shrinking */
     padding-right: 1rem;
     padding-left: 1rem;
-    max-width: calc(100vw - 44rem);
 }
 .model-downloader-right-sidebar {
     display: inline-block;
