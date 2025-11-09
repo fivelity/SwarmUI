@@ -282,21 +282,23 @@ class GenTabLayout {
         else {
             this.altRegion.style.visibility = '';
         }
-        this.inputSidebar.style.width = `${barTopLeft}`;
+        // Use flexbox instead of fixed widths for better layout management
+        this.inputSidebar.style.width = leftShut ? '0' : `${barTopLeft}`;
         this.inputSidebar.style.display = leftShut ? 'none' : '';
-        this.altRegion.style.width = `calc(100vw - ${barTopLeft} - ${barTopRight} - 10px)`;
-        this.mainImageArea.style.width = `calc(100vw - ${barTopLeft})`;
+        // Remove fixed width calculations - let flexbox handle it
+        this.altRegion.style.width = '';
+        this.mainImageArea.style.width = '';
         this.mainImageArea.scrollTop = 0;
         if (imageEditor && imageEditor.active) {
             let imageEditorSizePercent = this.imageEditorBarPos < 0 ? 0.5 : (this.imageEditorBarPos / 100.0);
-            imageEditor.inputDiv.style.width = `calc((${curImgWidth}) * ${imageEditorSizePercent})`;
-            this.currentImage.style.width = `calc((${curImgWidth}) * ${(1.0 - imageEditorSizePercent)} - 6px)`;
+            imageEditor.inputDiv.style.width = `calc((100%) * ${imageEditorSizePercent})`;
+            this.currentImage.style.width = `calc((100%) * ${(1.0 - imageEditorSizePercent)} - 6px)`;
         }
         else {
-            this.currentImage.style.width = `calc(${curImgWidth})`;
+            this.currentImage.style.width = '';
         }
-        this.currentImageWrapbox.style.width = `calc(${curImgWidth})`;
-        this.currentImageBatch.style.width = `calc(${barTopRight} - 6px)`;
+        this.currentImageWrapbox.style.width = '';
+        this.currentImageBatch.style.width = `${barTopRight}`;
         if (this.currentImageBatchCore.offsetWidth < 425) {
             this.currentImageBatchCore.classList.add('current_image_batch_core_small');
         }
