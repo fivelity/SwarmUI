@@ -15,6 +15,7 @@
     <title id="page_title">@ViewData["Title"] - SwarmUI - @Program.ServerSettings.UserAuthorization.InstanceTitle</title>
         <link rel="stylesheet" id="bs_theme_header" href="@bsUrl" />
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+        <link rel="stylesheet" href="~/css/design-tokens.css?vary=@Utilities.VaryID" />
         <link rel="stylesheet" id="sitecssheader" href="~/css/site.css?vary=@Utilities.VaryID" />
         <link rel="stylesheet" href="~/css/main.css?vary=@Utilities.VaryID" />
         <link rel="stylesheet" id="themecssheader" href="~/css/theme.css?vary=@Utilities.VaryID" />
@@ -30,7 +31,18 @@
     <script src="~/js/translator.js?vary=@Utilities.VaryID"></script>
 </head>
 <body>
-    <div class="top-status-bar-wrapper"><div class="top-status-bar" id="top_status_bar"></div></div>
+    <div class="top-status-bar-wrapper">
+        <div class="top-status-bar" id="top_status_bar" title="Click for details"></div>
+        <div class="status-bar-details" id="status_bar_details" style="display: none;">
+            <div class="status-details-header">
+                <h6>Generation Queue</h6>
+                <button class="status-details-close" onclick="document.getElementById('status_bar_details').style.display='none'">×</button>
+            </div>
+            <div class="status-details-content" id="status_details_content">
+                <p class="text-muted">No active generations</p>
+            </div>
+        </div>
+    </div>
     <div class="center-toast toast-error-box" id="center_toast">
         @WebUtil.Toast("error_toast_box", "Error", "", "error_toast_content", "", false)
     </div>
@@ -87,6 +99,67 @@
     <script src="~/js/permissions.js?vary=@Utilities.VaryID"></script>
     <script src="~/js/site.js?vary=@Utilities.VaryID"></script>
     <div id="version_display" class="version-display">SwarmUI v<span>@Utilities.Version</span><span> (@Program.CurrentGitDate)</span></div>
+
+    <!-- Keyboard Shortcuts Help Modal -->
+    <div class="modal fade" id="keyboard_shortcuts_modal" tabindex="-1" aria-labelledby="keyboardShortcutsTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="keyboardShortcutsTitle">Keyboard Shortcuts</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="shortcuts-grid">
+                        <div class="shortcuts-section">
+                            <h6>Generation</h6>
+                            <div class="shortcut-row">
+                                <kbd>Enter</kbd>
+                                <span>Generate (when in prompt field)</span>
+                            </div>
+                            <div class="shortcut-row">
+                                <kbd>Ctrl</kbd> + <kbd>Enter</kbd>
+                                <span>Toggle Generate Forever</span>
+                            </div>
+                            <div class="shortcut-row">
+                                <kbd>Alt</kbd> + <kbd>I</kbd>
+                                <span>Interrupt Generation</span>
+                            </div>
+                        </div>
+                        <div class="shortcuts-section">
+                            <h6>Navigation</h6>
+                            <div class="shortcut-row">
+                                <kbd>←</kbd> <kbd>→</kbd>
+                                <span>Navigate batch gallery</span>
+                            </div>
+                            <div class="shortcut-row">
+                                <kbd>Ctrl</kbd> + <kbd>↑</kbd> <kbd>↓</kbd>
+                                <span>Navigate prompt history</span>
+                            </div>
+                            <div class="shortcut-row">
+                                <kbd>Esc</kbd>
+                                <span>Close modals & popovers</span>
+                            </div>
+                            <div class="shortcut-row">
+                                <kbd>Tab</kbd>
+                                <span>Navigate between fields</span>
+                            </div>
+                        </div>
+                        <div class="shortcuts-section">
+                            <h6>General</h6>
+                            <div class="shortcut-row">
+                                <kbd>Ctrl</kbd> + <kbd>/</kbd>
+                                <span>Show this help</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     @RenderSection("Scripts", required: false)
 </body>
 </html>

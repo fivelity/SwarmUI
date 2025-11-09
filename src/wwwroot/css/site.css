@@ -114,6 +114,87 @@ body {
     animation-iteration-count: infinite;
     padding-left: var(--space-4);
     opacity: 0.8;
+    cursor: pointer;
+    transition: opacity var(--duration-150) var(--ease-in-out);
+}
+
+.top-status-bar:hover {
+    opacity: 1;
+}
+
+/* Status bar details dropdown */
+.status-bar-details {
+    position: absolute;
+    top: var(--space-8);
+    right: var(--space-4);
+    background: var(--bs-body-bg);
+    border: 1px solid var(--bs-border-color);
+    border-radius: 0.5rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    min-width: 300px;
+    max-width: 500px;
+    max-height: 400px;
+    z-index: var(--z-modal);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.status-details-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-3);
+    border-bottom: 1px solid var(--bs-border-color);
+    background: var(--bs-tertiary-bg);
+}
+
+.status-details-header h6 {
+    margin: 0;
+    font-weight: 600;
+}
+
+.status-details-close {
+    background: transparent;
+    border: none;
+    font-size: 1.5rem;
+    line-height: 1;
+    cursor: pointer;
+    color: var(--bs-body-color);
+    padding: 0;
+    width: 1.5rem;
+    height: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.25rem;
+    transition: all var(--duration-150) var(--ease-in-out);
+}
+
+.status-details-close:hover {
+    background: var(--bs-danger);
+    color: var(--bs-white);
+}
+
+.status-details-content {
+    padding: var(--space-3);
+    overflow-y: auto;
+    flex: 1;
+}
+
+.status-queue-item {
+    padding: var(--space-2);
+    border-bottom: 1px solid var(--bs-border-color);
+    font-size: var(--text-sm);
+}
+
+.status-queue-item:last-child {
+    border-bottom: none;
+}
+
+.status-queue-item-status {
+    font-weight: 600;
+    color: var(--bs-primary);
 }
 .status-bar-warn {
     animation-name: status_glow-warn;

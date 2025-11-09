@@ -256,6 +256,73 @@
   --container-md: 720px;
   --container-lg: 960px;
   --container-xl: 1140px;
+
+  /* ========================================
+     SWARMUI COMPONENT TOKENS
+     Application-specific component tokens
+     ======================================== */
+
+  /* Navigation specific */
+  --sui-subnav-height: var(--subnav-height, 48px);
+
+  /* Backend status colors */
+  --backend-errored: var(--bs-danger);
+  --backend-disabled: var(--bs-warning);
+  --backend-running: var(--bs-success);
+  --backend-idle: #688772;
+  --backend-loading: #557700;
+  --backend-waiting: #557700;
+
+  /* Batch colors */
+  --batch-0: rgba(var(--bs-primary-rgb), 0.05);
+  --batch-1: rgba(var(--bs-info-rgb), 0.05);
+
+  /* Star/rating colors */
+  --star: #ffcc00;
+  --star-rgb: 255, 204, 0;
+
+  /* Semantic color aliases */
+  --yellow: var(--bs-warning);
+  --yellow-rgb: var(--bs-warning-rgb);
+  --green: var(--bs-success);
+  --green-rgb: var(--bs-success-rgb);
+  --red: var(--bs-danger);
+  --background: var(--bs-body-bg);
+  --text: var(--bs-body-color);
+
+  /* Selection and focus */
+  --box-selected-border: var(--bs-primary);
+  --box-selected-border-stronger: var(--bs-primary);
+
+  /* Button color system */
+  --btn-primary-bg: var(--bs-primary);
+  --btn-primary-color: var(--bs-white);
+  --btn-primary-border: var(--bs-primary);
+  --btn-primary-hover-bg: var(--bs-primary-border-subtle);
+  --btn-secondary-bg: var(--bs-secondary-bg);
+  --btn-secondary-color: var(--bs-body-color);
+  --btn-secondary-border: var(--bs-border-color);
+
+  /* Danger button variants */
+  --danger-button-background: var(--bs-danger);
+  --danger-button-foreground: var(--bs-white);
+  --danger-button-border: var(--bs-danger);
+  --danger-button-background-hover: var(--bs-danger);
+  --danger-button-foreground-hover: var(--bs-white);
+
+  /* Model image preview */
+  --model-img-border-color-hover: var(--bs-primary);
+
+  /* Background variants */
+  --background-rgb: var(--bs-body-bg-rgb);
+  --popup-back: var(--bs-tertiary-bg);
+  --popup-front: var(--bs-body-color);
+  --notice-pop: rgba(var(--bs-success-rgb), 0.3);
+  --toast-body: var(--bs-tertiary-bg);
+  --toast-header: var(--bs-secondary-bg);
+
+  /* Shadow system (use design-tokens shadows) */
+  --shadow-current: var(--shadow-sm);
 }
 
 /* ========================================

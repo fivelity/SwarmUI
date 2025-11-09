@@ -238,42 +238,30 @@ body {
     overflow: hidden;
 }
 
-/* Tab content - consolidated base styles */
+/* Ensure tab content is visible */
 .tab-content {
+    display: block !important;
     flex: 1 1 auto;
     min-height: 0;
     overflow: hidden;
-    white-space: normal;
 }
 
-/* Tab pane base styles with fade transition */
+/* Tab pane base styles */
 .tab-pane {
     min-height: 0;
     height: 100%;
     display: none;
-    opacity: 0;
-    transition: opacity var(--duration-200) var(--ease-in-out);
 }
 
-/* Active tab panes should display with fade-in */
+/* Active tab panes should display */
 .tab-pane.show.active,
 .tab-pane.active {
     display: block;
-    opacity: 1;
 }
 
 /* Remove excessive padding from tab panes - but allow bottom tabs */
 .tab-pane:not(.genpage-bottom-tab) {
     padding: 0;
-}
-
-/* Global hover effect standardization */
-.btn,
-.nav-link,
-.basic-button,
-button:not(:disabled),
-a.interactive {
-    transition: all var(--duration-150) var(--ease-in-out);
 }
 
 /* Ensure nested tab panes (inside any tab) remain visible if active */
@@ -396,6 +384,9 @@ a.interactive {
 .interrupt-button:hover {
     background-color: var(--bs-danger);
     color: var(--bs-white);
+}
+.tab-content {
+    white-space: normal;
 }
 /* Sub-navigation within pages (in-content subnav) */
 .swarm-gen-tab-subnav {
@@ -636,7 +627,7 @@ a.interactive {
 .current_image_batch_core,
 #current_image_batch {
     display: grid;
-    grid-template-columns: repeat(var(--batch-grid-columns, 3), 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
     gap: 0.5rem;
     padding: 0.5rem;
     overflow-y: auto;
@@ -671,14 +662,6 @@ a.interactive {
     transform: scale(1.05);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     z-index: 10;
-}
-
-/* Selected state for keyboard navigation */
-#current_image_batch .image-block.selected,
-.current_image_batch_core .image-block.selected {
-    outline: 3px solid var(--bs-primary);
-    outline-offset: -3px;
-    z-index: 15;
 }
 
 /* Images in gallery blocks - preserve aspect ratio */
@@ -738,15 +721,15 @@ a.interactive {
     left: 0;
     width: fit-content;
     padding: 0.1rem;
-    color: color-mix(in srgb, var(--bs-body-color) 70%, var(--bs-body-bg));
-    background-color: color-mix(in srgb, transparent 50%, var(--bs-body-bg));
+    color: color-mix(in srgb, var(--text) 70%, var(--background));
+    background-color: color-mix(in srgb, transparent 50%, var(--background));
     border-radius: 0.4rem;
-    transition: all var(--duration-500) var(--ease-out);
+    transition: all 0.5s ease-out;
     cursor: pointer;
 }
 .batch-gear-button:hover {
-    color: var(--bs-body-color);
-    background-color: var(--bs-primary);
+    color: var(--text);
+    background-color: var(--emphasis);
 }
 .image-block {
     display: inline-block;
@@ -808,7 +791,7 @@ a.interactive {
     width: 100%;
 }
 .image-block:hover {
-    background-color: var(--bs-primary);
+    background-color: var(--emphasis);
 }
 .image-block-starred {
     box-shadow: 0 0 1px 1px var(--star);
@@ -837,7 +820,7 @@ a.interactive {
     content: '';
     width: 10rem;
     height: 1rem;
-    background-color: var(--bs-primary);
+    background-color: var(--emphasis);
 }
 .image-block-failed::before {
     transform: rotate(45deg);
@@ -877,8 +860,8 @@ a.interactive {
 }
 .current_model_view {
     display: inline-block;
-    border: 1px dotted var(--bs-border-color);
-    background-color: var(--bs-tertiary-bg);
+    border: 1px dotted var(--light-border);
+    background-color: var(--background-soft);
     border-radius: 0.3rem;
     padding-left: 0.2rem;
     padding-right: 0.2rem;
@@ -892,7 +875,7 @@ a.interactive {
     white-space: nowrap;
     vertical-align: top;
     position: relative;
-    border: 1px solid var(--bs-border-color);
+    border: 1px solid var(--light-border);
 }
 .model-block img {
     max-height: 9rem;
@@ -904,7 +887,7 @@ a.interactive {
     vertical-align: top;
     cursor: pointer;
     object-fit: contain;
-    background-color: var(--bs-tertiary-bg);
+    background-color: var(--background-soft);
 }
 .model-descblock {
     width: 19.5rem;
@@ -962,27 +945,27 @@ a.interactive {
     padding-right: 0.2rem;
     border-radius: 0.2rem;
     opacity: 0.7;
-    background-color: color-mix(in srgb, transparent 80%, var(--bs-body-bg));
-    transition: background-color var(--duration-200) var(--ease-out);
+    background-color: color-mix(in srgb, transparent 80%, var(--background));
+    transition: background-color 0.2s ease-out;
 }
 .image-block:hover .model-block-menu-button {
     opacity: 1.0;
-    background-color: color-mix(in srgb, transparent 50%, var(--bs-body-bg));
+    background-color: color-mix(in srgb, transparent 50%, var(--background));
 }
 .model-block-menu-button:hover {
     opacity: 1.0;
-    background-color: var(--bs-primary) !important;
+    background-color: var(--emphasis) !important;
     cursor: pointer;
-    border: 1px solid var(--btn-primary-border);
-    color: var(--bs-emphasis-color);
+    border: 1px solid var(--button-border);
+    color: var(--text-strong);
 }
 .model-selected {
     border: 1px solid var(--box-selected-border-stronger);
     background-color: var(--box-selected-background-stronger);
 }
 .model-loaded {
-    border: 1px solid color-mix(in srgb, var(--bs-body-bg) 50%, var(--box-selected-border));
-    background-color: color-mix(in srgb, var(--bs-body-bg) 50%, var(--box-selected-background));
+    border: 1px solid color-mix(in srgb, var(--background) 50%, var(--box-selected-border));
+    background-color: color-mix(in srgb, var(--background) 50%, var(--box-selected-background));
 }
 .model-unavailable {
     opacity: 0.3;
@@ -1002,7 +985,7 @@ a.interactive {
     cursor: pointer;
     padding-left: 3px;
     padding-right: 3px;
-    color: var(--bs-body-color);
+    color: var(--text);
     text-decoration: none;
     min-height: 1.3rem;
     line-height: 1.3rem;
@@ -1016,24 +999,24 @@ a.interactive {
     width: 100%;
     padding-left: 3px;
     padding-right: 3px;
-    color: var(--bs-body-color);
+    color: var(--text);
     text-decoration: none;
     margin-bottom: 0.5rem;
     margin-top: 0.5rem;
-    border-bottom: 1px solid var(--bs-border-color);
+    border-bottom: 1px solid var(--light-border);
     height: 1.3rem;
 }
 .sui_popover_model_button_selected {
-    background-color: color-mix(in srgb, var(--bs-primary) 50%, var(--bs-body-bg));
+    background-color: color-mix(in srgb, var(--emphasis) 50%, var(--background));
 }
 .sui_popover_model_button_add_all {
     padding-bottom: 0.1rem;
-    border-bottom: 1px solid var(--bs-border-color);
+    border-bottom: 1px solid var(--light-border);
     margin-bottom: 0.1rem;
 }
 .sui_popover_model_button:hover {
-    background-color: var(--bs-primary);
-    color: var(--bs-white);
+    background-color: var(--emphasis);
+    color: var(--emphasis-text);
 }
 .sui-popover-inline-block {
     white-space: nowrap;
@@ -1059,23 +1042,23 @@ a.interactive {
 }
 .model_filename {
     font-size: 80%;
-    color: var(--bs-secondary-color);
+    color: var(--text-soft);
 }
 .refresh-button {
     margin: 0.5rem;
-    background-color: var(--btn-primary-bg);
-    color: var(--btn-primary-color);
+    background-color: var(--button-background);
+    color: var(--button-text);
     border-radius: 0.5rem;
-    border: 1px solid var(--btn-primary-border);
+    border: 1px solid var(--button-border);
     min-width: 2rem;
 }
 .refresh-button:hover {
-    background-color: var(--btn-primary-hover-bg);
-    color: var(--btn-primary-color);
+    background-color: var(--button-background-hover);
+    color: var(--button-foreground-hover);
 }
 .refresh-button:disabled {
-    background-color: var(--bs-secondary-bg);
-    color: var(--bs-secondary-color);
+    background-color: var(--button-background-disabled);
+    color: var(--button-foreground-disabled);
 }
 .tool-container .tool {
     display: none;
@@ -1089,7 +1072,7 @@ a.interactive {
     width: 95%;
     margin-left: 2.5%;
     padding: 0.5rem;
-    border: 1px solid var(--bs-border-color);
+    border: 1px solid var(--light-border);
 }
 .tool-selector {
     margin-top: 0.5rem;
@@ -1097,10 +1080,10 @@ a.interactive {
     margin-left: 5%;
 }
 .modal_error_bottom {
-    color: var(--bs-danger);
+    color: var(--red);
 }
 .modal_success_bottom {
-    color: var(--bs-success);
+    color: var(--green);
 }
 #add_preset_modal {
     max-height: calc(95vh - var(--bs-modal-margin));
@@ -1136,7 +1119,7 @@ a.interactive {
 }
 .preset-in-list {
     display: inline-block;
-    border: 1px solid var(--bs-border-color);
+    border: 1px solid var(--light-border);
     padding-left: 0.5rem;
     border-radius: 1rem;
     border-right: none;
@@ -1146,7 +1129,7 @@ a.interactive {
 }
 .preset-remove-button {
     display: inline-block;
-    color: var(--bs-body-color);
+    color: var(--text);
     font-weight: bold;
 }
 .preset-remove-button:hover {
@@ -1262,25 +1245,67 @@ a.interactive {
     overflow: hidden;
     margin: auto;
 }
-/* Old legacy styles removed - using modern flexbox styles below instead */
+.browser-folder-tree-container {
+    width: 15rem;
+    display: inline-block;
+    height: calc(max(10rem, 100%));
+    overflow: auto;
+    vertical-align: top;
+}
+.browser-folder-tree-splitter {
+    display: inline-block;
+    width: 5px;
+    height: calc(max(10rem, 100%));
+    cursor: col-resize;
+    background-color: var(--bs-border-color);
+    vertical-align: top;
+    transition: background-color var(--duration-200) var(--ease-in-out);
+}
+
+.browser-folder-tree-splitter:hover {
+    background-color: var(--bs-primary);
+}
+.browser-header-bar {
+    width: calc(100% - 1rem);
+    height: 2.5rem;
+    display: block;
+    overflow-x: auto;
+    overflow-y: hidden;
+    margin-left: 0.5rem;
+}
 .browser-header-count {
     color: var(--bs-secondary-color);
     font-size: 80%;
     margin-left: 0.5rem;
     opacity: 0.8;
 }
-/* Old legacy inline-block styles removed - using modern flexbox styles below instead */
-/* But keep minimal backward compatibility for rendering */
-.browser-folder-tree-splitter {
+.browser-fullcontent-container {
+    margin-left: 0.2rem;
     display: inline-block;
-    width: 5px;
-    cursor: col-resize;
-    background-color: var(--bs-border-color);
-    transition: background-color var(--duration-200) var(--ease-in-out);
+    width: calc(100vw - 15rem - 2rem);
+    height: calc(max(10rem, 100%));
+    vertical-align: top;
+    overflow: hidden;
+    white-space: nowrap;
 }
-
-.browser-folder-tree-splitter:hover {
-    background-color: var(--bs-primary);
+.browser-content-container {
+    display: inline-block;
+    width: 100%;
+    height: calc(100% - 2rem);
+    overflow: auto;
+    vertical-align: top;
+    padding-bottom: 3rem;
+    white-space: normal;
+}
+.browser_container {
+    display: block;
+    height: 100% !important;
+    min-height: 0 !important;
+    overflow: hidden;
+    white-space: nowrap;
+    background-color: var(--bs-body-bg);
+    border: 1px solid var(--bs-border-color);
+    border-radius: 0.375rem;
 }
 
 /* Bottom tabs need full height */
@@ -1290,8 +1315,6 @@ a.interactive {
     flex-direction: column;
     min-height: 0;
     overflow: hidden;
-    position: relative;
-    z-index: 10;
 }
 
 .genpage-bottom-tab .browser_container {
@@ -1299,8 +1322,6 @@ a.interactive {
     min-height: 0;
     height: auto !important;
     overflow: hidden;
-    position: relative;
-    z-index: 10;
 }
 
 
@@ -1317,8 +1338,6 @@ a.interactive {
     min-height: 0 !important;
     overflow: hidden;
     background-color: var(--bs-body-bg);
-    position: relative;
-    z-index: 10;
 }
 
 /* Left tree navigation */
@@ -1331,11 +1350,6 @@ a.interactive {
     padding: 0.5rem;
     overflow-y: auto;
     overflow-x: hidden;
-    position: relative;
-    z-index: 5;
-    display: flex !important;
-    flex-direction: column !important;
-    visibility: visible !important;
 }
 
 /* Right content area */
@@ -1344,12 +1358,9 @@ a.interactive {
     min-width: 0;
     padding: 0;
     background-color: var(--bs-body-bg);
-    display: flex !important;
-    flex-direction: column !important;
+    display: flex;
+    flex-direction: column;
     overflow: hidden;
-    position: relative;
-    z-index: 5;
-    visibility: visible !important;
 }
 
 /* Browser header bar */
@@ -1365,49 +1376,6 @@ a.interactive {
     overflow-y: auto;
     overflow-x: hidden;
     padding: 0.5rem;
-    background-color: var(--bs-body-bg);
-    position: relative;
-    z-index: 5;
-    display: block !important; /* Ensure it's always visible */
-    visibility: visible !important;
-    opacity: 1 !important;
-}
-
-/* Ensure server tab manage_users components don't overlay bottom bar content */
-/* The d-flex h-100 container inside Server-ManageUsers tab was overlaying everything */
-#Server-ManageUsers .d-flex.h-100 {
-    position: relative;
-    z-index: 1;
-    /* Constrain to tab pane only */
-    max-height: 100%;
-}
-
-/* When Server-ManageUsers tab is NOT active, ensure its content doesn't display */
-#Server-ManageUsers:not(.active):not(.show) {
-    display: none !important;
-}
-
-/* CRITICAL: Aggressively hide the admin_user_filter that keeps appearing */
-/* These should ONLY appear in the Server tab's ManageUsers section */
-#Server-ManageUsers:not(.active) #admin_user_filter,
-#Server-ManageUsers:not(.active) #admin_user_clear_input_icon,
-#Server-ManageUsers:not(.show) #admin_user_filter,
-#Server-ManageUsers:not(.show) #admin_user_clear_input_icon,
-body:not([data-current-tab="server"]) #admin_user_filter,
-body:not([data-current-tab="server"]) #admin_user_clear_input_icon {
-    display: none !important;
-    visibility: hidden !important;
-    position: absolute !important;
-    left: -9999px !important;
-}
-
-#manage_users_leftbox,
-#manage_users_rightbox,
-#manage_users_leftbox_content_rolelist,
-#manage_users_leftbox_content_userlist,
-#manage_users_rightbox_content {
-    position: relative;
-    z-index: auto;
 }
 
 .browser-folder-tree-part {
@@ -1415,9 +1383,8 @@ body:not([data-current-tab="server"]) #admin_user_clear_input_icon {
     margin: 0.125rem 0;
     border-radius: 0.375rem;
     cursor: pointer;
-    -webkit-user-select: none;
     user-select: none;
-    transition: all var(--duration-150) var(--ease-in-out);
+    transition: all 0.15s ease-in-out;
     position: relative;
     font-size: 0.875rem;
     display: block;
@@ -1441,7 +1408,7 @@ body:not([data-current-tab="server"]) #admin_user_clear_input_icon {
 .model-block {
     background-color: var(--bs-body-bg);
     border-radius: 0.375rem;
-    transition: all var(--duration-150) var(--ease-in-out);
+    transition: all 0.15s ease-in-out;
     box-shadow: var(--shadow-xs);
 }
 
@@ -1456,7 +1423,7 @@ body:not([data-current-tab="server"]) #admin_user_clear_input_icon {
 .image-block {
     border-radius: 0.375rem;
     overflow: hidden;
-    transition: all var(--duration-150) var(--ease-in-out);
+    transition: all 0.15s ease-in-out;
     box-shadow: var(--shadow-xs);
 }
 
@@ -1482,7 +1449,7 @@ body:not([data-current-tab="server"]) #admin_user_clear_input_icon {
 
 .swarm-gen-tab-subnav .nav-link {
     border-bottom: 2px solid transparent;
-    transition: all var(--duration-150) var(--ease-in-out);
+    transition: all 0.15s ease-in-out;
 }
 
 .swarm-gen-tab-subnav .nav-link.active {
@@ -1504,7 +1471,7 @@ body:not([data-current-tab="server"]) #admin_user_clear_input_icon {
 }
 
 #navbarNav .nav-link {
-    transition: all var(--duration-150) var(--ease-in-out);
+    transition: all 0.15s ease-in-out;
     border-bottom: 2px solid transparent;
 }
 
@@ -1523,7 +1490,7 @@ body:not([data-current-tab="server"]) #admin_user_clear_input_icon {
     padding: 0.5rem 1rem;
     border-radius: 0.375rem;
     margin-right: 0.25rem;
-    transition: all var(--duration-150) var(--ease-in-out);
+    transition: all 0.15s ease-in-out;
 }
 
 #subnav_list .nav-link:hover {
@@ -1609,7 +1576,7 @@ body:not([data-current-tab="server"]) #admin_user_clear_input_icon {
     padding: 0.5rem 1rem;
     border-bottom: 2px solid transparent;
     border-radius: 0.375rem 0.375rem 0 0;
-    transition: all var(--duration-150) var(--ease-in-out);
+    transition: all 0.15s ease-in-out;
     cursor: pointer;
     position: relative;
     z-index: 1;
@@ -1636,8 +1603,6 @@ body:not([data-current-tab="server"]) #admin_user_clear_input_icon {
     display: flex;
     flex-direction: column;
     background-color: var(--bs-body-bg);
-    position: relative;
-    z-index: 1;
 }
 
 /* Bottom bar tab panes - ensure they display correctly */
@@ -1646,15 +1611,12 @@ body:not([data-current-tab="server"]) #admin_user_clear_input_icon {
     flex: 1;
     min-height: 0;
     overflow: hidden;
-    position: relative;
-    z-index: 1;
 }
 
 #t2i_bottom_bar_content .tab-pane.show.active,
 #t2i_bottom_bar_content .tab-pane.active {
     display: flex;
     flex-direction: column;
-    z-index: 2;
 }
 
 /* Bottom info bar styling */
@@ -1780,129 +1742,7 @@ body:not([data-current-tab="server"]) #admin_user_clear_input_icon {
     margin-left: 0;
 }
 
-/* Prompt input wrapper with history button */
-.prompt-input-wrapper {
-    position: relative;
-    display: flex;
-    align-items: flex-start;
-}
-
-.prompt-input-wrapper .alt_prompt_textbox {
-    flex: 1;
-    padding-right: 3rem;
-}
-
-.prompt-history-button {
-    position: absolute;
-    right: 0.5rem;
-    top: 0.5rem;
-    background: transparent;
-    border: 1px solid var(--bs-border-color);
-    border-radius: 0.25rem;
-    padding: 0.375rem;
-    cursor: pointer;
-    color: var(--bs-body-color);
-    transition: all var(--duration-150) var(--ease-in-out);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 2rem;
-    min-height: 2rem;
-}
-
-.prompt-history-button:hover {
-    background-color: var(--bs-tertiary-bg);
-    border-color: var(--bs-primary);
-    color: var(--bs-primary);
-}
-
-.prompt-history-button:active {
-    transform: scale(0.95);
-}
-
-.prompt-history-button svg {
-    display: block;
-}
-
-/* Prompt history dropdown */
-.prompt-history-dropdown {
-    background: var(--bs-body-bg);
-    border: 1px solid var(--bs-border-color);
-    border-radius: 0.5rem;
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-    max-width: 400px;
-    min-width: 300px;
-    max-height: 400px;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-}
-
-.prompt-history-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: var(--space-3);
-    border-bottom: 1px solid var(--bs-border-color);
-    font-weight: 600;
-    background: var(--bs-tertiary-bg);
-}
-
-.prompt-history-close {
-    background: transparent;
-    border: none;
-    font-size: 1.5rem;
-    line-height: 1;
-    cursor: pointer;
-    color: var(--bs-body-color);
-    padding: 0;
-    width: 1.5rem;
-    height: 1.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 0.25rem;
-    transition: all var(--duration-150) var(--ease-in-out);
-}
-
-.prompt-history-close:hover {
-    background: var(--bs-danger);
-    color: var(--bs-white);
-}
-
-.prompt-history-list {
-    overflow-y: auto;
-    flex: 1;
-}
-
-.prompt-history-item {
-    padding: var(--space-3);
-    border-bottom: 1px solid var(--bs-border-color);
-    cursor: pointer;
-    transition: background-color var(--duration-150) var(--ease-in-out);
-}
-
-.prompt-history-item:last-child {
-    border-bottom: none;
-}
-
-.prompt-history-item:hover {
-    background-color: var(--bs-tertiary-bg);
-}
-
-.prompt-history-text {
-    font-size: var(--text-sm);
-    color: var(--bs-body-color);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    line-clamp: 3;
-    -webkit-box-orient: vertical;
-    line-height: 1.5;
-}
-
-/* Prompt textareas - modern styling with auto-expand */
+/* Prompt textareas - modern styling */
 .alt_prompt_textbox,
 #alt_prompt_textbox,
 #alt_negativeprompt_textbox {
@@ -1912,13 +1752,10 @@ body:not([data-current-tab="server"]) #admin_user_clear_input_icon {
     border-radius: 0.5rem;
     background-color: var(--bs-body-bg);
     color: var(--bs-body-color);
-    resize: none;
+    resize: vertical;
     font-family: inherit;
-    transition: border-color var(--duration-200) var(--ease-in-out), box-shadow 0.2s ease, height var(--duration-150) var(--ease-in-out);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
     box-sizing: border-box;
-    overflow-y: auto;
-    min-height: 2.5rem;
-    max-height: 300px;
 }
 
 .alt_prompt_textbox:focus,
@@ -1943,7 +1780,7 @@ body:not([data-current-tab="server"]) #admin_user_clear_input_icon {
     padding: 0.75rem 1.5rem;
     border-radius: 0.5rem;
     font-weight: 500;
-    transition: all var(--duration-200) var(--ease-in-out);
+    transition: all 0.2s ease;
     border: none;
     cursor: pointer;
 }
@@ -2023,7 +1860,7 @@ body:not([data-current-tab="server"]) #admin_user_clear_input_icon {
     display: inline-block;
     position: relative;
     background-color: rgba(var(--bs-body-bg-rgb), 0.2);
-    transition: background-color var(--duration-200) var(--ease-out);
+    transition: background-color 0.2s ease-out;
 }
 
 .alt-prompt-image {
@@ -2107,10 +1944,10 @@ body:not([data-current-tab="server"]) #admin_user_clear_input_icon {
     padding-left: 0.6rem;
     padding-right: 0.6rem;
     margin: 1px;
-    background-color: color-mix(in srgb, var(--bs-body-bg) 70%, var(--bs-warning));
+    background-color: color-mix(in srgb, var(--background) 70%, var(--yellow));
 }
 .clip-tokenization-word-tweak {
-    background-color: color-mix(in srgb, var(--bs-body-bg) 70%, var(--bs-success));
+    background-color: color-mix(in srgb, var(--background) 70%, var(--green));
 }
 .clip-tokenization-wordbreak {
     font-size: 80%;
@@ -2358,7 +2195,7 @@ body:not([data-current-tab="server"]) #admin_user_clear_input_icon {
     display: block;
     background-color: var(--bs-tertiary-bg);
     cursor: pointer;
-    transition: background-color var(--duration-500) var(--ease-out);
+    transition: background-color 0.5s ease-out;
 }
 .admin-user-manage-name:hover {
     background-color: var(--bs-primary);
@@ -2393,16 +2230,6 @@ body:not([data-current-tab="server"]) #admin_user_clear_input_icon {
     font-size: 150%;
     white-space: pre-wrap;
     text-align: center;
-    padding: var(--space-6);
-    max-width: 600px;
-}
-
-.welcome_message::before {
-    content: '✨';
-    display: block;
-    font-size: 3rem;
-    margin-bottom: var(--space-4);
-    opacity: 0.6;
 }
 
 .welcome_message.generating {
@@ -2410,39 +2237,9 @@ body:not([data-current-tab="server"]) #admin_user_clear_input_icon {
     font-weight: 600;
 }
 
-.welcome_message.generating::before {
-    content: '⚡';
-    animation: pulse var(--duration-1000) var(--ease-in-out) infinite;
-}
-
 .welcome_message.error {
     color: var(--bs-danger);
     font-weight: 600;
-}
-
-.welcome_message.error::before {
-    content: '⚠️';
-}
-
-@keyframes pulse {
-    0%, 100% { opacity: 0.6; transform: scale(1); }
-    50% { opacity: 1; transform: scale(1.1); }
-}
-
-/* Empty state for batch gallery */
-#current_image_batch:empty::before {
-    content: 'No images yet\AStart generating to see your creations here';
-    white-space: pre;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    height: 100%;
-    min-height: 200px;
-    color: var(--bs-secondary-color);
-    font-size: var(--text-lg);
-    line-height: 2;
-    flex-direction: column;
 }
 .welcome-message-wrapper {
     min-height: 8em;
@@ -2452,7 +2249,7 @@ body:not([data-current-tab="server"]) #admin_user_clear_input_icon {
     background-color: var(--star);
     color: black !important;
     box-shadow: 0 0 1px 1px var(--star);
-    transition: all var(--duration-500) var(--ease-out);
+    transition: all 0.5s ease-out;
     border: none;
 }
 .button-starred-image:hover {
@@ -2548,20 +2345,12 @@ body:not([data-current-tab="server"]) #admin_user_clear_input_icon {
         width: 100%;
     }
     
-    /* Batch gallery - optimized mobile grid (respects user preference with min size) */
+    /* Batch gallery - optimized mobile grid */
     .current_image_batch_core,
     #current_image_batch {
         grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
         gap: 0.5rem;
         padding: 0.5rem;
-    }
-
-    /* On larger mobile devices, respect the grid column preference */
-    @media screen and (min-width: 576px) {
-        .current_image_batch_core,
-        #current_image_batch {
-            grid-template-columns: repeat(min(var(--batch-grid-columns, 3), 4), 1fr);
-        }
     }
 
     /* Mobile tap targets - ensure minimum 44x44px for accessibility */
@@ -2925,8 +2714,8 @@ body:not([data-current-tab="server"]) #admin_user_clear_input_icon {
     width: 100%;
     height: 20px;
     border: 1px solid rgba(var(--bs-border-color-rgb, 128, 128, 128), 0.7);
-    background-color: rgba(var(--bs-body-bg-rgb), 0.7);
-    color: var(--bs-body-color);
+    background-color: rgba(var(--background-rgb), 0.7);
+    color: var(--text);
     border-radius: 5px;
     margin-top: 0.5rem;
     margin-bottom: 0.5rem;
@@ -2953,7 +2742,7 @@ body:not([data-current-tab="server"]) #admin_user_clear_input_icon {
     margin-bottom: 0.5rem;
     border-radius: 0.5rem;
     border: 1px solid var(--bs-border-color);
-    background-color: var(--bs-body-bg);
+    background-color: var(--background);
 }
 .modal-preset-item {
     display: flex;
@@ -2991,7 +2780,7 @@ body:not([data-current-tab="server"]) #admin_user_clear_input_icon {
     color: var(--bs-danger);
     font-weight: bold;
     cursor: pointer;
-    transition: color var(--duration-300) var(--ease-in-out);
+    transition: color 0.3s ease;
 }
 .modal-preset-item .preset-remove-button:hover {
     color: rgba(var(--bs-danger-rgb), 0.7);
@@ -3003,7 +2792,7 @@ body:not([data-current-tab="server"]) #admin_user_clear_input_icon {
     border-radius: 0.3rem;
     font-weight: bold;
     cursor: pointer;
-    transition: background-color var(--duration-300) var(--ease-in-out);
+    transition: background-color 0.3s ease;
 }
 .modal-preset-item .preset-add-button:hover {
     background-color: rgba(var(--bs-primary-rgb), 0.8);
@@ -3023,7 +2812,7 @@ body:not([data-current-tab="server"]) #admin_user_clear_input_icon {
     color: var(--bs-info);
     font-weight: bold;
     cursor: pointer;
-    transition: color var(--duration-300) var(--ease-in-out);
+    transition: color 0.3s ease;
 }
 .modal-preset-item .preset-duplicate-button:hover {
     color: rgba(var(--bs-info-rgb), 0.7);
@@ -3032,7 +2821,7 @@ body:not([data-current-tab="server"]) #admin_user_clear_input_icon {
     color: var(--bs-success);
     font-weight: bold;
     cursor: pointer;
-    transition: color var(--duration-300) var(--ease-in-out);
+    transition: color 0.3s ease;
 }
 .modal-preset-item .preset-export-button:hover {
     color: rgba(var(--bs-success-rgb), 0.7);
@@ -3041,7 +2830,7 @@ body:not([data-current-tab="server"]) #admin_user_clear_input_icon {
     color: var(--bs-warning);
     font-weight: bold;
     cursor: pointer;
-    transition: color var(--duration-300) var(--ease-in-out);
+    transition: color 0.3s ease;
 }
 .modal-preset-item .preset-import-button:hover {
     color: rgba(var(--bs-warning-rgb), 0.7);
@@ -3050,7 +2839,7 @@ body:not([data-current-tab="server"]) #admin_user_clear_input_icon {
     color: var(--bs-danger);
     font-weight: bold;
     cursor: pointer;
-    transition: color var(--duration-300) var(--ease-in-out);
+    transition: color 0.3s ease;
 }
 .modal-preset-item .preset-download-button:hover {
     color: rgba(var(--bs-danger-rgb), 0.7);
@@ -3059,7 +2848,7 @@ body:not([data-current-tab="server"]) #admin_user_clear_input_icon {
     color: var(--bs-primary);
     font-weight: bold;
     cursor: pointer;
-    transition: color var(--duration-300) var(--ease-in-out);
+    transition: color 0.3s ease;
 }
 .modal-preset-item .preset-upload-button:hover {
     color: rgba(var(--bs-primary-rgb), 0.8);
@@ -3068,7 +2857,7 @@ body:not([data-current-tab="server"]) #admin_user_clear_input_icon {
     color: var(--bs-secondary-color);
     font-weight: bold;
     cursor: pointer;
-    transition: color var(--duration-300) var(--ease-in-out);
+    transition: color 0.3s ease;
 }
 .modal-preset-item .preset-info-button:hover {
     color: rgba(var(--bs-secondary-color-rgb), 0.7);
@@ -3077,7 +2866,7 @@ body:not([data-current-tab="server"]) #admin_user_clear_input_icon {
     color: var(--bs-secondary-color);
     font-weight: bold;
     cursor: pointer;
-    transition: color var(--duration-300) var(--ease-in-out);
+    transition: color 0.3s ease;
 }
 .modal-preset-item .preset-params-button:hover {
     color: rgba(var(--bs-secondary-color-rgb), 0.7);
@@ -3086,7 +2875,7 @@ body:not([data-current-tab="server"]) #admin_user_clear_input_icon {
     color: var(--bs-secondary-color);
     font-weight: bold;
     cursor: pointer;
-    transition: color var(--duration-300) var(--ease-in-out);
+    transition: color 0.3s ease;
 }
 .modal-preset-item .preset-advanced-button:hover {
     color: rgba(var(--bs-secondary-color-rgb), 0.7);
@@ -3144,235 +2933,4 @@ body:not([data-current-tab="server"]) #admin_user_clear_input_icon {
 }
 .modal-preset-item .preset-label.tag-default {
     background-color: rgba(0, 0, 0, 0.1);
-}
-
-/* ========================================
-   LOADING STATES & SKELETON SCREENS
-   Animated loading placeholders
-   ======================================== */
-
-/* Skeleton loader animation */
-.skeleton-loader {
-    background: linear-gradient(
-        90deg,
-        var(--bs-secondary-bg) 25%,
-        var(--bs-tertiary-bg) 50%,
-        var(--bs-secondary-bg) 75%
-    );
-    background-size: 200% 100%;
-    animation: skeleton-loading var(--duration-1000) var(--ease-in-out) infinite;
-    border-radius: var(--radius-md);
-}
-
-@keyframes skeleton-loading {
-    0% { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
-}
-
-/* Skeleton variants */
-.skeleton-text {
-    height: 1rem;
-    margin-bottom: var(--space-2);
-}
-
-.skeleton-title {
-    height: 1.5rem;
-    width: 60%;
-    margin-bottom: var(--space-3);
-}
-
-.skeleton-avatar {
-    width: 3rem;
-    height: 3rem;
-    border-radius: var(--radius-full);
-}
-
-.skeleton-card {
-    height: 10rem;
-    margin-bottom: var(--space-4);
-}
-
-/* Loading state for select elements */
-.loading {
-    position: relative;
-    pointer-events: none;
-    opacity: 0.6;
-}
-
-/* ========================================
-   KEYBOARD SHORTCUTS MODAL STYLES
-   ======================================== */
-
-.shortcuts-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: var(--space-6);
-}
-
-.shortcuts-section h6 {
-    color: var(--bs-primary);
-    font-weight: 600;
-    margin-bottom: var(--space-3);
-    font-size: var(--text-sm);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-}
-
-.shortcut-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: var(--space-2) 0;
-    border-bottom: 1px solid var(--bs-border-color);
-}
-
-.shortcut-row:last-child {
-    border-bottom: none;
-}
-
-.shortcut-row kbd {
-    background-color: var(--bs-tertiary-bg);
-    border: 1px solid var(--bs-border-color);
-    border-radius: 0.25rem;
-    padding: 0.25rem 0.5rem;
-    font-family: var(--bs-font-monospace);
-    font-size: var(--text-xs);
-    font-weight: 600;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-    margin: 0 0.25rem;
-}
-
-.shortcut-row span {
-    color: var(--bs-body-color);
-    font-size: var(--text-sm);
-    flex: 1;
-    text-align: right;
-}
-
-.loading::after {
-    content: '';
-    position: absolute;
-    right: 0.5rem;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 1rem;
-    height: 1rem;
-    border: 2px solid var(--bs-border-color);
-    border-top-color: var(--bs-primary);
-    border-radius: 50%;
-    animation: spin var(--duration-1000) linear infinite;
-}
-
-@keyframes spin {
-    to { transform: translateY(-50%) rotate(360deg); }
-}
-
-/* ========================================
-   KEYBOARD SHORTCUTS & UX IMPROVEMENTS
-   ======================================== */
-
-/* Prompt history dropdown */
-.prompt-history-button {
-    flex-shrink: 0;
-}
-
-.prompt-history-dropdown {
-    background-color: var(--bs-body-bg);
-    border: 1px solid var(--bs-border-color);
-    border-radius: 0.375rem;
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-    padding: 0.25rem 0;
-}
-
-.prompt-history-item {
-    padding: 0.75rem 1rem;
-    display: block;
-    text-decoration: none;
-    color: var(--bs-body-color);
-    border-bottom: 1px solid var(--bs-border-color);
-    transition: background-color var(--duration-200) var(--ease-in-out);
-}
-
-.prompt-history-item:last-child {
-    border-bottom: none;
-}
-
-.prompt-history-item:hover {
-    background-color: var(--bs-tertiary-bg);
-    color: var(--bs-body-color);
-}
-
-.prompt-history-item:active {
-    background-color: var(--bs-secondary-bg);
-}
-
-/* Empty state messages */
-.empty-state-message {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-/* Status bar expanded view */
-.status-bar-expanded {
-    font-size: 0.875rem;
-    line-height: 1.5;
-}
-
-.status-bar-expanded strong {
-    color: var(--bs-primary);
-    margin-right: 0.5rem;
-}
-
-/* Auto-expanding textarea improvements */
-.alt_prompt_textbox,
-#alt_prompt_textbox,
-#alt_negativeprompt_textbox {
-    transition: height var(--duration-200) var(--ease-in-out);
-}
-
-/* Keyboard shortcuts modal improvements */
-.keyboard-shortcuts-list {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
-.shortcut-item {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 0.75rem;
-    border-bottom: 1px solid var(--bs-border-color);
-    transition: background-color var(--duration-200) var(--ease-in-out);
-}
-
-.shortcut-item:hover {
-    background-color: var(--bs-tertiary-bg);
-}
-
-.shortcut-item:last-child {
-    border-bottom: none;
-}
-
-.shortcut-item kbd {
-    background-color: var(--bs-secondary-bg);
-    border: 1px solid var(--bs-border-color);
-    border-radius: 0.25rem;
-    padding: 0.25rem 0.5rem;
-    font-family: 'Courier New', Courier, monospace;
-    font-size: 0.875rem;
-    font-weight: 600;
-    min-width: 2.5rem;
-    text-align: center;
-    display: inline-block;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1), inset 0 -1px 0 rgba(0, 0, 0, 0.1);
-    color: var(--bs-body-color);
-}
-
-.shortcut-item span {
-    flex: 1;
-    color: var(--bs-body-color);
 }

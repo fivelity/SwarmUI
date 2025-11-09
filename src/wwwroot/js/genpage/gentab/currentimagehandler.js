@@ -304,6 +304,21 @@ function toggleSeparateBatches() {
     localStorage.setItem('separateBatches', `${separateBatchesElem.checked}`);
 }
 
+/** Reference to the batch grid size slider. */
+let batchGridSizeSlider = getRequiredElementById('batch_grid_size_slider');
+let batchGridSizeValue = getRequiredElementById('batch_grid_size_value');
+let savedGridSize = localStorage.getItem('batchGridSize') || '3';
+batchGridSizeSlider.value = savedGridSize;
+batchGridSizeValue.textContent = savedGridSize;
+document.documentElement.style.setProperty('--batch-grid-columns', savedGridSize);
+
+/** Called when the user adjusts the batch grid size slider. */
+function updateBatchGridSize(value) {
+    batchGridSizeValue.textContent = value;
+    document.documentElement.style.setProperty('--batch-grid-columns', value);
+    localStorage.setItem('batchGridSize', value);
+}
+
 function clickImageInBatch(div) {
     let imgElem = div.getElementsByTagName('img')[0];
     if (currentImgSrc == div.dataset.src) {

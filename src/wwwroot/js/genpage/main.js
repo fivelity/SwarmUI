@@ -623,12 +623,19 @@ function clickAnchorIn(listId, hrefId) {
     return false;
 }
 
+/**
+ * Unified tab routing system - handles navigation via hash routes
+ * Uses Bootstrap Tab API for proper tab activation
+ * @param {string} hash - The hash route (e.g., "#Generate" or "#Settings/API")
+ * @returns {boolean} - True if route was handled
+ */
 function applyWorkspaceRoute(hash) {
     if (!hash) return false;
     let parts = hash.replace(/^#/, '').split('/');
     let top = parts[0].toLowerCase();
     let sub = parts.length > 1 ? parts.slice(1).join('/') : '';
 
+    // Deactivate all top-level panes and nav links
     const topLevelPanes = document.querySelectorAll('.tab-content.tab-hundred > .tab-pane');
     topLevelPanes.forEach(pane => {
         pane.classList.remove('show', 'active');
@@ -637,19 +644,27 @@ function applyWorkspaceRoute(hash) {
     const mainNavLinks = document.querySelectorAll('#navbarNav .nav-link');
     mainNavLinks.forEach(link => link.classList.remove('active'));
 
+    // Helper: Show a specific tab pane
     function showPane(paneId) {
         const pane = document.getElementById(paneId);
         if (pane) {
             pane.classList.add('show', 'active');
+            // Trigger shown event for any listeners
+            pane.dispatchEvent(new Event('shown.bs.tab', { bubbles: true }));
         }
     }
 
+    // Helper: Set main navigation active state
     function setMainNavActive(navId) {
         const navLink = document.getElementById(navId);
         if (navLink) navLink.classList.add('active');
     }
 
-    function click(id) { let e = document.getElementById(id); if (e) e.click(); }
+    // Helper: Click element by ID (for compatibility with existing tab systems)
+    function click(id) {
+        let e = document.getElementById(id);
+        if (e) e.click();
+    }
 
     switch (top) {
         case 'generate':

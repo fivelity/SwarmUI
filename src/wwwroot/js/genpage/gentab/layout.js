@@ -1,4 +1,8 @@
-/** Data about a tab within the Generate UI that can be moved to different containers. */
+/**
+ * Data about a tab within the Generate UI that can be moved to different containers.
+ * Used for bottom bar tabs (Presets, Models, History, etc.) - NOT for main navigation.
+ * Main navigation is handled by site.js and main.js routing system.
+ */
 class MovableGenTab {
     constructor(navLink, handler) {
         this.handler = handler;
@@ -10,14 +14,20 @@ class MovableGenTab {
         this.currentGroup = this.defaultGroup;
         this.targetGroupId = getCookie(`tabloc_${this.id}`) || this.defaultGroup.id;
         this.visible = true;
+        // Remove Bootstrap toggle to use custom handler for movable tabs
         this.navElem.removeAttribute('data-bs-toggle');
         this.navElem.addEventListener('click', this.clickOn.bind(this));
     }
 
-    /** Alternate click handler for tabs, as bootstrap click handler gets confused. */
+    /**
+     * Custom click handler for movable tabs.
+     * Ensures only one tab is active within its group (bottom bar tabs).
+     */
     clickOn(e) {
         e.preventDefault();
+        e.stopPropagation(); // Prevent bubbling to main nav handlers
         this.setSelected();
+        // Deselect other tabs in the same group
         for (let tab of this.handler.managedTabs.filter(t => t.currentGroup.id == this.currentGroup.id && t.id != this.id)) {
             tab.setNotSelected();
         }
@@ -88,7 +98,7 @@ class GenTabLayout {
     leftShut = localStorage.getItem('barspot_leftShut') === 'true';
 
     /** Whether the bottom section should be shut. */
-    bottomShut = localStorage.getItem('barspot_midForceToBottom') === 'true';
+    bottomShut = localStorage.getItem('barspot_midForceToBottom') === 'true' && localStorage.getItem('user_closed_bottom_bar') === 'true';
 
     /** Position of the image-editor alignment bar (the split between image editor and output area). -1 if unset. */
     imageEditorBarPos = parseInt(getCookie('barspot_imageEditorSizeBar') || '-1');
@@ -107,6 +117,15 @@ class GenTabLayout {
 
     /** Layout to use as mobile/desktop/auto. */
     mobileDesktopLayout = localStorage.getItem('layout_mobileDesktop') || 'auto';
+
+    /** Minimum swipe delta in pixels to trigger swipe gestures (increased for better accuracy). */
+    minSwipeDelta = 100;
+
+    /** Starting X position for swipe detection. */
+    swipeStartX = -1;
+
+    /** Starting Y position for swipe detection. */
+    swipeStartY = -1;
 
     constructor() {
         this.leftSplitBar = getRequiredElementById('t2i-top-split-bar');
@@ -158,8 +177,10 @@ class GenTabLayout {
                 this.bottomShut = false;
                 localStorage.setItem('barspot_leftShut', 'false');
                 localStorage.setItem('barspot_midForceToBottom', 'false');
+                localStorage.setItem('layout_sidebars_manually_set', 'true');
             }
-            // Force bottom bar visible if it somehow got shut
+            // Force bottom bar visible if user hasn't explicitly closed it
+            // This ensures critical features (image history, presets, models) are accessible
             if (this.bottomShut && !localStorage.getItem('user_closed_bottom_bar')) {
                 this.bottomShut = false;
                 localStorage.setItem('barspot_midForceToBottom', 'false');
@@ -508,7 +529,10 @@ class GenTabLayout {
                 let deltaX = e.changedTouches.item(0).pageX - this.swipeStartX;
                 let deltaY = e.changedTouches.item(0).pageY - this.swipeStartY;
                 let allShut = this.leftShut && this.rightSectionBarPos <= 0 && this.bottomShut;
-                if (Math.abs(deltaX) > Math.abs(deltaY)) {
+                // Add direction bias: horizontal movement must be 2x vertical to trigger
+                let isHorizontalGesture = Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) >= Math.abs(deltaY) * 2;
+                let isVerticalGesture = Math.abs(deltaY) > Math.abs(deltaX) && Math.abs(deltaY) >= Math.abs(deltaX) * 2;
+                if (isHorizontalGesture) {
                     if (Math.abs(deltaX) > this.minSwipeDelta) {
                         // TODO: Mobile bar shuts need a smooth animation
                         // Swipe from anywhere towards left = close left bar
@@ -535,7 +559,7 @@ class GenTabLayout {
                         }
                     }
                 }
-                else {
+                else if (isVerticalGesture) {
                     if (Math.abs(deltaY) > this.minSwipeDelta) {
                         // Swipe from anywhere towards bottom = close bottom bar
                         if (!this.bottomShut && deltaY > 0) {

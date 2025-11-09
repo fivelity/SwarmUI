@@ -305,27 +305,32 @@ function updateSubNavBar() {
 
 document.addEventListener('DOMContentLoaded', () => {
     try {
-        // Add click handlers to main navigation to integrate with tab system
+        // Add click handlers to main navigation with proper history management
         const mainNavLinks = document.querySelectorAll('#navbarNav .nav-link');
         mainNavLinks.forEach(link => {
             link.addEventListener('click', (e) => {
                 const href = link.getAttribute('href') || '';
                 // Only handle in-app hash routes here
                 if (!href.startsWith('#')) return;
-                // Prevent default so nothing opens in a new tab/window
+
                 e.preventDefault();
                 e.stopPropagation();
-                // Update active state for responsiveness
+
+                // Update active state
                 mainNavLinks.forEach(navLink => navLink.classList.remove('active'));
                 link.classList.add('active');
-                // Update the URL and trigger routing
+
+                // Use pushState for proper browser history management
+                const newUrl = `${window.location.pathname}${window.location.search}${href}`;
                 if (window.location.hash !== href) {
-                    window.location.hash = href;
-                } else {
-                    // If already on the same hash, explicitly activate
-                    if (typeof activateTabFromHash === 'function') {
-                        activateTabFromHash(href);
-                    }
+                    // Add to browser history
+                    history.pushState({ tab: href }, '', newUrl);
+                    window.location.hash = href; // Also update hash for compatibility
+                }
+
+                // Activate the tab
+                if (typeof activateTabFromHash === 'function') {
+                    activateTabFromHash(href);
                 }
             });
         });
@@ -394,6 +399,13 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log('=== End Check ===');
         };
         
+        // Handle browser back/forward navigation with popstate
+        window.addEventListener('popstate', (event) => {
+            const hash = window.location.hash || '#Generate';
+            setActiveMainNavByHash(hash);
+            activateTabFromHash(hash);
+        });
+
         // Handle hash changes from other sources (like direct URL changes)
         window.addEventListener('hashchange', () => {
             const hash = window.location.hash || '#Generate';
@@ -439,10 +451,102 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Keyboard shortcuts
         document.addEventListener('keydown', (e) => {
+            // Alt+I: Interrupt current generation
             if (e.altKey && (e.key === 'i' || e.key === 'I')) {
                 const btn = document.getElementById('alt_interrupt_button') || document.getElementById('interrupt_button');
                 if (btn && !btn.classList.contains('interrupt-button-none')) {
                     btn.click();
+                    e.preventDefault();
+                }
+            }
+
+            // Enter: Generate (when focused on prompt textbox)
+            if (e.key === 'Enter' && !e.shiftKey && !e.ctrlKey && !e.metaKey) {
+                const target = e.target;
+                const promptTextbox = document.getElementById('alt_prompt_textbox');
+                const negativePromptTextbox = document.getElementById('alt_negativeprompt_textbox');
+
+                if (target === promptTextbox || target === negativePromptTextbox) {
+                    const generateBtn = document.getElementById('alt_generate_button');
+                    if (generateBtn) {
+                        generateBtn.click();
+                        e.preventDefault();
+                    }
+                }
+            }
+
+            // Ctrl/Cmd+Enter: Toggle Generate Forever (when focused on prompt textbox)
+            if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+                const target = e.target;
+                const promptTextbox = document.getElementById('alt_prompt_textbox');
+                const negativePromptTextbox = document.getElementById('alt_negativeprompt_textbox');
+
+                if (target === promptTextbox || target === negativePromptTextbox) {
+                    const genForeverBtn = document.getElementById('generate_forever_checkbox');
+                    if (genForeverBtn) {
+                        genForeverBtn.checked = !genForeverBtn.checked;
+                        // Trigger change event
+                        genForeverBtn.dispatchEvent(new Event('change'));
+                        e.preventDefault();
+                    }
+                }
+            }
+
+            // Esc: Close modals and popovers
+            if (e.key === 'Escape') {
+                // Close any open popovers
+                const openPopovers = document.querySelectorAll('.sui-popover[style*="display: block"], .sui-popover[style*="display:block"]');
+                openPopovers.forEach(popover => {
+                    popover.style.display = 'none';
+                });
+
+                // Close Bootstrap modals
+                const openModals = document.querySelectorAll('.modal.show');
+                openModals.forEach(modal => {
+                    const bsModal = bootstrap.Modal.getInstance(modal);
+                    if (bsModal) {
+                        bsModal.hide();
+                    }
+                });
+            }
+
+            // Arrow keys: Navigate batch gallery (when not focused on input)
+            if ((e.key === 'ArrowLeft' || e.key === 'ArrowRight') &&
+                !['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) {
+                const batchContainer = document.getElementById('current_image_batch');
+                if (batchContainer) {
+                    const images = Array.from(batchContainer.querySelectorAll('.image-block'));
+                    if (images.length === 0) return;
+
+                    // Find currently selected image (if any)
+                    let currentIndex = images.findIndex(img => img.classList.contains('selected'));
+
+                    if (e.key === 'ArrowLeft') {
+                        currentIndex = currentIndex <= 0 ? images.length - 1 : currentIndex - 1;
+                    } else {
+                        currentIndex = currentIndex >= images.length - 1 ? 0 : currentIndex + 1;
+                    }
+
+                    // Remove previous selection
+                    images.forEach(img => img.classList.remove('selected'));
+
+                    // Select and click new image
+                    const targetImage = images[currentIndex];
+                    if (targetImage) {
+                        targetImage.classList.add('selected');
+                        targetImage.click();
+                        targetImage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                        e.preventDefault();
+                    }
+                }
+            }
+
+            // Ctrl/Cmd + /: Show keyboard shortcuts help
+            if ((e.ctrlKey || e.metaKey) && e.key === '/') {
+                const shortcutsModal = document.getElementById('keyboard_shortcuts_modal');
+                if (shortcutsModal) {
+                    const modal = new bootstrap.Modal(shortcutsModal);
+                    modal.show();
                     e.preventDefault();
                 }
             }
@@ -466,6 +570,265 @@ document.addEventListener('DOMContentLoaded', () => {
             toggleBtn.addEventListener('click', () => {
                 const newTheme = (root.getAttribute('data-bs-theme') === 'dark') ? 'light' : 'dark';
                 applyBsTheme(newTheme);
+            });
+        }
+
+        // Auto-expanding textareas
+        function setupAutoExpandTextarea(textarea) {
+            if (!textarea) return;
+
+            function resize() {
+                textarea.style.height = 'auto';
+                textarea.style.height = Math.min(textarea.scrollHeight, 300) + 'px';
+            }
+
+            textarea.addEventListener('input', resize);
+            // Also resize on paste
+            textarea.addEventListener('paste', () => setTimeout(resize, 0));
+            // Initial resize
+            resize();
+        }
+
+        // Setup auto-expand for prompt textboxes
+        const promptTextbox = document.getElementById('alt_prompt_textbox');
+        const negativePromptTextbox = document.getElementById('alt_negativeprompt_textbox');
+
+        if (promptTextbox) {
+            setupAutoExpandTextarea(promptTextbox);
+        }
+
+        if (negativePromptTextbox) {
+            setupAutoExpandTextarea(negativePromptTextbox);
+        }
+
+        // Prompt history functionality
+        const PROMPT_HISTORY_KEY = 'sui.promptHistory';
+        const MAX_HISTORY = 20;
+        let promptHistory = [];
+        let historyIndex = -1;
+
+        // Load prompt history from localStorage
+        try {
+            const saved = localStorage.getItem(PROMPT_HISTORY_KEY);
+            if (saved) {
+                promptHistory = JSON.parse(saved);
+            }
+        } catch (e) {
+            console.error('Failed to load prompt history:', e);
+        }
+
+        // Save prompt to history
+        function savePromptToHistory(prompt) {
+            if (!prompt || prompt.trim() === '') return;
+
+            // Remove duplicates
+            promptHistory = promptHistory.filter(p => p !== prompt);
+
+            // Add to beginning
+            promptHistory.unshift(prompt);
+
+            // Limit size
+            if (promptHistory.length > MAX_HISTORY) {
+                promptHistory = promptHistory.slice(0, MAX_HISTORY);
+            }
+
+            // Save to localStorage
+            try {
+                localStorage.setItem(PROMPT_HISTORY_KEY, JSON.stringify(promptHistory));
+            } catch (e) {
+                console.error('Failed to save prompt history:', e);
+            }
+
+            // Reset index
+            historyIndex = -1;
+        }
+
+        // Navigate prompt history
+        function navigateHistory(direction) {
+            if (promptHistory.length === 0) return;
+
+            if (direction === 'up') {
+                historyIndex = Math.min(historyIndex + 1, promptHistory.length - 1);
+            } else {
+                historyIndex = Math.max(historyIndex - 1, -1);
+            }
+
+            if (historyIndex >= 0) {
+                promptTextbox.value = promptHistory[historyIndex];
+                // Trigger input event to resize textarea
+                promptTextbox.dispatchEvent(new Event('input'));
+            } else {
+                promptTextbox.value = '';
+            }
+        }
+
+        // Show prompt history dropdown
+        function showPromptHistoryDropdown() {
+            if (promptHistory.length === 0) {
+                alert('No prompt history available');
+                return;
+            }
+
+            const dropdown = document.createElement('div');
+            dropdown.className = 'prompt-history-dropdown';
+            dropdown.innerHTML = `
+                <div class="prompt-history-header">
+                    <span>Recent Prompts</span>
+                    <button class="prompt-history-close" onclick="this.closest('.prompt-history-dropdown').remove()">×</button>
+                </div>
+                <div class="prompt-history-list">
+                    ${promptHistory.map((prompt, index) => `
+                        <div class="prompt-history-item" data-index="${index}">
+                            <div class="prompt-history-text">${escapeHtml(prompt)}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+
+            // Position dropdown
+            const button = document.getElementById('prompt_history_button');
+            const rect = button.getBoundingClientRect();
+            dropdown.style.position = 'fixed';
+            dropdown.style.top = (rect.bottom + 5) + 'px';
+            dropdown.style.right = (window.innerWidth - rect.right) + 'px';
+            dropdown.style.zIndex = '10000';
+
+            document.body.appendChild(dropdown);
+
+            // Add click handlers
+            dropdown.querySelectorAll('.prompt-history-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const index = parseInt(item.dataset.index);
+                    promptTextbox.value = promptHistory[index];
+                    promptTextbox.dispatchEvent(new Event('input'));
+                    dropdown.remove();
+                    promptTextbox.focus();
+                });
+            });
+
+            // Close on click outside
+            setTimeout(() => {
+                document.addEventListener('click', function closeDropdown(e) {
+                    if (!dropdown.contains(e.target) && e.target !== button) {
+                        dropdown.remove();
+                        document.removeEventListener('click', closeDropdown);
+                    }
+                });
+            }, 100);
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Hook into generate button to save prompts
+        const generateBtn = document.getElementById('alt_generate_button');
+        if (generateBtn && promptTextbox) {
+            const originalOnClick = generateBtn.onclick;
+            generateBtn.onclick = function(e) {
+                savePromptToHistory(promptTextbox.value);
+                if (originalOnClick) {
+                    originalOnClick.call(this, e);
+                }
+            };
+        }
+
+        // Ctrl+Up/Down for history navigation
+        if (promptTextbox) {
+            promptTextbox.addEventListener('keydown', (e) => {
+                if (e.ctrlKey && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
+                    e.preventDefault();
+                    navigateHistory(e.key === 'ArrowUp' ? 'up' : 'down');
+                }
+            });
+        }
+
+        // History button click handler
+        const historyBtn = document.getElementById('prompt_history_button');
+        if (historyBtn) {
+            historyBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                showPromptHistoryDropdown();
+            });
+        }
+
+        // Status bar click-to-expand
+        const statusBar = document.getElementById('top_status_bar');
+        const statusDetails = document.getElementById('status_bar_details');
+
+        if (statusBar && statusDetails) {
+            statusBar.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const isVisible = statusDetails.style.display !== 'none';
+                statusDetails.style.display = isVisible ? 'none' : 'block';
+
+                // Update content when showing
+                if (!isVisible) {
+                    updateStatusDetailsContent();
+                }
+            });
+
+            // Close when clicking outside
+            document.addEventListener('click', (e) => {
+                if (statusDetails.style.display === 'block' &&
+                    !statusDetails.contains(e.target) &&
+                    e.target !== statusBar) {
+                    statusDetails.style.display = 'none';
+                }
+            });
+        }
+
+        // Function to update status details content
+        function updateStatusDetailsContent() {
+            const content = document.getElementById('status_details_content');
+            if (!content) return;
+
+            // Get current generation info from the status text
+            const statusText = statusBar.textContent;
+
+            if (!statusText || statusText === 'Loading...') {
+                content.innerHTML = '<p class="text-muted">Loading status...</p>';
+                return;
+            }
+
+            // Parse the status text to show details
+            const parts = statusText.match(/(\d+)\s+([^,]+)/g);
+
+            if (!parts || parts.length === 0) {
+                content.innerHTML = '<p class="text-muted">No active generations</p>';
+                return;
+            }
+
+            let html = '';
+            parts.forEach(part => {
+                const match = part.match(/(\d+)\s+(.+)/);
+                if (match) {
+                    const [, count, label] = match;
+                    html += `
+                        <div class="status-queue-item">
+                            <div class="status-queue-item-status">${count} ${label}</div>
+                        </div>
+                    `;
+                }
+            });
+
+            content.innerHTML = html || '<p class="text-muted">No active generations</p>';
+        }
+
+        // Update status details when status bar changes
+        if (statusBar) {
+            const observer = new MutationObserver(() => {
+                if (statusDetails.style.display === 'block') {
+                    updateStatusDetailsContent();
+                }
+            });
+
+            observer.observe(statusBar, {
+                childList: true,
+                characterData: true,
+                subtree: true
             });
         }
 

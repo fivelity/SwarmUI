@@ -16,7 +16,7 @@
                             <input type="text" class="main_inputs_filter auto-text" id="main_inputs_filter" oninput="hideUnsupportableParams()" placeholder="Filter parameters..." />
                             <span class="clear_input_icon" id="clear_input_icon" onclick="clearParamFilterInput()">&#x2715;</span>
                         </div>
-                        <div id="main_inputs_area"></div>
+                        <div id="main_inputs_area" class="custom-scrollbar"></div>
                         <div id="main_inputs_area_hidden" class="main_inputs_area_hidden"></div>
                         <div style="height: 10rem;"></div> <!-- Spacer -->
                     </div>
@@ -34,10 +34,17 @@
             </ul>
             <div class="tab-content" id="currentimagecontent">
                 <div class="tab-pane show active genpage-bottom-tab" style="overflow:hidden" id="Image-Result-Tab" role="tabpanel">
-                    <div class="image_editor_input" id="image_editor_input" style="display:none;"></div><div class="image_editor_sizebar splitter-bar t2i-top-imageeditor-bar" id="image_editor_sizebar" style="display:none;"></div><div class="current_image drag_image_target" id="current_image"><div id="welcome_message" class="welcome_message">@(new HtmlString(Program.VersionUpdateMessage ?? (Program.ServerSettings.ShowExperimentalFeatures ? "Experimental Features are enabled. Issue reports will not be accepted." : Program.ServerSettings.UI.OverrideWelcomeMessage)))</div></div>
+                    <div class="image_editor_input" id="image_editor_input" style="display:none;"></div>
+                    <div class="image_editor_sizebar splitter-bar t2i-top-imageeditor-bar" id="image_editor_sizebar" style="display:none;"></div>
+                    <div class="current_image drag_image_target" id="current_image">
+                        <div id="welcome_message" class="welcome_message">@(new HtmlString(Program.VersionUpdateMessage ?? (Program.ServerSettings.ShowExperimentalFeatures ? "Experimental Features are enabled. Issue reports will not be accepted." : Program.ServerSettings.UI.OverrideWelcomeMessage)))</div>
+                    </div>
                 </div>
                 <div id="extra_welcome_message">@(new HtmlString(Program.ServerSettings.UI.ExtraWelcomeInfo))</div>
-            </div></div><div class="t2i-top-split-bar splitter-bar" id="t2i-top-2nd-split-bar"></div><div class="current_image_batch" id="current_image_batch_wrapper">
+            </div>
+        </div>
+        <div class="t2i-top-split-bar splitter-bar" id="t2i-top-2nd-split-bar"></div>
+        <div class="current_image_batch" id="current_image_batch_wrapper">
                 <ul class="nav nav-tabs swarm-gen-tab-subnav" data-title="Right Sidebar" data-content="rightsidebarcontent" role="tablist" id="rightsidebarcollection">
                     <li class="nav-item" role="presentation">
                         <a class="nav-link active translate" data-bs-toggle="tab" href="#Image-Batch-Tab" aria-selected="true" role="tab">Batch</a>
@@ -77,6 +84,10 @@
                                     <input type="checkbox" class="form-check-input" id="separate_batches_checkbox" onchange="toggleSeparateBatches()"> <label class="form-check-label translate" for="separate_batches_checkbox">Separate Batches</label>
                                 </span>
                             </div>
+                            <div class="batchgear-toggler" title="Adjust the number of columns in the batch gallery grid.">
+                                <label class="form-label translate" for="batch_grid_size_slider">Grid Columns: <span id="batch_grid_size_value">3</span></label>
+                                <input type="range" class="form-range" id="batch_grid_size_slider" min="2" max="8" step="1" value="3" oninput="updateBatchGridSize(this.value)">
+                            </div>
                         </div>
                         <div id="current_image_batch" class="current_image_batch_core"></div>
                     </div>
@@ -97,7 +108,15 @@
                         </span>
                     </span>
                     <div class="alt_prompt_textboxes">
-                        <textarea id="alt_prompt_textbox" class="alt_prompt_textbox translate" rows="1" placeholder="Type your prompt here... (or, drag/paste an image in to use Image Prompting)" onpaste="imagePromptImagePaste(arguments[0])"></textarea>
+                        <div class="prompt-input-wrapper">
+                            <textarea id="alt_prompt_textbox" class="alt_prompt_textbox translate" rows="1" placeholder="Type your prompt here... (or, drag/paste an image in to use Image Prompting)" onpaste="imagePromptImagePaste(arguments[0])"></textarea>
+                            <button class="prompt-history-button" id="prompt_history_button" title="Prompt History (Ctrl+Up/Down)">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                    <path d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
+                                    <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
+                                </svg>
+                            </button>
+                        </div>
                         <br>
                         <textarea id="alt_negativeprompt_textbox" class="alt_prompt_textbox translate" rows="1" placeholder="Optionally, type a negative prompt here..."></textarea>
                     </div>

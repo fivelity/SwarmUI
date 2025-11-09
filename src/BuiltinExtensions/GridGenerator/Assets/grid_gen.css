@@ -3,17 +3,17 @@
     margin-bottom: 0.5rem;
 }
 .grid-gen-run-button {
-    background-color: var(--button-background);
-    color: var(--button-text);
-    border: 1px solid var(--button-border);
+    background-color: var(--btn-primary-bg);
+    color: var(--btn-primary-color);
+    border: 1px solid var(--btn-primary-border);
     font-size: 200%;
     font-weight: bold;
     padding: 1rem;
     border-radius: 1rem;
 }
 .grid-gen-run-button:hover {
-    background-color: var(--button-background-hover);
-    color: var(--button-foreground-hover);
+    background-color: var(--btn-primary-hover-bg);
+    color: var(--btn-primary-color);
 }
 .grid-gen-axis-area {
     border-radius: 1rem;
@@ -21,33 +21,33 @@
     width: 99%;
     margin-left: 0.5%;
     padding: 0.5rem;
-    border: 1px solid var(--light-border);
+    border: 1px solid var(--bs-border-color);
 }
 .grid-gen-axis-input {
     width: calc(max(60%, 25rem));
     vertical-align: top;
     display: inline-block;
-    border: 1px solid var(--light-border);
-    background-color: var(--background-soft);
+    border: 1px solid var(--bs-border-color);
+    background-color: var(--bs-tertiary-bg);
     white-space: pre-wrap;
 }
 .grid-gen-axis-input-value {
     display: inline-block;
-    border: 1px solid gray;
-    background-color: rgba(127, 127, 127, 0.25);
+    border: 1px solid var(--bs-border-color);
+    background-color: rgba(var(--bs-secondary-color-rgb), 0.25);
     border-radius: 0.5rem;
     margin-left: 0.25rem;
     margin-right: 0.25rem;
 }
 .grid-gen-axis-input-value-invalid {
-    background-color: rgba(255, 0, 0, 0.25);
+    background-color: rgba(var(--bs-danger-rgb), 0.25);
 }
 .grid-gen-axis-input-value-skipped {
     opacity: 0.5;
 }
 .grid-gen-axis-input-separator {
     font-weight: bold;
-    color: #ffff55;
+    color: var(--bs-warning);
 }
 .grid-gen-selector {
     vertical-align: top;
@@ -59,7 +59,7 @@
     font-weight: bold;
 }
 .gridgen_warn {
-    color: red;
+    color: var(--bs-danger);
     font-weight: bold;
 }
 .grid-gen-checkboxes {
