@@ -1,0 +1,36 @@
+Core Identity & Vision:
+Project Name: ReactiveSwarm
+Objective: 100% feature parity with SwarmUI in a modern, real-time Vite environment.
+Design Aesthetic: Modern Dark 2.0. Deep charcoal/black backgrounds (#09090b), glassmorphism layers, and bento-style telemetry headers.
+
+Technology Constraints (2026 Stack):
+Frontend: React 19+ (strict), TypeScript 5.6+, and Tailwind CSS v4.1+.
+State Management: Zustand with a modular slice architecture (`useGenerationStore`, `useBackendStore`, `useModelStore`).
+UI Library: Shadcn UI (Latest) and Lucide React icons. Avoid other icon sets unless requested.
+State Rules: Never use prop-drilling or large React Contexts for real-time generation data. Subscriptions must be fine-grained to prevent re-render lag.
+
+Modular & Resizable Layout:
+Panel System: Use `react-resizable-panels` for a 3-column setup. Both sidebars must be resizable via drag handles and collapsible via arrow toggles. Persist states in useLayoutStore and localStorage.
+UI Slots: Build a modular "Slot" system allowing users to rearrange the "Main Canvas," "Model Browser," and "Gallery." Users should be able to toggle "Layout Modification Mode" to swap component positions.
+
+Advanced Parameter Engine (Left Sidebar):
+Sortable UI: Implement a "Pick and Place" system using `@dnd-kit/sortable` for all parameter groups (Sampling, Seed, etc.). Users can drag groups to change their vertical order.
+Searchable Params: Include a real-time filter at the top of the sidebar to find specific parameters within the groups.
+Display Advanced Parameters: Implement a toggle switch for the 'Display Advanced Parameters' boolean, to unhide the complete list of available parameters.
+
+Feature Parity Guidelines:
+Real-time: Must handle live binary/base64 image streams via WebSocket.
+Prompt Engine: Implement a real-time syntax parser for:
+`<wildcard:path>` and `<random:a,b>`.
+`<alt:cat,dog>` (alternating every step).
+`<param[cfgscale]:5>` (embedded parameter overrides).
+ComfyUI Sync: A dedicated "Workflow" tab/page with an iframe to `/ComfyBackendDirect/`. Use `postMessage` for bi-directional state syncing (injecting seeds/prompts from the React UI into the node workflow).
+Model Browser: Must support folder-tree navigation and metadata display.
+Grid Generator: A specialized UI for multi-axis parameter testing with dynamic axis reorganization.
+Image Editor: Integrated canvas for inpainting and masking with brush size and blur controls.
+
+Performance & Theming;
+React 19 Transitions: Wrap all sidebar slider updates in `startTransition` to ensure the main UI never stutters.
+Theme Service: All UI tokens (colors, blur, spacing) must be native CSS variables in the Tailwind 4 theme.
+Import/Export: A "Theme Manager" that exports current variables as a .json blob and allows users to upload theme files to instantly re-skin the entire dashboard.
+ComfyUI Bridge: A persistent WebSocket connection to the Swarm backend that streams Node-level progress even when the user is in the "Simple" tab.
