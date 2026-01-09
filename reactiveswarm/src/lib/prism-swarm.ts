@@ -16,8 +16,38 @@ Prism.languages.swarm = {
       }
     }
   },
+  'control': {
+    pattern: /<(alt|random|fromto(?:\[[^\]]+\])?|repeat|cycle):[^>]+>/,
+    inside: {
+      'punctuation': /^<(?:alt|random|fromto(?:\[[^\]]+\])?|repeat|cycle):|>$|:/,
+      'keyword': /^(?:alt|random|fromto|repeat|cycle)/,
+      'number': /\[[0-9.]+\]/
+    }
+  },
+  'region': {
+    pattern: /<region:[^>]+>/,
+    inside: {
+      'punctuation': /^<region:|>$|:/,
+      'number': /[0-9.]+/
+    }
+  },
+  'segment': {
+    pattern: /<segment:[^>]+>/,
+    inside: {
+      'punctuation': /^<segment:|>$|:/,
+      'string': /[^<>]+/
+    }
+  },
+  'variable': {
+    pattern: /<(?:set)?var(?:\[[^\]]+\])?:[^>]+>/,
+    inside: {
+      'punctuation': /^<(?:set)?var(?:\[[^\]]+\])?:|>$|:/,
+      'keyword': /^(?:set)?var/,
+      'string': /[^<>]+/
+    }
+  },
   'wildcard': {
-    pattern: /<wildcard:[^>]+>|<random:[^>]+>|<alt:[^>]+>|<[^:>]+>/,
+    pattern: /<wildcard:[^>]+>|<[^:>]+>/,
     inside: {
         'punctuation': /^<[^:]+:|>$|:/,
         'string': /[^<>]+/

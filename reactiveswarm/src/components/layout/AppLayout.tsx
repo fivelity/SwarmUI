@@ -12,12 +12,15 @@ import { TopNavigation } from "./TopNavigation";
 import { ComfyUIFrame } from "./ComfyUIFrame";
 import { SettingsPage } from "./SettingsPage";
 import { GridGenerator } from "@/components/grid/GridGenerator";
+import { ExtensionsPage } from "@/components/extensions/ExtensionsPage";
+import { ToolsPage } from "@/components/resources/ToolsPage";
 import { useLayoutStore } from "@/stores/layoutStore";
 import { useUIStore } from "@/stores/uiStore";
 import { cn } from "@/lib/utils";
 import { socketService } from "@/services/websocketService";
 import { Toaster } from "@/components/ui/sonner";
 import { ImageEditor } from "@/components/editor/ImageEditor";
+import { ExtensionAssetLoader } from "@/components/extensions/ExtensionAssetLoader";
 
 export function AppLayout() {
   const { 
@@ -28,7 +31,9 @@ export function AppLayout() {
       leftSidebarCollapsed,
       rightSidebarCollapsed,
       toggleLeftSidebar,
-      toggleRightSidebar
+      toggleRightSidebar,
+      setLeftSidebarCollapsed,
+      setRightSidebarCollapsed
   } = useLayoutStore();
 
   const { activeTab, setIsMobile, editingImage, setEditingImage } = useUIStore();
@@ -122,14 +127,20 @@ export function AppLayout() {
               {/* Left Sidebar Panel */}
               <Panel 
                   panelRef={leftPanelRef}
-                  defaultSize={leftSidebarSize} 
+                  defaultSize={leftSidebarSize < 5 ? 20 : leftSidebarSize} 
                   minSize={15} 
                   maxSize={30}
                   collapsible={true}
                   collapsedSize={0}
                   className={cn(leftSidebarCollapsed && "min-w-0 w-0 border-none")}
                   onResize={(size) => {
-                    setLeftSidebarSize(size.asPercentage);
+                    const pct = size.asPercentage;
+                    if (pct < 5) {
+                        if (!leftSidebarCollapsed) setLeftSidebarCollapsed(true);
+                    } else {
+                        setLeftSidebarSize(pct);
+                        if (leftSidebarCollapsed) setLeftSidebarCollapsed(false);
+                    }
                   }}
               >
                   <LeftSidebar />
@@ -142,7 +153,7 @@ export function AppLayout() {
               />
 
               {/* Main Content */}
-              <Panel defaultSize={100 - leftSidebarSize - rightSidebarSize} minSize={30}>
+              <Panel defaultSize={100 - (leftSidebarSize < 5 ? 20 : leftSidebarSize) - (rightSidebarSize < 5 ? 20 : rightSidebarSize)} minSize={30}>
                 <MainCanvas />
               </Panel>
 
@@ -155,14 +166,20 @@ export function AppLayout() {
               {/* Right Sidebar Panel */}
               <Panel 
                   panelRef={rightPanelRef}
-                  defaultSize={rightSidebarSize} 
+                  defaultSize={rightSidebarSize < 5 ? 20 : rightSidebarSize} 
                   minSize={15} 
                   maxSize={30}
                   collapsible={true}
                   collapsedSize={0}
                   className={cn(rightSidebarCollapsed && "min-w-0 w-0 border-none")}
                   onResize={(size) => {
-                    setRightSidebarSize(size.asPercentage);
+                    const pct = size.asPercentage;
+                    if (pct < 5) {
+                        if (!rightSidebarCollapsed) setRightSidebarCollapsed(true);
+                    } else {
+                        setRightSidebarSize(pct);
+                        if (rightSidebarCollapsed) setRightSidebarCollapsed(false);
+                    }
                   }}
               >
                 <RightSidebar />
@@ -173,6 +190,8 @@ export function AppLayout() {
 
           {activeTab === 'comfy' && <ComfyUIFrame />}
           {activeTab === 'grid' && <GridGenerator />}
+          {activeTab === 'tools' && <ToolsPage />}
+          {activeTab === 'extensions' && <ExtensionsPage />}
           {activeTab === 'settings' && <SettingsPage />}
       </div>
       
@@ -183,6 +202,7 @@ export function AppLayout() {
         onSave={handleSaveMask}
       />
       
+      <ExtensionAssetLoader />
       <Toaster />
     </div>
   );

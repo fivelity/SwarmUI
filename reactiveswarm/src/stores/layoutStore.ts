@@ -16,6 +16,8 @@ interface LayoutState {
   setRightSidebarSize: (size: number) => void;
   toggleLeftSidebar: () => void;
   toggleRightSidebar: () => void;
+  setLeftSidebarCollapsed: (collapsed: boolean) => void;
+  setRightSidebarCollapsed: (collapsed: boolean) => void;
   setLayoutMode: (mode: 'default' | 'focus' | 'gallery') => void;
   setParameterGroupOrder: (order: string[]) => void;
 }
@@ -35,6 +37,8 @@ export const useLayoutStore = create<LayoutState>()(
         setRightSidebarSize: (size) => set({ rightSidebarSize: size }),
         toggleLeftSidebar: () => set((state) => ({ leftSidebarCollapsed: !state.leftSidebarCollapsed })),
         toggleRightSidebar: () => set((state) => ({ rightSidebarCollapsed: !state.rightSidebarCollapsed })),
+        setLeftSidebarCollapsed: (collapsed) => set({ leftSidebarCollapsed: collapsed }),
+        setRightSidebarCollapsed: (collapsed) => set({ rightSidebarCollapsed: collapsed }),
         setLayoutMode: (mode) => set({ layoutMode: mode }),
         setParameterGroupOrder: (order) => set({ parameterGroupOrder: order }),
       }),

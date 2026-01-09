@@ -9,7 +9,9 @@ import {
     Activity,
     RefreshCw,
     Menu,
-    Grid
+    Grid,
+    Box,
+    Wrench
 } from "lucide-react";
 
 export function TopNavigation() {
@@ -19,7 +21,9 @@ export function TopNavigation() {
   const tabs = [
     { id: 'generate', label: 'Generate', icon: Layers },
     { id: 'grid', label: 'Grid', icon: Grid },
+    { id: 'tools', label: 'Tools', icon: Wrench },
     { id: 'comfy', label: 'ComfyUI', icon: Cpu },
+    { id: 'extensions', label: 'Extensions', icon: Box },
     { id: 'settings', label: 'Settings', icon: Settings },
   ] as const;
 

@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
 
-type Tab = 'generate' | 'comfy' | 'settings' | 'history' | 'grid';
+type Tab = 'generate' | 'comfy' | 'settings' | 'history' | 'grid' | 'extensions' | 'tools';
 
 interface UIState {
   activeTab: Tab;
