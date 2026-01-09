@@ -1,14 +1,16 @@
 import { useLayoutStore } from "@/stores/layoutStore";
 import { useHistoryStore } from "@/stores/historyStore";
+import { useUIStore } from "@/stores/uiStore";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Image as ImageIcon, Folder, Star, CheckSquare, Trash2, X } from "lucide-react";
+import { Image as ImageIcon, Folder, Star, CheckSquare, Trash2, X, Edit } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export function RightSidebar() {
   const { rightSidebarCollapsed } = useLayoutStore();
+  const { setEditingImage } = useUIStore();
   const { 
       images, 
       selectionMode, 
@@ -28,6 +30,11 @@ export function RightSidebar() {
           selectImage(id);
           // TODO: Open image viewer/modal
       }
+  };
+
+  const handleEdit = (e: React.MouseEvent, imageUrl: string) => {
+      e.stopPropagation();
+      setEditingImage(imageUrl);
   };
 
   const handleDeleteSelected = () => {
@@ -137,9 +144,24 @@ export function RightSidebar() {
                                     )}
 
                                     {/* Star Badge (only show if not in selection mode or if starred) */}
-                                    {!selectionMode && img.isStarred && (
+                                    {img.isStarred && (
                                         <div className="absolute top-1 right-1 bg-black/50 p-1 rounded-full text-yellow-500">
                                             <Star className="w-3 h-3 fill-current" />
+                                        </div>
+                                    )}
+                                    
+                                    {/* Actions Overlay (Hover) */}
+                                    {!selectionMode && (
+                                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                                            <Button 
+                                                size="icon" 
+                                                variant="secondary" 
+                                                className="h-8 w-8 rounded-full"
+                                                onClick={(e) => handleEdit(e, img.url)}
+                                                title="Edit / Inpaint"
+                                            >
+                                                <Edit className="w-4 h-4" />
+                                            </Button>
                                         </div>
                                     )}
                                 </Card>

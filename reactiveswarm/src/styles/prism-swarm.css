@@ -1,0 +1,51 @@
+/* PrismJS SwarmUI Syntax Highlighting Theme */
+
+/* Base text color */
+.token.string {
+	color: #a5b3ce;
+}
+
+/* Lora <lora:name:1.0> */
+.token.lora .token.punctuation {
+	color: #c678dd; /* Purple for <lora: > */
+}
+.token.lora .token.variable {
+    color: #d19a66; /* Orange for weight */
+    font-weight: bold;
+}
+
+/* Wildcards <wildcard:name> */
+.token.wildcard {
+    color: #98c379; /* Green */
+}
+.token.wildcard .token.punctuation {
+    color: #56b6c2; /* Cyan */
+}
+
+/* Params <param:steps:30> */
+.token.param .token.keyword {
+    color: #e06c75; /* Red */
+}
+.token.param .token.number {
+    color: #d19a66; /* Orange */
+}
+
+/* Emphasis (cat:1.2) */
+.token.emphasis .token.punctuation {
+    color: #61afef; /* Blue */
+}
+.token.emphasis .token.number {
+    color: #d19a66; /* Orange */
+}
+
+/* Comments */
+.token.comment {
+	color: #5c6370;
+	font-style: italic;
+}
+
+/* BREAK */
+.token.break {
+    color: #e06c75;
+    font-weight: bold;
+}

@@ -1,6 +1,6 @@
 import { useParameterStore } from "@/stores/parameterStore";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { PromptEditor } from "@/components/ui/prompt-editor";
 
 export function PromptInput() {
   const prompt = useParameterStore((state) => state.prompt);
@@ -9,13 +9,15 @@ export function PromptInput() {
   return (
     <div className="space-y-2">
       <Label htmlFor="prompt">Prompt</Label>
-      <Textarea 
-        id="prompt" 
-        placeholder="Describe your image..." 
-        className="min-h-[100px] resize-y font-mono text-sm bg-muted/30 focus:bg-muted/50 transition-colors"
-        value={prompt}
-        onChange={(e) => setPrompt(e.target.value)}
-      />
+      <div className="min-h-[100px] border border-input rounded-md bg-muted/30 focus-within:ring-1 focus-within:ring-ring transition-colors">
+        <PromptEditor 
+            id="prompt" 
+            placeholder="Describe your image..." 
+            value={prompt}
+            onValueChange={setPrompt}
+            className="min-h-[100px] border-0 shadow-none focus-within:ring-0"
+        />
+      </div>
     </div>
   );
 }
@@ -27,13 +29,15 @@ export function NegativePromptInput() {
   return (
     <div className="space-y-2">
       <Label htmlFor="neg-prompt" className="text-muted-foreground text-xs">Negative Prompt</Label>
-      <Textarea 
-        id="neg-prompt" 
-        placeholder="What to exclude..." 
-        className="min-h-[60px] resize-y font-mono text-xs bg-muted/30 focus:bg-muted/50 transition-colors text-muted-foreground"
-        value={negativePrompt}
-        onChange={(e) => setNegativePrompt(e.target.value)}
-      />
+      <div className="min-h-[60px] border border-input rounded-md bg-muted/30 focus-within:ring-1 focus-within:ring-ring transition-colors">
+        <PromptEditor 
+            id="neg-prompt" 
+            placeholder="What to exclude..." 
+            value={negativePrompt}
+            onValueChange={setNegativePrompt}
+            className="min-h-[60px] border-0 shadow-none focus-within:ring-0 text-muted-foreground"
+        />
+      </div>
     </div>
   );
 }

@@ -11,11 +11,13 @@ import { DragHandle } from "./DragHandle";
 import { TopNavigation } from "./TopNavigation";
 import { ComfyUIFrame } from "./ComfyUIFrame";
 import { SettingsPage } from "./SettingsPage";
+import { GridGenerator } from "@/components/grid/GridGenerator";
 import { useLayoutStore } from "@/stores/layoutStore";
 import { useUIStore } from "@/stores/uiStore";
 import { cn } from "@/lib/utils";
 import { socketService } from "@/services/websocketService";
 import { Toaster } from "@/components/ui/sonner";
+import { ImageEditor } from "@/components/editor/ImageEditor";
 
 export function AppLayout() {
   const { 
@@ -29,7 +31,7 @@ export function AppLayout() {
       toggleRightSidebar
   } = useLayoutStore();
 
-  const { activeTab, setIsMobile } = useUIStore();
+  const { activeTab, setIsMobile, editingImage, setEditingImage } = useUIStore();
 
   const leftPanelRef = useRef<PanelImperativeHandle>(null);
   const rightPanelRef = useRef<PanelImperativeHandle>(null);
@@ -104,6 +106,11 @@ export function AppLayout() {
     }
   }, [rightSidebarCollapsed]);
 
+  const handleSaveMask = (maskData: string) => {
+      console.log("Saved mask:", maskData);
+      // TODO: Handle mask save (e.g. send to API or store in state)
+  };
+
   return (
     <div className="h-screen w-screen bg-background overflow-hidden text-foreground flex flex-col">
       <TopNavigation />
@@ -165,8 +172,17 @@ export function AppLayout() {
           )}
 
           {activeTab === 'comfy' && <ComfyUIFrame />}
+          {activeTab === 'grid' && <GridGenerator />}
           {activeTab === 'settings' && <SettingsPage />}
       </div>
+      
+      <ImageEditor 
+        imageUrl={editingImage || ""} 
+        isOpen={!!editingImage} 
+        onClose={() => setEditingImage(null)} 
+        onSave={handleSaveMask}
+      />
+      
       <Toaster />
     </div>
   );

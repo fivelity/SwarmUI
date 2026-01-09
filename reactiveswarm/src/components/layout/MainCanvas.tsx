@@ -1,9 +1,12 @@
 import { useGenerationStore } from "@/stores/generationStore";
+import { useUIStore } from "@/stores/uiStore";
 import { Progress } from "@/components/ui/progress";
-import { Loader2, Image as ImageIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Loader2, Image as ImageIcon, Edit } from "lucide-react";
 
 export function MainCanvas() {
   const { currentImage, isGenerating, progress, currentStep, totalSteps } = useGenerationStore();
+  const { setEditingImage } = useUIStore();
 
   return (
     <div className="h-full w-full bg-background relative flex flex-col overflow-hidden">
@@ -12,12 +15,27 @@ export function MainCanvas() {
         <div className="absolute inset-0 bg-[radial-gradient(#27272a_1px,transparent_1px)] bg-size-[16px_16px] mask-[radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)] pointer-events-none"></div>
         
         {currentImage ? (
-          <div className="relative max-w-full max-h-full shadow-2xl rounded-lg overflow-hidden border border-border">
+          <div className="relative max-w-full max-h-full shadow-2xl rounded-lg overflow-hidden border border-border group">
             <img 
               src={currentImage} 
               alt="Generated Content" 
               className="max-w-full max-h-full object-contain"
             />
+            
+            {/* Overlay Actions */}
+            {!isGenerating && (
+                <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Button 
+                        size="sm" 
+                        variant="secondary" 
+                        className="shadow-lg backdrop-blur-md bg-background/80"
+                        onClick={() => setEditingImage(currentImage)}
+                    >
+                        <Edit className="w-4 h-4 me-2" />
+                        Edit / Inpaint
+                    </Button>
+                </div>
+            )}
           </div>
         ) : (
           <div className="relative z-10 text-center space-y-4 text-muted-foreground/50">
