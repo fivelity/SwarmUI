@@ -1,8 +1,8 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import { modelsService } from "@/api/ModelsService";
-import { useBackendStore } from "@/store/useBackendStore";
-import { useSessionStore } from "@/store/useSessionStore";
+import { useBackendStore } from "@/stores/backendStore";
+import { useSessionStore } from "@/stores/sessionStore";
 
 const downloadSockets = new Map<string, WebSocket>();
 

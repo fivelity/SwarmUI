@@ -3,7 +3,7 @@ import { devtools } from 'zustand/middleware';
 
 interface GenerationState {
   isGenerating: boolean;
-  progress: number; // 0-100
+  progress: number; // 0-1
   currentImage: string | null; // Base64 or URL
   queuePosition: number;
   totalQueue: number;

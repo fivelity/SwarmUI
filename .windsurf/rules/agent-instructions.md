@@ -25,6 +25,8 @@ Session & auth, T2I (REST + WS), video workflows, models, ComfyUI workflows, ext
 - **REST vs WS Separation:** Use `/API/GenerateText2ImageWS` for live previews/progress; do not send preview fields to the REST endpoint.
     
 - **Strict Typing:** **No `any`.** Use comprehensive DTOs and Discriminated Unions for WebSocket events (`preview` | `progress` | `result` | `error`).
+
+- **SwarmUI Backend:** Use the SwarmUI backend as a reference for the API contracts and data models. **NEVER MODIFY THE SWARMUI BACKEND!**
     
 
 ---

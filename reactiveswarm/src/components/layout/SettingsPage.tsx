@@ -1,5 +1,5 @@
 import { useTheme } from "next-themes";
-import { useBackendStore } from "@/store/useBackendStore";
+import { useBackendStore } from "@/stores/backendStore";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";

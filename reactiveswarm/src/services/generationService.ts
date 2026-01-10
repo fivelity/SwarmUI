@@ -3,7 +3,7 @@ import { swarmHttp } from "@/api/SwarmHttpClient";
 import { ParamSerializer } from "@/lib/utils/ParamSerializer";
 import { useParameterStore } from "@/stores/parameterStore";
 import { useGenerationStore } from "@/stores/generationStore";
-import { useJobStore } from "@/store/useJobStore";
+import { useJobStore } from "@/stores/jobStore";
 import { runText2ImageWS } from "@/services/t2iWsRunner";
 import { resolveSwarmPath } from "@/lib/utils/swarmPaths";
 import { useT2IParamValuesStore } from "@/stores/t2iParamValuesStore";
@@ -11,6 +11,12 @@ import { useT2IParamValuesStore } from "@/stores/t2iParamValuesStore";
 function resolveWsImage(img: string): string {
   if (img.startsWith("data:")) return img;
   return resolveSwarmPath(img);
+}
+
+function normalizePercent(p: number | undefined): number | undefined {
+  if (p === undefined) return undefined;
+  if (!Number.isFinite(p)) return undefined;
+  return p > 1.001 ? p / 100 : p;
 }
 
 export const generateImage = async () => {
@@ -56,7 +62,8 @@ export const generateImage = async () => {
       openTimeoutMs: 800,
       onEvent: (evt) => {
         if (evt.type === "progress") {
-          const overall = typeof evt.gen_progress.overall_percent === "number" ? evt.gen_progress.overall_percent : genStore.progress;
+          const overallRaw = typeof evt.gen_progress.overall_percent === "number" ? evt.gen_progress.overall_percent : genStore.progress;
+          const overall = normalizePercent(overallRaw) ?? genStore.progress;
           genStore.setProgress(overall, undefined, undefined);
           if (evt.gen_progress.preview) {
             genStore.setCurrentImage(resolveWsImage(evt.gen_progress.preview));
@@ -95,6 +102,8 @@ export const generateImage = async () => {
 };
 
 export const interruptGeneration = async (includeOtherSessions: boolean = false) => {
+  // Always stop the local WS stream immediately.
+  useJobStore.getState().closeActiveJob();
   try {
     await swarmHttp.post("InterruptAll", { other_sessions: includeOtherSessions });
   } catch (e) {

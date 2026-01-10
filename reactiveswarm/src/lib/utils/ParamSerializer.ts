@@ -1,4 +1,4 @@
-export type FlatParamValue = string | number | boolean | null | undefined;
+export type FlatParamValue = string | number | boolean | string[] | null | undefined;
 
 export type FlatParamRecord = Record<string, FlatParamValue>;
 

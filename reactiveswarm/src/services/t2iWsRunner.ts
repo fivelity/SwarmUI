@@ -1,8 +1,8 @@
 import { WsDispatcher } from "@/lib/utils/WsDispatcher";
 import type { FlatParamRecord } from "@/lib/utils/ParamSerializer";
-import { useBackendStore } from "@/store/useBackendStore";
-import { useJobStore } from "@/store/useJobStore";
-import { useSessionStore } from "@/store/useSessionStore";
+import { useBackendStore } from "@/stores/backendStore";
+import { useJobStore } from "@/stores/jobStore";
+import { useSessionStore } from "@/stores/sessionStore";
 import type { SwarmWsEvent } from "@/types/t2i";
 
 export interface T2IWsRunHandle {
@@ -26,6 +26,12 @@ function createRequestId(): string {
   return `${Date.now()}_${Math.random().toString(16).slice(2)}`;
 }
 
+function normalizePercent(p: number | undefined): number | undefined {
+  if (p === undefined) return undefined;
+  if (!Number.isFinite(p)) return undefined;
+  return p > 1.001 ? p / 100 : p;
+}
+
 export async function runText2ImageWS(flatPayload: FlatParamRecord, options?: T2IWsRunOptions): Promise<T2IWsRunHandle> {
   const backendUrl = useBackendStore.getState().backendUrl;
   const ensureSession = useSessionStore.getState().ensureSession;
@@ -39,18 +45,21 @@ export async function runText2ImageWS(flatPayload: FlatParamRecord, options?: T2
 
   const dispatcher = new WsDispatcher();
   const socket = new WebSocket(wsUrl);
+  useJobStore.getState().registerCloseHandler(requestId, () => socket.close());
 
   const unsub = dispatcher.addListener((evt) => {
     if (evt.type === "progress") {
       const rid = evt.gen_progress.request_id ?? requestId;
       useJobStore.getState().ensureJob(rid);
+      const overall = normalizePercent(evt.gen_progress.overall_percent);
+      const current = normalizePercent(evt.gen_progress.current_percent);
       useJobStore
         .getState()
         .updateProgress(
           rid,
           evt.gen_progress.batch_index,
-          evt.gen_progress.overall_percent,
-          evt.gen_progress.current_percent,
+          overall,
+          current,
           evt.gen_progress.preview,
           evt.gen_progress.metadata,
         );
@@ -68,6 +77,7 @@ export async function runText2ImageWS(flatPayload: FlatParamRecord, options?: T2
 
     if (evt.type === "error") {
       useJobStore.getState().markError(requestId, evt.message);
+      socket.close();
       options?.onEvent?.(evt, requestId);
       return;
     }
@@ -86,6 +96,7 @@ export async function runText2ImageWS(flatPayload: FlatParamRecord, options?: T2
 
   const cleanup = (): void => {
     unsub();
+    useJobStore.getState().unregisterCloseHandler(requestId);
   };
 
   socket.onmessage = (e) => {
@@ -108,6 +119,7 @@ export async function runText2ImageWS(flatPayload: FlatParamRecord, options?: T2
     if (existing && existing.status !== "error" && existing.status !== "completed") {
       useJobStore.getState().markComplete(requestId);
     }
+    options?.onEvent?.({ type: "close" }, requestId);
   };
 
   const opened: boolean = await new Promise((resolve) => {

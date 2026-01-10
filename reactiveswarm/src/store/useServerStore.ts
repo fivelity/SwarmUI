@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import { adminService } from "@/api/AdminService";
 import type { CurrentStatusResponse, ServerGpuInfo, ServerResourceInfo, TelemetryPoint } from "@/types/server";
-import { useBackendStore } from "@/store/useBackendStore";
+import { useBackendStore } from "@/stores/backendStore";
 
 let heartbeatTimer: number | null = null;
 let telemetryTimer: number | null = null;

@@ -1,5 +1,5 @@
-import { useBackendStore } from "@/store/useBackendStore";
-import { useSessionStore } from "@/store/useSessionStore";
+import { useBackendStore } from "@/stores/backendStore";
+import { useSessionStore } from "@/stores/sessionStore";
 import type { SwarmApiError, SwarmErrorEnvelope } from "@/types/api";
 
 export interface SwarmRequestOptions {

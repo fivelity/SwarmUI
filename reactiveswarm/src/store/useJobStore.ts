@@ -23,8 +23,15 @@ export interface JobStoreState {
   jobs: Map<string, JobState>;
   activeRequestId: string | null;
 
+  closeHandlers: Map<string, () => void>;
+
   ensureJob: (requestId: string) => void;
   setActiveRequestId: (requestId: string | null) => void;
+
+  registerCloseHandler: (requestId: string, close: () => void) => void;
+  unregisterCloseHandler: (requestId: string) => void;
+  closeJob: (requestId: string) => void;
+  closeActiveJob: () => void;
 
   updateProgress: (requestId: string, batchIndex: string, overallPercent?: number, currentPercent?: number, preview?: string, metadata?: string) => void;
   addImage: (requestId: string, batchIndex: string, image: string, metadata?: string | null) => void;
@@ -47,6 +54,8 @@ export const useJobStore = create<JobStoreState>()(
       jobs: new Map<string, JobState>(),
       activeRequestId: null,
 
+      closeHandlers: new Map<string, () => void>(),
+
       ensureJob: (requestId) => {
         const cur = get().jobs.get(requestId);
         if (cur) return;
@@ -68,6 +77,35 @@ export const useJobStore = create<JobStoreState>()(
       },
 
       setActiveRequestId: (activeRequestId) => set({ activeRequestId }),
+
+      registerCloseHandler: (requestId, close) => {
+        set((state) => {
+          const next = cloneMap(state.closeHandlers);
+          next.set(requestId, close);
+          return { closeHandlers: next };
+        });
+      },
+
+      unregisterCloseHandler: (requestId) => {
+        set((state) => {
+          if (!state.closeHandlers.has(requestId)) return state;
+          const next = cloneMap(state.closeHandlers);
+          next.delete(requestId);
+          return { closeHandlers: next };
+        });
+      },
+
+      closeJob: (requestId) => {
+        const handler = get().closeHandlers.get(requestId);
+        handler?.();
+      },
+
+      closeActiveJob: () => {
+        const rid = get().activeRequestId;
+        if (!rid) return;
+        const handler = get().closeHandlers.get(rid);
+        handler?.();
+      },
 
       updateProgress: (requestId, batchIndex, overallPercent, currentPercent, preview, metadata) => {
         set((state) => {
@@ -134,7 +172,7 @@ export const useJobStore = create<JobStoreState>()(
         });
       },
 
-      clear: () => set({ jobs: new Map(), activeRequestId: null }),
+      clear: () => set({ jobs: new Map(), activeRequestId: null, closeHandlers: new Map() }),
     }),
     { name: "JobStore" },
   ),

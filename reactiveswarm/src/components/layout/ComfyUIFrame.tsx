@@ -1,5 +1,5 @@
 import { ComfyOverlay } from "@/components/comfy/ComfyOverlay";
-import { useBackendStore } from "@/store/useBackendStore";
+import { useBackendStore } from "@/stores/backendStore";
 
 export function ComfyUIFrame() {
   const backendUrl = useBackendStore((s) => s.backendUrl);

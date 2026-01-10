@@ -18,7 +18,7 @@ import { ExtensionsPage } from "@/components/extensions/ExtensionsPage";
 import { ToolsPage } from "@/components/resources/ToolsPage";
 import { useLayoutStore } from "@/stores/layoutStore";
 import { useUIStore } from "@/stores/uiStore";
-import { useServerStore } from "@/store/useServerStore";
+import { useServerStore } from "@/stores/serverStore";
 import { cn } from "@/lib/utils";
 import { Toaster } from "@/components/ui/sonner";
 import { ImageEditor } from "@/components/editor/ImageEditor";

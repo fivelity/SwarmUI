@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
-import { useBackendStore } from "@/store/useBackendStore";
+import { useBackendStore } from "@/stores/backendStore";
 import type { GetNewSessionResponse } from "@/types/session";
 
 export interface SessionState {

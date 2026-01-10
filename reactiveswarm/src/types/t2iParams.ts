@@ -73,4 +73,4 @@ export interface ListT2IParamsResponse {
   [key: string]: unknown;
 }
 
-export type T2IParamValue = string | number | boolean;
+export type T2IParamValue = string | number | boolean | string[];
