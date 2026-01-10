@@ -3,6 +3,7 @@ import { devtools } from "zustand/middleware";
 import { modelsService, type ModelSubtype, type ModelNetEntry } from "@/api/ModelsService";
 
 export interface Model {
+    id: string;
     name: string;
     path: string;
     type: 'checkpoint' | 'lora' | 'embedding' | 'vae';
@@ -51,8 +52,10 @@ function parsePathAndName(fullName: string): { path: string; name: string } {
 
 function toUiModel(entry: ModelNetEntry, uiType: Model["type"]): Model | null {
   if (typeof entry.name !== "string" || entry.name.length === 0) return null;
+  const id = entry.name.replace(/\\/g, "/").replace(/^\/+/, "");
   const { path, name } = parsePathAndName(entry.name);
   return {
+    id,
     name,
     path,
     type: uiType,

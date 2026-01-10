@@ -38,7 +38,7 @@ export function ModelBrowser({ onSelect }: ModelBrowserProps) {
   const handleSelect = (model: Model) => {
       setSelectedModel(model);
       if (onSelect) {
-          onSelect(model.name);
+          onSelect(model.id);
       }
   };
 
@@ -87,9 +87,9 @@ export function ModelBrowser({ onSelect }: ModelBrowserProps) {
                 ) : (
                     filteredModels.map((model) => (
                         <ModelCard 
-                            key={model.name} 
+                            key={model.id} 
                             model={model} 
-                            selected={selectedModel?.name === model.name}
+                            selected={selectedModel?.id === model.id}
                             onSelect={handleSelect}
                         />
                     ))

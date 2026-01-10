@@ -120,7 +120,16 @@ function modelOptions(param: T2IParamNet, models: Record<string, string[]>): str
   if (param.type !== "model") return [];
   const subtype = param.subtype ?? "Stable-Diffusion";
   const list = models[subtype];
-  return Array.isArray(list) ? list : [];
+  if (!Array.isArray(list)) return [];
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const v of list) {
+    if (typeof v !== "string") continue;
+    if (seen.has(v)) continue;
+    seen.add(v);
+    out.push(v);
+  }
+  return out;
 }
 
 function ParamRow({ param }: { param: T2IParamNet }) {
@@ -189,8 +198,13 @@ function ParamRow({ param }: { param: T2IParamNet }) {
       }
 
       case "dropdown": {
-        const opts = param.values ?? [];
-        const names = param.value_names ?? null;
+        const raw = param.values ?? [];
+        const seen = new Set<string>();
+        const opts = raw.filter((x) => {
+          if (seen.has(x)) return false;
+          seen.add(x);
+          return true;
+        });
         const v = typeof effectiveValue === "string" ? effectiveValue : String(effectiveValue);
         return (
           <Select value={v} onValueChange={(nv) => onChangeValue(coerceValue(param, nv))} disabled={commonDisabled}>
@@ -198,21 +212,24 @@ function ParamRow({ param }: { param: T2IParamNet }) {
               <SelectValue placeholder={param.default || "Select..."} />
             </SelectTrigger>
             <SelectContent>
-              {opts.map((o, idx) => {
-                const label = names && names[idx] ? names[idx] : o;
-                return (
-                  <SelectItem key={o} value={o}>
-                    {label}
-                  </SelectItem>
-                );
-              })}
+              {opts.map((o, idx) => (
+                <SelectItem key={`${o}__${idx}`} value={o}>
+                  {o}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         );
       }
 
       case "model": {
-        const opts = modelOptions(param, models);
+        const raw = modelOptions(param, models);
+        const seen = new Set<string>();
+        const opts = raw.filter((x) => {
+          if (seen.has(x)) return false;
+          seen.add(x);
+          return true;
+        });
         const v = typeof effectiveValue === "string" ? effectiveValue : String(effectiveValue);
         return (
           <Select value={v} onValueChange={(nv) => onChangeValue(nv)} disabled={commonDisabled}>
@@ -221,8 +238,8 @@ function ParamRow({ param }: { param: T2IParamNet }) {
             </SelectTrigger>
             <SelectContent>
               {v && !opts.includes(v) ? <SelectItem value={v}>{v}</SelectItem> : null}
-              {opts.map((o) => (
-                <SelectItem key={o} value={o}>
+              {opts.map((o, idx) => (
+                <SelectItem key={`${o}__${idx}`} value={o}>
                   {o}
                 </SelectItem>
               ))}
