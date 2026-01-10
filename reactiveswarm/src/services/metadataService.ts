@@ -16,7 +16,7 @@ export interface ParsedSwarmParams {
     model?: string;
     scheduler?: string;
     // Add other known keys
-    [key: string]: any;
+    [key: string]: unknown;
 }
 
 export const metadataService = {

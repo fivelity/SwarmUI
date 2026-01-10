@@ -1,9 +1,11 @@
 import { useEffect, useRef } from "react";
 import {
-  Panel,
-  Group,
   type PanelImperativeHandle,
 } from "react-resizable-panels";
+import {
+  ResizablePanelGroup,
+  ResizablePanel,
+} from "@/components/ui/resizable";
 import { LeftSidebar } from "./LeftSidebar";
 import { RightSidebar } from "./RightSidebar";
 import { MainCanvas } from "./MainCanvas";
@@ -95,10 +97,17 @@ export function AppLayout() {
       if (leftSidebarCollapsed) {
         panel.collapse();
       } else {
-        panel.expand();
+        const sizeObj = panel.getSize();
+        const currentSize = sizeObj.asPercentage;
+        const targetSize = leftSidebarSize < 5 ? 20 : leftSidebarSize;
+        
+        if (Math.abs(currentSize - targetSize) > 0.1 || currentSize < 5) {
+             panel.expand(); 
+             panel.resize(targetSize);
+        }
       }
     }
-  }, [leftSidebarCollapsed]);
+  }, [leftSidebarCollapsed, leftSidebarSize]);
 
   useEffect(() => {
     const panel = rightPanelRef.current;
@@ -106,10 +115,17 @@ export function AppLayout() {
       if (rightSidebarCollapsed) {
         panel.collapse();
       } else {
-        panel.expand();
+        const sizeObj = panel.getSize();
+        const currentSize = sizeObj.asPercentage;
+        const targetSize = rightSidebarSize < 5 ? 20 : rightSidebarSize;
+        
+        if (Math.abs(currentSize - targetSize) > 0.1 || currentSize < 5) {
+            panel.expand();
+            panel.resize(targetSize);
+        }
       }
     }
-  }, [rightSidebarCollapsed]);
+  }, [rightSidebarCollapsed, rightSidebarSize]);
 
   const handleSaveMask = (maskData: string) => {
       console.log("Saved mask:", maskData);
@@ -122,29 +138,31 @@ export function AppLayout() {
       
       <div className="flex-1 overflow-hidden relative">
           {activeTab === 'generate' && (
-            <Group orientation="horizontal" className="h-full w-full">
+            <ResizablePanelGroup orientation="horizontal" className="h-full w-full">
               
               {/* Left Sidebar Panel */}
-              <Panel 
+              <ResizablePanel 
                   panelRef={leftPanelRef}
                   defaultSize={leftSidebarSize < 5 ? 20 : leftSidebarSize} 
                   minSize={15} 
                   maxSize={30}
                   collapsible={true}
                   collapsedSize={0}
-                  className={cn(leftSidebarCollapsed && "min-w-0 w-0 border-none")}
-                  onResize={(size) => {
+                  className={cn("transition-all duration-300 ease-in-out", leftSidebarCollapsed && "min-w-0 w-0 border-none")}
+                  onResize={(size: PanelSize) => {
+                    // size is { asPercentage: number, inPixels: number }
                     const pct = size.asPercentage;
-                    if (pct < 5) {
-                        if (!leftSidebarCollapsed) setLeftSidebarCollapsed(true);
-                    } else {
-                        setLeftSidebarSize(pct);
-                        if (leftSidebarCollapsed) setLeftSidebarCollapsed(false);
+                    
+                    if (pct >= 5) {
+                         setLeftSidebarSize(pct);
+                         if (leftSidebarCollapsed) setLeftSidebarCollapsed(false);
+                    } else if (pct < 1) {
+                         if (!leftSidebarCollapsed) setLeftSidebarCollapsed(true);
                     }
                   }}
               >
                   <LeftSidebar />
-              </Panel>
+              </ResizablePanel>
 
               <DragHandle 
                   collapsed={leftSidebarCollapsed} 
@@ -153,9 +171,9 @@ export function AppLayout() {
               />
 
               {/* Main Content */}
-              <Panel defaultSize={100 - (leftSidebarSize < 5 ? 20 : leftSidebarSize) - (rightSidebarSize < 5 ? 20 : rightSidebarSize)} minSize={30}>
+              <ResizablePanel defaultSize={100 - (leftSidebarSize < 5 ? 20 : leftSidebarSize) - (rightSidebarSize < 5 ? 20 : rightSidebarSize)} minSize={30}>
                 <MainCanvas />
-              </Panel>
+              </ResizablePanel>
 
               <DragHandle 
                   collapsed={rightSidebarCollapsed} 
@@ -164,28 +182,28 @@ export function AppLayout() {
               />
 
               {/* Right Sidebar Panel */}
-              <Panel 
+              <ResizablePanel 
                   panelRef={rightPanelRef}
                   defaultSize={rightSidebarSize < 5 ? 20 : rightSidebarSize} 
                   minSize={15} 
                   maxSize={30}
                   collapsible={true}
                   collapsedSize={0}
-                  className={cn(rightSidebarCollapsed && "min-w-0 w-0 border-none")}
-                  onResize={(size) => {
+                  className={cn("transition-all duration-300 ease-in-out", rightSidebarCollapsed && "min-w-0 w-0 border-none")}
+                  onResize={(size: any) => {
                     const pct = size.asPercentage;
-                    if (pct < 5) {
-                        if (!rightSidebarCollapsed) setRightSidebarCollapsed(true);
-                    } else {
+                    if (pct >= 5) {
                         setRightSidebarSize(pct);
                         if (rightSidebarCollapsed) setRightSidebarCollapsed(false);
+                    } else if (pct < 1) {
+                        if (!rightSidebarCollapsed) setRightSidebarCollapsed(true);
                     }
                   }}
               >
                 <RightSidebar />
-              </Panel>
+              </ResizablePanel>
 
-            </Group>
+            </ResizablePanelGroup>
           )}
 
           {activeTab === 'comfy' && <ComfyUIFrame />}

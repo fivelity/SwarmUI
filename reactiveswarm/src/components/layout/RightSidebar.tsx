@@ -9,7 +9,7 @@ import { Image as ImageIcon, Folder, Star, CheckSquare, Trash2, X, Edit } from "
 import { cn } from "@/lib/utils";
 
 export function RightSidebar() {
-  const { rightSidebarCollapsed } = useLayoutStore();
+  // const { rightSidebarCollapsed } = useLayoutStore(); // Not used directly
   const { setEditingImage } = useUIStore();
   const { 
       images, 
@@ -21,7 +21,7 @@ export function RightSidebar() {
       selectImage 
   } = useHistoryStore();
 
-  if (rightSidebarCollapsed) return null;
+  // if (rightSidebarCollapsed) return null;
 
   const handleImageClick = (id: string) => {
       if (selectionMode) {

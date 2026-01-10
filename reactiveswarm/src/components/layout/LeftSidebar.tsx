@@ -6,8 +6,15 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Play, Sparkles } from "lucide-react";
-import { generateImage } from "@/services/generationService";
+import { Play, Sparkles, ChevronDown, Square, XCircle } from "lucide-react";
+import { generateImage, interruptGeneration, cancelGeneration } from "@/services/generationService";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
 
 // DnD Imports
 import {
@@ -36,7 +43,7 @@ import { AdvancedParams } from "@/components/parameters/AdvancedParams";
 import { PresetManager } from "@/components/parameters/PresetManager";
 
 export function LeftSidebar() {
-  const { leftSidebarCollapsed, parameterGroupOrder, setParameterGroupOrder } = useLayoutStore();
+  const { parameterGroupOrder, setParameterGroupOrder } = useLayoutStore();
   const { isGenerating } = useGenerationStore();
   const [showAdvanced, setShowAdvanced] = useState(false);
 
@@ -47,7 +54,7 @@ export function LeftSidebar() {
     })
   );
 
-  if (leftSidebarCollapsed) return null;
+  // if (leftSidebarCollapsed) return null; // Removed to allow Panel to handle collapsing logic
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
@@ -145,19 +152,50 @@ export function LeftSidebar() {
       </ScrollArea>
 
       <div className="p-4 border-t border-border bg-card">
-        <Button 
-            size="lg" 
-            className="w-full font-bold text-md shadow-lg shadow-primary/20"
-            onClick={generateImage}
-            disabled={isGenerating}
-        >
-            {isGenerating ? "Generating..." : (
-                <>
-                    <Play className="w-4 h-4 me-2 fill-current" />
-                    Generate
-                </>
-            )}
-        </Button>
+        <div className="flex w-full shadow-lg shadow-primary/20 rounded-md">
+            <Button 
+                size="lg" 
+                className={`flex-1 rounded-e-none font-bold text-md ${isGenerating ? 'bg-amber-600 hover:bg-amber-700 text-white' : ''}`}
+                onClick={isGenerating ? () => interruptGeneration(false) : generateImage}
+            >
+                {isGenerating ? (
+                    <>
+                        <Square className="w-4 h-4 me-2 fill-current" />
+                        Interrupt
+                    </>
+                ) : (
+                    <>
+                        <Play className="w-4 h-4 me-2 fill-current" />
+                        Generate
+                    </>
+                )}
+            </Button>
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <Button 
+                        size="lg" 
+                        className={`rounded-s-none px-2 border-s border-primary-foreground/20 ${isGenerating ? 'bg-amber-600 hover:bg-amber-700 text-white' : ''}`}
+                    >
+                        <ChevronDown className="w-4 h-4" />
+                    </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48">
+                    <DropdownMenuItem onClick={() => interruptGeneration(false)} disabled={!isGenerating}>
+                        <Square className="w-4 h-4 me-2" />
+                        Interrupt
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={cancelGeneration} disabled={!isGenerating}>
+                        <XCircle className="w-4 h-4 me-2" />
+                        Cancel
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={() => interruptGeneration(true)} disabled={!isGenerating}>
+                        <Square className="w-4 h-4 me-2 text-destructive" />
+                        Interrupt All Sessions
+                    </DropdownMenuItem>
+                </DropdownMenuContent>
+            </DropdownMenu>
+        </div>
       </div>
     </div>
   );

@@ -14,6 +14,8 @@ export interface T2IParameters {
   aspectRatio: string;
   denoisingStrength: number;
   batchSize: number;
+  maskBlur: number;
+  maskGrow: number;
 }
 
 interface ParameterState extends T2IParameters {
@@ -28,6 +30,8 @@ interface ParameterState extends T2IParameters {
   setAspectRatio: (ratio: string) => void;
   setDenoisingStrength: (strength: number) => void;
   setBatchSize: (size: number) => void;
+  setMaskBlur: (blur: number) => void;
+  setMaskGrow: (grow: number) => void;
   setAllParameters: (params: Partial<T2IParameters>) => void;
   resetParameters: () => void;
 }
@@ -45,6 +49,8 @@ const defaultParameters: T2IParameters = {
   aspectRatio: "1:1",
   denoisingStrength: 0.75,
   batchSize: 1,
+  maskBlur: 0,
+  maskGrow: 0,
 };
 
 export const useParameterStore = create<ParameterState>()(
@@ -63,6 +69,8 @@ export const useParameterStore = create<ParameterState>()(
       setAspectRatio: (aspectRatio) => set({ aspectRatio }),
       setDenoisingStrength: (denoisingStrength) => set({ denoisingStrength }),
       setBatchSize: (batchSize) => set({ batchSize }),
+      setMaskBlur: (maskBlur) => set({ maskBlur }),
+      setMaskGrow: (maskGrow) => set({ maskGrow }),
       
       setAllParameters: (params) => set((state) => ({ ...state, ...params })),
       resetParameters: () => set(defaultParameters),

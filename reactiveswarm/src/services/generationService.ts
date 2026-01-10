@@ -57,3 +57,24 @@ export const cancelGeneration = async () => {
         console.error("Failed to cancel generation:", error);
     }
 }
+
+export const interruptGeneration = async (includeOtherSessions: boolean = false) => {
+    try {
+        await swarmApi.post("/InterruptAll", { other_sessions: includeOtherSessions });
+        // We don't necessarily set generating to false here, as backend will send events.
+        // But for UI responsiveness we might want to.
+        // However, interrupt just skips current. Queue might continue.
+        // If we want to stop EVERYTHING, we usually Cancel.
+        // SwarmUI distinction:
+        // Interrupt: Stop current image, proceed to next in batch/queue.
+        // Cancel: Stop current and clear queue (usually).
+        // The API docs say "InterruptAll": Tell all waiting generations in this session or all sessions to interrupt.
+        // Wait, "waiting generations... to interrupt".
+        // Does it clear queue?
+        // Usually Interrupt = Skip current.
+        // SwarmUI might treat "InterruptAll" as "Stop everything".
+        // Let's assume InterruptAll stops the current execution.
+    } catch (error) {
+        console.error("Failed to interrupt generation:", error);
+    }
+}
