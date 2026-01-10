@@ -18,6 +18,7 @@ import { ExtensionsPage } from "@/components/extensions/ExtensionsPage";
 import { ToolsPage } from "@/components/resources/ToolsPage";
 import { useLayoutStore } from "@/stores/layoutStore";
 import { useUIStore } from "@/stores/uiStore";
+import { useServerStore } from "@/store/useServerStore";
 import { cn } from "@/lib/utils";
 import { Toaster } from "@/components/ui/sonner";
 import { ImageEditor } from "@/components/editor/ImageEditor";
@@ -45,6 +46,11 @@ export function AppLayout() {
   const rightPanelRef = useRef<PanelImperativeHandle>(null);
 
   // SwarmUI generation sockets are per-request (active WS pattern). No global socket.
+
+  useEffect(() => {
+    useServerStore.getState().start();
+    return () => useServerStore.getState().stop();
+  }, []);
 
   // Handle Window Resize (Mobile Detection)
   useEffect(() => {

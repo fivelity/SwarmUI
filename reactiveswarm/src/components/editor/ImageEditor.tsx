@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
-import { Label } from "@/components/ui/label";
 import { 
     Eraser, 
     Brush, 
@@ -63,7 +62,7 @@ export function ImageEditor({ imageUrl, isOpen, onClose, onSave }: ImageEditorPr
         }
     }, [historyIndex]);
 
-    const undo = () => {
+    const undo = useCallback(() => {
         if (historyIndex > 0) {
             const canvas = canvasRef.current;
             const ctx = canvas?.getContext('2d');
@@ -73,9 +72,9 @@ export function ImageEditor({ imageUrl, isOpen, onClose, onSave }: ImageEditorPr
                 setHistoryIndex(historyIndex - 1);
             }
         }
-    };
+    }, [history, historyIndex]);
 
-    const redo = () => {
+    const redo = useCallback(() => {
         if (historyIndex < history.length - 1) {
             const canvas = canvasRef.current;
             const ctx = canvas?.getContext('2d');
@@ -85,7 +84,7 @@ export function ImageEditor({ imageUrl, isOpen, onClose, onSave }: ImageEditorPr
                 setHistoryIndex(historyIndex + 1);
             }
         }
-    };
+    }, [history, historyIndex]);
 
     // Initialize Canvas
     useEffect(() => {
@@ -131,7 +130,7 @@ export function ImageEditor({ imageUrl, isOpen, onClose, onSave }: ImageEditorPr
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [isOpen, historyIndex, history]); // Dependencies for undo/redo
+    }, [isOpen, redo, undo]);
 
     const handleMouseDown = (e: React.MouseEvent) => {
         const isMiddleClick = e.button === 1;

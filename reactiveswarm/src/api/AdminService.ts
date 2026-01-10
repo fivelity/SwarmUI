@@ -1,4 +1,5 @@
 import { swarmHttp } from "@/api/SwarmHttpClient";
+import type { CurrentStatusResponse, ServerResourceInfo } from "@/types/server";
 
 export interface CheckForUpdatesResponse {
   server_updates_count: number;
@@ -39,12 +40,12 @@ export class AdminService {
     });
   }
 
-  getServerResourceInfo(): Promise<unknown> {
-    return swarmHttp.post("GetServerResourceInfo", {});
+  getServerResourceInfo(): Promise<ServerResourceInfo> {
+    return swarmHttp.post<ServerResourceInfo>("GetServerResourceInfo", {});
   }
 
-  getCurrentStatus(): Promise<unknown> {
-    return swarmHttp.post("GetCurrentStatus", {});
+  getCurrentStatus(): Promise<CurrentStatusResponse> {
+    return swarmHttp.post<CurrentStatusResponse>("GetCurrentStatus", {});
   }
 }
 
