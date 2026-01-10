@@ -1,4 +1,4 @@
-import type { SwarmWsEvent, SwarmWsProgressPayload } from "@/types/t2i";
+import type { SwarmWsEvent, SwarmWsImagePayload, SwarmWsProgressPayload } from "@/types/t2i";
 
 export type WsDispatchListener = (event: SwarmWsEvent) => void;
 
@@ -41,6 +41,12 @@ function toBooleanOrUndefined(v: unknown): boolean | undefined {
   return typeof v === "boolean" ? v : undefined;
 }
 
+function toStringOrNullOrUndefined(v: unknown): string | null | undefined {
+  if (typeof v === "string") return v;
+  if (v === null) return null;
+  return undefined;
+}
+
 function parseProgressPayload(raw: unknown): SwarmWsProgressPayload | null {
   if (!isRecord(raw)) return null;
   const batchIndex = toStringOrUndefined(raw.batch_index);
@@ -56,6 +62,20 @@ function parseProgressPayload(raw: unknown): SwarmWsProgressPayload | null {
   };
 
   return payload;
+}
+
+function parseNestedImagePayload(raw: unknown): SwarmWsImagePayload | null {
+  if (!isRecord(raw)) return null;
+  const image = toStringOrUndefined(raw.image);
+  const batchIndex = toStringOrUndefined(raw.batch_index);
+  if (!image || !batchIndex) return null;
+
+  return {
+    image,
+    batch_index: batchIndex,
+    request_id: toStringOrUndefined(raw.request_id),
+    metadata: toStringOrNullOrUndefined(raw.metadata),
+  };
 }
 
 export class WsDispatcher {
@@ -135,6 +155,14 @@ export class WsDispatcher {
         },
       });
       return;
+    }
+
+    if (msg.image !== undefined) {
+      const nested = parseNestedImagePayload(msg.image);
+      if (nested) {
+        this.emit({ type: "image", image: nested });
+        return;
+      }
     }
 
     if (Array.isArray(msg.discard_indices)) {

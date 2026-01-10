@@ -6,7 +6,7 @@ export function getImageOutPrefix(): string {
   if (outputAppendUser && typeof userId === "string" && userId.length > 0) {
     return `View/${userId}`;
   }
-  return "Output";
+  return "View";
 }
 
 export function resolveSwarmPath(path: string): string {
