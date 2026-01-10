@@ -1,5 +1,6 @@
 import { useBackendStore } from "@/stores/backendStore";
 import { useSessionStore } from "@/stores/sessionStore";
+import { resolveApiUrl } from "@/lib/config/swarmEndpoints";
 import type { SwarmApiError, SwarmErrorEnvelope } from "@/types/api";
 
 export interface SwarmRequestOptions {
@@ -16,7 +17,8 @@ export class SwarmHttpClient {
     const baseUrl = useBackendStore.getState().backendUrl;
     const sessionId = await useSessionStore.getState().ensureSession(options?.signal);
 
-    const res = await fetch(`${baseUrl}/API/${path}`, {
+    const url = resolveApiUrl(path, baseUrl);
+    const res = await fetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

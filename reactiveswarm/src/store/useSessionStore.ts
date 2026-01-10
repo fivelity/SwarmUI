@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
 import { useBackendStore } from "@/stores/backendStore";
+import { resolveApiUrl } from "@/lib/config/swarmEndpoints";
 import type { GetNewSessionResponse } from "@/types/session";
 
 export interface SessionState {
@@ -18,7 +19,8 @@ let inflight: Promise<string> | null = null;
 
 async function fetchNewSession(signal?: AbortSignal): Promise<GetNewSessionResponse> {
   const baseUrl = useBackendStore.getState().backendUrl;
-  const res = await fetch(`${baseUrl}/API/GetNewSession`, {
+  const url = resolveApiUrl("GetNewSession", baseUrl);
+  const res = await fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     credentials: "include",

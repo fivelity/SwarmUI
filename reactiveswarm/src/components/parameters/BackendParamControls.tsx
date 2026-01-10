@@ -527,29 +527,28 @@ export function BackendParamControls() {
             {group?.description ? <div className="text-[10px] text-muted-foreground">{group.description}</div> : null}
           </button>
 
-          {group?.toggles ? (
-            <div className="flex items-center gap-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-8 px-2 text-xs"
-                onClick={() => {
-                  const descendantGroupIds = descendantGroupIdsByGroup.get(groupId) ?? [];
-                  const idsToClear: string[] = [groupId, ...groupParams.map((p) => p.id), ...descendantGroupIds];
-                  for (const dg of descendantGroupIds) {
-                    const dgParams = paramsByGroup.get(dg) ?? [];
-                    idsToClear.push(...dgParams.map((p) => p.id));
-                  }
-                  clearParams(idsToClear);
-                }}
-                title="Reset this group"
-              >
-                Reset
-              </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 px-2 text-xs"
+              onClick={() => {
+                const descendantGroupIds = descendantGroupIdsByGroup.get(groupId) ?? [];
+                const idsToClear: string[] = [groupId, ...groupParams.map((p) => p.id), ...descendantGroupIds];
+                for (const dg of descendantGroupIds) {
+                  const dgParams = paramsByGroup.get(dg) ?? [];
+                  idsToClear.push(...dgParams.map((p) => p.id));
+                }
+                clearParams(idsToClear);
+              }}
+              title="Reset this group"
+            >
+              Reset
+            </Button>
+            {group?.toggles ? (
               <Switch
                 checked={groupEnabled !== false}
                 onCheckedChange={(v) => {
-                  // Use groupId as a pseudo-flag too.
                   setEnabled(groupId, v);
                   for (const p of groupParams) {
                     setEnabled(p.id, v);
@@ -565,8 +564,8 @@ export function BackendParamControls() {
                   }
                 }}
               />
-            </div>
-          ) : null}
+            ) : null}
+          </div>
         </div>
 
         {open ? (
@@ -634,7 +633,18 @@ export function BackendParamControls() {
         <div className="space-y-5 pr-3">
           {ungrouped.length > 0 ? (
             <div className="space-y-3">
-              <div className="text-xs font-semibold">Ungrouped</div>
+              <div className="flex items-center justify-between gap-2">
+                <div className="text-xs font-semibold">Ungrouped</div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 px-2 text-xs"
+                  onClick={() => clearParams(ungrouped.map((p) => p.id))}
+                  title="Reset ungrouped params"
+                >
+                  Reset
+                </Button>
+              </div>
               {ungrouped.map((p) => (
                 <ParamRow key={p.id} param={p} />
               ))}

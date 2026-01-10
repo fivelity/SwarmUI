@@ -14,7 +14,7 @@ export const useBackendStore = create<BackendState>()(
     persist(
       (set) => ({
         isConnected: false,
-        backendUrl: "http://localhost:7801",
+        backendUrl: import.meta.env.VITE_SWARMUI_URL ?? "http://localhost:7801",
 
         setConnected: (isConnected) => set({ isConnected }),
         setBackendUrl: (backendUrl) => set({ backendUrl }),

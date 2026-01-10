@@ -1,5 +1,6 @@
 import { useBackendStore } from "@/stores/backendStore";
 import { useSessionStore } from "@/stores/sessionStore";
+import { resolveSwarmUiUrl } from "@/lib/config/swarmEndpoints";
 
 export function getImageOutPrefix(): string {
   const { outputAppendUser, userId } = useSessionStore.getState();
@@ -11,9 +12,7 @@ export function getImageOutPrefix(): string {
 
 export function resolveSwarmPath(path: string): string {
   const backendUrl = useBackendStore.getState().backendUrl;
-  const base = backendUrl.endsWith("/") ? backendUrl.slice(0, -1) : backendUrl;
-  const p = path.startsWith("/") ? path.slice(1) : path;
-  return `${base}/${p}`;
+  return resolveSwarmUiUrl(path, backendUrl);
 }
 
 export function resolveOutputImageUrl(relativeSrc: string): string {

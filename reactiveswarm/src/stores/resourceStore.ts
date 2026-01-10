@@ -3,8 +3,15 @@ import { devtools } from "zustand/middleware";
 import { modelsService } from "@/api/ModelsService";
 import { useBackendStore } from "@/stores/backendStore";
 import { useSessionStore } from "@/stores/sessionStore";
+import { resolveWsUrl } from "@/lib/config/swarmEndpoints";
 
 const downloadSockets = new Map<string, WebSocket>();
+
+function normalizePercent(p: number | undefined): number | undefined {
+    if (p === undefined) return undefined;
+    if (!Number.isFinite(p)) return undefined;
+    return p > 1.001 ? p / 100 : p;
+}
 
 export interface WildcardFile {
     name: string;
@@ -98,7 +105,7 @@ export const useResourceStore = create<ResourceState>()(
                 }));
 
                 const backendUrl = useBackendStore.getState().backendUrl;
-                const wsUrl = `${backendUrl.replace(/^http/, "ws")}/API/DoModelDownloadWS`;
+                const wsUrl = resolveWsUrl("DoModelDownloadWS", backendUrl);
 
                 void (async () => {
                     try {
@@ -135,7 +142,8 @@ export const useResourceStore = create<ResourceState>()(
 
                                 const overall = typeof msg.overall_percent === "number" ? msg.overall_percent : undefined;
                                 const current = typeof msg.current_percent === "number" ? msg.current_percent : undefined;
-                                const pct = Math.max(0, Math.min(100, Math.round(((overall ?? current ?? 0) as number) * 100)));
+                                const norm = normalizePercent(overall ?? current) ?? 0;
+                                const pct = Math.max(0, Math.min(100, Math.round(norm * 100)));
                                 setTask({ progress: pct });
                             } catch {
                                 // ignore parse failures

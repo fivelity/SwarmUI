@@ -3,6 +3,7 @@ import type { FlatParamRecord } from "@/lib/utils/ParamSerializer";
 import { useBackendStore } from "@/stores/backendStore";
 import { useJobStore } from "@/stores/jobStore";
 import { useSessionStore } from "@/stores/sessionStore";
+import { resolveWsUrl } from "@/lib/config/swarmEndpoints";
 import type { SwarmWsEvent } from "@/types/t2i";
 
 export interface T2IWsRunHandle {
@@ -14,12 +15,6 @@ export interface T2IWsRunOptions {
   requestId?: string;
   openTimeoutMs?: number;
   onEvent?: (event: SwarmWsEvent, requestId: string) => void;
-}
-
-function wsBaseFromHttp(httpBase: string): string {
-  if (httpBase.startsWith("https://")) return `wss://${httpBase.slice("https://".length)}`;
-  if (httpBase.startsWith("http://")) return `ws://${httpBase.slice("http://".length)}`;
-  return httpBase;
 }
 
 function createRequestId(): string {
@@ -37,7 +32,7 @@ export async function runText2ImageWS(flatPayload: FlatParamRecord, options?: T2
   const ensureSession = useSessionStore.getState().ensureSession;
   const sessionId = await ensureSession();
 
-  const wsUrl = `${wsBaseFromHttp(backendUrl)}/API/GenerateText2ImageWS`;
+  const wsUrl = resolveWsUrl("GenerateText2ImageWS", backendUrl);
   const requestId = options?.requestId ?? createRequestId();
   const openTimeoutMs = options?.openTimeoutMs ?? 800;
 

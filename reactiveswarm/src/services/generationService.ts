@@ -7,6 +7,8 @@ import { useJobStore } from "@/stores/jobStore";
 import { runText2ImageWS } from "@/services/t2iWsRunner";
 import { resolveSwarmPath } from "@/lib/utils/swarmPaths";
 import { useT2IParamValuesStore } from "@/stores/t2iParamValuesStore";
+import { useT2IParamsStore } from "@/stores/t2iParamsStore";
+import { modelsService } from "@/api/ModelsService";
 
 function resolveWsImage(img: string): string {
   if (img.startsWith("data:")) return img;
@@ -17,6 +19,40 @@ function normalizePercent(p: number | undefined): number | undefined {
   if (p === undefined) return undefined;
   if (!Number.isFinite(p)) return undefined;
   return p > 1.001 ? p / 100 : p;
+}
+
+async function resolveModelFallback(): Promise<string | undefined> {
+  const backendParamsState = useT2IParamValuesStore.getState();
+  const fromOverride = backendParamsState.enabled.model !== false ? backendParamsState.values.model : undefined;
+  if (typeof fromOverride === "string" && fromOverride.trim().length > 0) {
+    return fromOverride.trim();
+  }
+
+  const modelsBySubtype = useT2IParamsStore.getState().models;
+  const list = modelsBySubtype["Stable-Diffusion"];
+  if (Array.isArray(list) && list.length > 0) {
+    const first = list[0];
+    if (typeof first === "string" && first.trim().length > 0) {
+      return first.trim();
+    }
+  }
+
+  const resp = await modelsService.listModels({
+    path: "",
+    depth: 1,
+    subtype: "Stable-Diffusion",
+    allowRemote: true,
+    sortBy: "Name",
+    sortReverse: false,
+    dataImages: false,
+  });
+
+  const firstFile = Array.isArray(resp.files) ? resp.files[0] : undefined;
+  const name = firstFile && typeof firstFile.name === "string" ? firstFile.name : undefined;
+  if (typeof name === "string" && name.trim().length > 0) {
+    return name.trim();
+  }
+  return undefined;
 }
 
 export const generateImage = async () => {
@@ -38,11 +74,15 @@ export const generateImage = async () => {
     cfgscale: params.cfgScale,
     width: params.width,
     height: params.height,
-    model: params.model,
+    model: params.model.trim().length > 0 ? params.model.trim() : undefined,
     extras: {
       sampler: params.scheduler,
     },
   });
+
+  if (typeof flat.model === "string" && flat.model.trim().length === 0) {
+    delete flat.model;
+  }
 
   const backendParamsState = useT2IParamValuesStore.getState();
   for (const [key, value] of Object.entries(backendParamsState.values)) {
@@ -50,6 +90,23 @@ export const generateImage = async () => {
     if (backendParamsState.enabled[key] === false) continue;
     if (flat[key] !== undefined) continue;
     flat[key] = value;
+  }
+
+  if (typeof flat.model !== "string" || flat.model.trim().length === 0) {
+    const fallback = await resolveModelFallback().catch(() => undefined);
+    if (typeof fallback === "string" && fallback.trim().length > 0) {
+      flat.model = fallback;
+      useParameterStore.getState().setModel(fallback);
+    }
+  }
+
+  if (typeof flat.model !== "string" || flat.model.trim().length === 0) {
+    const requestId = `${Date.now()}_${Math.random().toString(16).slice(2)}`;
+    useJobStore.getState().ensureJob(requestId);
+    useJobStore.getState().setActiveRequestId(requestId);
+    useJobStore.getState().markError(requestId, "No model selected. Select a model or ensure models are available.");
+    genStore.setGenerating(false);
+    return;
   }
 
   try {

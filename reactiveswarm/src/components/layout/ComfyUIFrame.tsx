@@ -1,9 +1,10 @@
 import { ComfyOverlay } from "@/components/comfy/ComfyOverlay";
 import { useBackendStore } from "@/stores/backendStore";
+import { resolveSwarmUiUrl } from "@/lib/config/swarmEndpoints";
 
 export function ComfyUIFrame() {
   const backendUrl = useBackendStore((s) => s.backendUrl);
-  const base = backendUrl.endsWith("/") ? backendUrl.slice(0, -1) : backendUrl;
+  const src = resolveSwarmUiUrl("ComfyBackendDirect/", backendUrl);
 
   return (
     <div className="h-full w-full bg-background flex flex-col items-center justify-center relative overflow-hidden">
@@ -13,7 +14,7 @@ export function ComfyUIFrame() {
         <div className="absolute inset-0 z-10">
           <iframe
             title="ComfyUI Backend"
-            src={`${base}/ComfyBackendDirect/`}
+            src={src}
             className="w-full h-full border-0 pointer-events-auto"
           />
         </div>
