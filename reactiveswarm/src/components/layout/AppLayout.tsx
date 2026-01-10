@@ -98,13 +98,12 @@ export function AppLayout() {
       if (leftSidebarCollapsed) {
         panel.collapse();
       } else {
-        const sizeObj = panel.getSize();
-        const currentSize = sizeObj.asPercentage;
+        const currentSize = panel.getSize().asPercentage;
         const targetSize = leftSidebarSize < 5 ? 20 : leftSidebarSize;
         
         if (Math.abs(currentSize - targetSize) > 0.1 || currentSize < 5) {
              panel.expand(); 
-             panel.resize(targetSize);
+             panel.resize(String(targetSize));
         }
       }
     }
@@ -116,13 +115,12 @@ export function AppLayout() {
       if (rightSidebarCollapsed) {
         panel.collapse();
       } else {
-        const sizeObj = panel.getSize();
-        const currentSize = sizeObj.asPercentage;
+        const currentSize = panel.getSize().asPercentage;
         const targetSize = rightSidebarSize < 5 ? 20 : rightSidebarSize;
         
         if (Math.abs(currentSize - targetSize) > 0.1 || currentSize < 5) {
             panel.expand();
-            panel.resize(targetSize);
+            panel.resize(String(targetSize));
         }
       }
     }
@@ -144,16 +142,14 @@ export function AppLayout() {
               {/* Left Sidebar Panel */}
               <ResizablePanel 
                   panelRef={leftPanelRef}
-                  defaultSize={leftSidebarSize < 5 ? 20 : leftSidebarSize} 
-                  minSize={15} 
-                  maxSize={30}
+                  defaultSize={String(leftSidebarSize < 5 ? 20 : leftSidebarSize)} 
+                  minSize="15" 
+                  maxSize="30"
                   collapsible={true}
-                  collapsedSize={0}
-                  className={cn("transition-all duration-300 ease-in-out", leftSidebarCollapsed && "min-w-0 w-0 border-none")}
+                  collapsedSize="0"
+                  className={cn("min-w-0 overflow-hidden transition-all duration-300 ease-in-out", leftSidebarCollapsed && "w-0 border-none")}
                   onResize={(size: PanelSize) => {
-                    // size is { asPercentage: number, inPixels: number }
                     const pct = size.asPercentage;
-                    
                     if (pct >= 5) {
                          setLeftSidebarSize(pct);
                          if (leftSidebarCollapsed) setLeftSidebarCollapsed(false);
@@ -172,7 +168,11 @@ export function AppLayout() {
               />
 
               {/* Main Content */}
-              <ResizablePanel defaultSize={100 - (leftSidebarSize < 5 ? 20 : leftSidebarSize) - (rightSidebarSize < 5 ? 20 : rightSidebarSize)} minSize={30}>
+              <ResizablePanel
+                defaultSize={String(100 - (leftSidebarSize < 5 ? 20 : leftSidebarSize) - (rightSidebarSize < 5 ? 20 : rightSidebarSize))}
+                minSize="30"
+                className="min-w-0 overflow-hidden"
+              >
                 <MainCanvas />
               </ResizablePanel>
 
@@ -185,12 +185,12 @@ export function AppLayout() {
               {/* Right Sidebar Panel */}
               <ResizablePanel 
                   panelRef={rightPanelRef}
-                  defaultSize={rightSidebarSize < 5 ? 20 : rightSidebarSize} 
-                  minSize={15} 
-                  maxSize={30}
+                  defaultSize={String(rightSidebarSize < 5 ? 20 : rightSidebarSize)} 
+                  minSize="15" 
+                  maxSize="30"
                   collapsible={true}
-                  collapsedSize={0}
-                  className={cn("transition-all duration-300 ease-in-out", rightSidebarCollapsed && "min-w-0 w-0 border-none")}
+                  collapsedSize="0"
+                  className={cn("min-w-0 overflow-hidden transition-all duration-300 ease-in-out", rightSidebarCollapsed && "w-0 border-none")}
                   onResize={(size: PanelSize) => {
                     const pct = size.asPercentage;
                     if (pct >= 5) {
