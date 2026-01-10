@@ -1,4 +1,4 @@
-import { useParameterStore } from "@/stores/parameterStore";
+import { useParameterStore, type T2IParameters } from "@/stores/parameterStore";
 
 /**
  * Service to handle reading metadata from SwarmUI generated images (PNG).
@@ -83,17 +83,21 @@ export const metadataService = {
      */
     applyMetadata(params: ParsedSwarmParams) {
         const store = useParameterStore.getState();
-        const updates: Partial<ParsedSwarmParams> = {};
 
-        if (params.prompt) updates.prompt = params.prompt as string;
-        if (params.negativeprompt) updates.negativePrompt = params.negativeprompt as string;
-        if (params.seed !== undefined) updates.seed = params.seed as number;
-        if (params.steps) updates.steps = params.steps as number;
-        if (params.cfgscale) updates.cfgScale = params.cfgscale as number;
-        if (params.width) updates.width = params.width as number;
-        if (params.height) updates.height = params.height as number;
-        if (params.model) updates.model = params.model as string;
-        if (params.scheduler) updates.scheduler = params.scheduler as string;
+        const updates: Partial<T2IParameters> = {};
+
+        if (typeof params.prompt === "string") updates.prompt = params.prompt;
+        if (typeof params.negativeprompt === "string") updates.negativePrompt = params.negativeprompt;
+        if (typeof params.seed === "number") updates.seed = params.seed;
+        if (typeof params.steps === "number") updates.steps = params.steps;
+        if (typeof params.cfgscale === "number") updates.cfgScale = params.cfgscale;
+        if (typeof params.width === "number") updates.width = params.width;
+        if (typeof params.height === "number") updates.height = params.height;
+        if (typeof params.model === "string") updates.model = params.model;
+
+        // SwarmUI uses `sampler` for the scheduler dropdown.
+        const samplerMaybe: unknown = (params as { sampler?: unknown }).sampler;
+        if (typeof samplerMaybe === "string") updates.scheduler = samplerMaybe;
         
         // SwarmUI might store aspect ratio or we calculate it
         // For now, let's just update what we found

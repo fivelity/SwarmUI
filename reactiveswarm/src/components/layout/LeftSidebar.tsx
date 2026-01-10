@@ -41,6 +41,7 @@ import { GenerationParams } from "@/components/parameters/GenerationParams";
 import { ResolutionSelector } from "@/components/parameters/ResolutionSelector";
 import { AdvancedParams } from "@/components/parameters/AdvancedParams";
 import { PresetManager } from "@/components/parameters/PresetManager";
+import { BackendParamControls } from "@/components/parameters/BackendParamControls";
 
 export function LeftSidebar() {
   const { parameterGroupOrder, setParameterGroupOrder } = useLayoutStore();
@@ -108,6 +109,12 @@ export function LeftSidebar() {
                 />
             </div>
             {showAdvanced && <AdvancedParams />}
+          </div>
+        );
+      case "backend":
+        return (
+          <div className="space-y-4">
+            <BackendParamControls />
           </div>
         );
       default:

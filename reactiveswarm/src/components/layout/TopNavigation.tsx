@@ -1,5 +1,6 @@
 import { useUIStore } from "@/stores/uiStore";
 import { useGenerationStore } from "@/stores/generationStore";
+import { useT2IParamsStore } from "@/stores/t2iParamsStore";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { 
@@ -17,6 +18,7 @@ import {
 export function TopNavigation() {
   const { activeTab, setActiveTab } = useUIStore();
   const { isGenerating, queuePosition, totalQueue, progress } = useGenerationStore();
+  const isRefreshing = useT2IParamsStore((s) => s.isLoading);
 
   const tabs = [
     { id: 'generate', label: 'Generate', icon: Layers },
@@ -91,8 +93,15 @@ export function TopNavigation() {
         <div className="h-6 w-px bg-border hidden sm:block" />
 
         {/* Quick Actions */}
-        <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground">
-            <RefreshCw className="w-4 h-4" />
+        <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-muted-foreground"
+            onClick={() => void useT2IParamsStore.getState().triggerRefresh(true)}
+            disabled={isRefreshing}
+            title="Refresh models/parameters"
+        >
+            <RefreshCw className={cn("w-4 h-4", isRefreshing && "animate-spin")} />
         </Button>
         <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground sm:hidden">
             <Menu className="w-4 h-4" />

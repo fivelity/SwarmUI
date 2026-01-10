@@ -31,7 +31,7 @@ export const useLayoutStore = create<LayoutState>()(
         leftSidebarCollapsed: false,
         rightSidebarCollapsed: false,
         layoutMode: 'default',
-        parameterGroupOrder: ['model', 'prompt', 'params', 'resolution', 'advanced'],
+        parameterGroupOrder: ['model', 'prompt', 'params', 'resolution', 'advanced', 'backend'],
 
         setLeftSidebarSize: (size) => set({ leftSidebarSize: size }),
         setRightSidebarSize: (size) => set({ rightSidebarSize: size }),

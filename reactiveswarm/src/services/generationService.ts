@@ -6,6 +6,7 @@ import { useGenerationStore } from "@/stores/generationStore";
 import { useJobStore } from "@/store/useJobStore";
 import { runText2ImageWS } from "@/services/t2iWsRunner";
 import { resolveSwarmPath } from "@/lib/utils/swarmPaths";
+import { useT2IParamValuesStore } from "@/stores/t2iParamValuesStore";
 
 function resolveWsImage(img: string): string {
   if (img.startsWith("data:")) return img;
@@ -36,6 +37,14 @@ export const generateImage = async () => {
       sampler: params.scheduler,
     },
   });
+
+  const backendParamsState = useT2IParamValuesStore.getState();
+  for (const [key, value] of Object.entries(backendParamsState.values)) {
+    if (value === undefined) continue;
+    if (backendParamsState.enabled[key] === false) continue;
+    if (flat[key] !== undefined) continue;
+    flat[key] = value;
+  }
 
   try {
     const requestId = `${Date.now()}_${Math.random().toString(16).slice(2)}`;
