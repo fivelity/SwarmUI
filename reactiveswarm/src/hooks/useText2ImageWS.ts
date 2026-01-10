@@ -97,7 +97,11 @@ export function useText2ImageWS(options: UseText2ImageWsOptions) {
 
     socket.onopen = () => {
       // Active WebSocket Pattern: first message is the request payload.
-      socket.send(JSON.stringify({ session_id: sessionId, ...flatPayload }));
+      const imagesRaw = flatPayload["images"];
+      const images = typeof imagesRaw === "number" ? imagesRaw : 1;
+      const rawInput: Record<string, unknown> = { ...flatPayload };
+      delete rawInput.images;
+      socket.send(JSON.stringify({ session_id: sessionId, images, ...rawInput }));
     };
 
     return {

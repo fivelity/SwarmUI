@@ -6,17 +6,49 @@ export interface Suggestion {
   description?: string;
 }
 
-export const mockWildcards: Suggestion[] = [
-  { id: 'w1', label: 'colors', value: '<wildcard:colors>', type: 'wildcard', description: 'Random colors' },
-  { id: 'w2', label: 'styles', value: '<wildcard:styles>', type: 'wildcard', description: 'Art styles' },
-  { id: 'w3', label: 'locations', value: '<wildcard:locations>', type: 'wildcard', description: 'Places' },
-];
+import { userService } from "@/api/UserService";
 
-export const mockLoras: Suggestion[] = [
-  { id: 'l1', label: 'detailed_eye', value: '<lora:detailed_eye:1.0>', type: 'lora', description: 'Detailed Eyes' },
-  { id: 'l2', label: 'add_detail', value: '<lora:add_detail:1.0>', type: 'lora', description: 'Detail Adder' },
-  { id: 'l3', label: 'pixel_art', value: '<lora:pixel_art:1.0>', type: 'lora', description: 'Pixel Art Style' },
-];
+let cached: Suggestion[] | null = null;
+let inflight: Promise<Suggestion[]> | null = null;
+
+function parseType(raw: string): Suggestion["type"] {
+  const lowered = raw.toLowerCase();
+  if (lowered.includes("wildcard")) return "wildcard";
+  if (lowered.includes("lora")) return "lora";
+  if (lowered.includes("embedding")) return "embedding";
+  return "model";
+}
+
+function parseAutoCompletionEntry(entry: string, idx: number): Suggestion {
+  // SwarmUI sends "autocompletions" as a list of text blobs. Format can vary.
+  // Common pattern (from docs): "Word\nword\ntag\n3".
+  const parts = entry.split("\n").map((p) => p.trim()).filter((p) => p.length > 0);
+  const label = parts[0] ?? entry;
+  const value = parts[1] ?? label;
+  const tag = parts[2] ?? "model";
+  const description = parts.length > 3 ? parts.slice(3).join(" ") : undefined;
+  return {
+    id: `ac_${idx}_${label}`,
+    label,
+    value,
+    type: parseType(tag),
+    description,
+  };
+}
+
+async function getAllSuggestions(): Promise<Suggestion[]> {
+  if (cached) return cached;
+  if (inflight) return inflight;
+  inflight = (async () => {
+    const data = await userService.getMyUserData();
+    const list = Array.isArray(data.autocompletions) ? data.autocompletions : [];
+    cached = list.map((e, i) => parseAutoCompletionEntry(e, i));
+    return cached;
+  })().finally(() => {
+    inflight = null;
+  });
+  return inflight;
+}
 
 export const getSuggestions = (text: string, cursorIndex: number): Suggestion[] => {
   // Simple regex to detect trigger characters before cursor
@@ -29,13 +61,19 @@ export const getSuggestions = (text: string, cursorIndex: number): Suggestion[] 
   if (lastOpenAngle === -1) return [];
   
   const triggerText = textBeforeCursor.slice(lastOpenAngle);
-  
+
+  // Fire-and-forget fetch; results will be available on next keystroke.
+  void getAllSuggestions();
+
+  const all = cached ?? [];
+  const needle = triggerText.replace(/^<([a-z]+:)?/i, "").toLowerCase();
+
   if (triggerText.startsWith('<w') || triggerText.startsWith('<wildcard:')) {
-    return mockWildcards.filter(s => s.label.toLowerCase().includes(triggerText.replace(/^<(wildcard:)?/, '').toLowerCase()));
+    return all.filter((s) => s.type === "wildcard" && s.label.toLowerCase().includes(needle));
   }
-  
+
   if (triggerText.startsWith('<l') || triggerText.startsWith('<lora:')) {
-    return mockLoras.filter(s => s.label.toLowerCase().includes(triggerText.replace(/^<(lora:)?/, '').toLowerCase()));
+    return all.filter((s) => s.type === "lora" && s.label.toLowerCase().includes(needle));
   }
 
   return [];

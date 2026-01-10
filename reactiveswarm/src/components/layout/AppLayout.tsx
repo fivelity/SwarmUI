@@ -19,7 +19,6 @@ import { ToolsPage } from "@/components/resources/ToolsPage";
 import { useLayoutStore } from "@/stores/layoutStore";
 import { useUIStore } from "@/stores/uiStore";
 import { cn } from "@/lib/utils";
-import { socketService } from "@/services/websocketService";
 import { Toaster } from "@/components/ui/sonner";
 import { ImageEditor } from "@/components/editor/ImageEditor";
 import { ExtensionAssetLoader } from "@/components/extensions/ExtensionAssetLoader";
@@ -45,13 +44,7 @@ export function AppLayout() {
   const leftPanelRef = useRef<PanelImperativeHandle>(null);
   const rightPanelRef = useRef<PanelImperativeHandle>(null);
 
-  // Initialize WebSocket connection
-  useEffect(() => {
-    socketService.connect();
-    return () => {
-        socketService.disconnect();
-    };
-  }, []);
+  // SwarmUI generation sockets are per-request (active WS pattern). No global socket.
 
   // Handle Window Resize (Mobile Detection)
   useEffect(() => {

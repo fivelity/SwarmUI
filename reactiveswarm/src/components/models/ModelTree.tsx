@@ -18,7 +18,7 @@ export function ModelTree() {
         <div className="p-2 space-y-1">
           {folders.map((folder) => {
             const isSelected = selectedFolder === folder;
-            const displayName = folder === "/" ? "Root" : folder.replace("/", "");
+            const displayName = folder === "/" ? "Root" : folder.replace(/^\/+/, "");
             return (
               <Button
                 key={folder}

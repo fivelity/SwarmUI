@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useHistoryStore } from "@/stores/historyStore";
 import { useUIStore } from "@/stores/uiStore";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -12,13 +13,19 @@ export function RightSidebar() {
   const { setEditingImage } = useUIStore();
   const { 
       images, 
+      isLoading,
       selectionMode, 
       selectedImageIds, 
       setSelectionMode, 
       toggleSelection, 
       removeImages,
-      selectImage 
+      selectImage,
+      fetchImages
   } = useHistoryStore();
+
+  useEffect(() => {
+    fetchImages({ path: "", depth: 4, sortBy: "Date", sortReverse: true });
+  }, [fetchImages]);
 
   // if (rightSidebarCollapsed) return null;
 
@@ -106,7 +113,12 @@ export function RightSidebar() {
             <TabsContent value="gallery" className="flex-1 m-0 overflow-hidden">
                 <ScrollArea className="h-full">
                     <div className="p-2 grid grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-2">
-                        {images.length === 0 ? (
+                        {isLoading ? (
+                             <div className="col-span-full h-40 flex flex-col items-center justify-center text-muted-foreground p-4 text-center">
+                                <ImageIcon className="w-8 h-8 mb-2 opacity-50" />
+                                <p className="text-sm">Loading images...</p>
+                             </div>
+                        ) : images.length === 0 ? (
                              <div className="col-span-full h-40 flex flex-col items-center justify-center text-muted-foreground p-4 text-center">
                                 <ImageIcon className="w-8 h-8 mb-2 opacity-50" />
                                 <p className="text-sm">No images generated yet.</p>

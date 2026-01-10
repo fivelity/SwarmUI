@@ -40,14 +40,12 @@ export function WildcardManager() {
     };
 
     const handleDelete = async (name: string) => {
-        if (confirm(`Are you sure you want to delete ${name}?`)) {
-            await deleteWildcard(name);
-            if (selectedFile === name) {
-                setSelectedFile(null);
-                setEditorContent("");
-            }
-            toast.success(`Deleted ${name}`);
+        await deleteWildcard(name);
+        if (selectedFile === name) {
+            setSelectedFile(null);
+            setEditorContent("");
         }
+        toast.success(`Deleted ${name}`);
     };
 
     return (

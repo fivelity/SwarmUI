@@ -1,114 +1,97 @@
-import { create } from 'zustand';
-import { devtools } from 'zustand/middleware';
+import { create } from "zustand";
+import { devtools } from "zustand/middleware";
+import { adminService, type CheckForUpdatesResponse } from "@/api/AdminService";
 
-export interface Extension {
-  id: string;
-  name: string;
-  author: string;
-  description: string;
-  version: string;
-  isInstalled: boolean;
-  canUpdate: boolean;
-  githubUrl?: string;
-  scriptFiles?: string[];
-  styleFiles?: string[];
-}
-
-interface ExtensionState {
-  extensions: Extension[];
+export interface ExtensionState {
   isLoading: boolean;
   installLog: string[];
-  
-  fetchExtensions: () => Promise<void>;
-  installExtension: (id: string) => Promise<void>;
-  uninstallExtension: (id: string) => Promise<void>;
-  updateExtension: (id: string) => Promise<void>;
-}
 
-// Mock Data
-const MOCK_EXTENSIONS: Extension[] = [
-    {
-        id: "grid_generator",
-        name: "Grid Generator",
-        author: "mcmonkey",
-        description: "Generate grids of images varying parameters.",
-        version: "1.0.0",
-        isInstalled: true,
-        canUpdate: false,
-        scriptFiles: ["/extensions/grid/main.js"]
-    },
-    {
-        id: "controlnet",
-        name: "ControlNet Preprocessors",
-        author: "lllyasviel",
-        description: "Advanced control over image generation structure.",
-        version: "0.8.0",
-        isInstalled: false,
-        canUpdate: false,
-    },
-    {
-        id: "image_editor",
-        name: "Pro Image Editor",
-        author: "SwarmTeam",
-        description: "In-browser canvas for masking and inpainting.",
-        version: "1.2.0",
-        isInstalled: true,
-        canUpdate: true,
-    }
-];
+  serverUpdatesCount: number;
+  serverUpdatesPreview: string[];
+  extensionUpdates: string[];
+  backendUpdates: string[];
+
+  checkForUpdates: () => Promise<void>;
+  installExtension: (extensionName: string) => Promise<void>;
+  uninstallExtension: (extensionName: string) => Promise<void>;
+  updateExtension: (extensionName: string) => Promise<void>;
+  updateAndRestart: (opts?: { updateExtensions?: boolean; updateBackends?: boolean; force?: boolean }) => Promise<void>;
+}
 
 export const useExtensionStore = create<ExtensionState>()(
   devtools(
     (set) => ({
-      extensions: [],
       isLoading: false,
       installLog: [],
 
-      fetchExtensions: async () => {
-          set({ isLoading: true });
-          // Simulate API call
-          setTimeout(() => {
-              set({ extensions: MOCK_EXTENSIONS, isLoading: false });
-          }, 500);
+      serverUpdatesCount: 0,
+      serverUpdatesPreview: [],
+      extensionUpdates: [],
+      backendUpdates: [],
+
+      checkForUpdates: async () => {
+        set({ isLoading: true });
+        try {
+          const res: CheckForUpdatesResponse = await adminService.checkForUpdates();
+          set({
+            isLoading: false,
+            serverUpdatesCount: res.server_updates_count,
+            serverUpdatesPreview: Array.isArray(res.server_updates_preview) ? res.server_updates_preview : [],
+            extensionUpdates: Array.isArray(res.extension_updates) ? res.extension_updates : [],
+            backendUpdates: Array.isArray(res.backend_updates) ? res.backend_updates : [],
+          });
+        } catch (e) {
+          const msg = e instanceof Error ? e.message : "CheckForUpdates failed";
+          set((state) => ({ isLoading: false, installLog: [...state.installLog, msg] }));
+        }
       },
 
-      installExtension: async (id) => {
-          set((state) => ({ 
-              installLog: [...state.installLog, `Starting installation of ${id}...`] 
-          }));
-          
-          // Simulate install process
-          await new Promise(resolve => setTimeout(resolve, 1500));
-          
-          set((state) => ({
-              extensions: state.extensions.map(ext => 
-                  ext.id === id ? { ...ext, isInstalled: true } : ext
-              ),
-              installLog: [...state.installLog, `Successfully installed ${id}.`]
-          }));
+      installExtension: async (extensionName) => {
+        set((state) => ({ installLog: [...state.installLog, `Installing ${extensionName}...`] }));
+        const res = await adminService.installExtension(extensionName);
+        if ("error" in res) {
+          set((state) => ({ installLog: [...state.installLog, `Install failed: ${res.error}`] }));
+          return;
+        }
+        set((state) => ({ installLog: [...state.installLog, `Installed ${extensionName}. Restart to load.`] }));
       },
 
-      uninstallExtension: async (id) => {
-           set((state) => ({
-              extensions: state.extensions.map(ext => 
-                  ext.id === id ? { ...ext, isInstalled: false } : ext
-              )
-           }));
+      uninstallExtension: async (extensionName) => {
+        set((state) => ({ installLog: [...state.installLog, `Uninstalling ${extensionName}...`] }));
+        const res = await adminService.uninstallExtension(extensionName);
+        if ("error" in res) {
+          set((state) => ({ installLog: [...state.installLog, `Uninstall failed: ${res.error}`] }));
+          return;
+        }
+        set((state) => ({ installLog: [...state.installLog, `Uninstalled ${extensionName}. Restart to apply.`] }));
       },
 
-      updateExtension: async (id) => {
-          set((state) => ({ 
-              installLog: [...state.installLog, `Updating ${id}...`] 
-          }));
-          await new Promise(resolve => setTimeout(resolve, 1000));
-          set((state) => ({
-              extensions: state.extensions.map(ext => 
-                  ext.id === id ? { ...ext, canUpdate: false, version: "Latest" } : ext
-              ),
-              installLog: [...state.installLog, `Updated ${id}.`]
-          }));
-      }
+      updateExtension: async (extensionName) => {
+        set((state) => ({ installLog: [...state.installLog, `Updating ${extensionName}...`] }));
+        const res = await adminService.updateExtension(extensionName);
+        if ("error" in res) {
+          set((state) => ({ installLog: [...state.installLog, `Update failed: ${res.error}`] }));
+          return;
+        }
+        set((state) => ({
+          installLog: [...state.installLog, res.success ? `Updated ${extensionName}. Restart to load.` : `No update available for ${extensionName}.`],
+        }));
+      },
+
+      updateAndRestart: async (opts) => {
+        set((state) => ({ installLog: [...state.installLog, `Restarting server...`] }));
+        const res = await adminService.updateAndRestart({
+          updateExtensions: opts?.updateExtensions,
+          updateBackends: opts?.updateBackends,
+          force: opts?.force,
+        });
+        if ("error" in res) {
+          set((state) => ({ installLog: [...state.installLog, `UpdateAndRestart failed: ${res.error}`] }));
+          return;
+        }
+        set((state) => ({ installLog: [...state.installLog, res.result ?? (res.success ? "Restart requested." : "No changes found.") ] }));
+      },
     }),
-    { name: 'ExtensionStore' }
+    { name: "ExtensionStore" }
   )
 );

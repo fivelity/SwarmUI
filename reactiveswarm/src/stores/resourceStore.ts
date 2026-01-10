@@ -1,5 +1,10 @@
-import { create } from 'zustand';
-import { devtools } from 'zustand/middleware';
+import { create } from "zustand";
+import { devtools } from "zustand/middleware";
+import { modelsService } from "@/api/ModelsService";
+import { useBackendStore } from "@/store/useBackendStore";
+import { useSessionStore } from "@/store/useSessionStore";
+
+const downloadSockets = new Map<string, WebSocket>();
 
 export interface WildcardFile {
     name: string;
@@ -19,6 +24,8 @@ export interface DownloadTask {
 interface ResourceState {
     wildcards: WildcardFile[];
     downloads: DownloadTask[];
+    isLoadingWildcards: boolean;
+    wildcardsError?: string;
     
     // Actions
     fetchWildcards: () => Promise<void>;
@@ -27,90 +34,148 @@ interface ResourceState {
     
     startDownload: (url: string, name: string, type: string) => void;
     cancelDownload: (id: string) => void;
-    // Mock progress update
-    updateDownloadProgress: (id: string, progress: number) => void;
 }
-
-const MOCK_WILDCARDS: WildcardFile[] = [
-    { name: "colors.txt", content: "red\nblue\ngreen\nyellow\npurple" },
-    { name: "animals.txt", content: "cat\ndog\nbird\nlion\ntiger" },
-    { name: "styles.txt", content: "cyberpunk\nrealistic\noil painting\nwatercolor" }
-];
 
 export const useResourceStore = create<ResourceState>()(
     devtools(
-        (set, get) => ({
+        (set) => ({
             wildcards: [],
             downloads: [],
+            isLoadingWildcards: false,
+            wildcardsError: undefined,
 
             fetchWildcards: async () => {
-                // Simulate API fetch
-                await new Promise(resolve => setTimeout(resolve, 500));
-                set({ wildcards: MOCK_WILDCARDS });
+                set({ isLoadingWildcards: true, wildcardsError: undefined });
+                try {
+                    const resp = await modelsService.listModels({
+                        path: "",
+                        depth: 20,
+                        subtype: "Wildcards",
+                        allowRemote: false,
+                        sortBy: "Name",
+                        sortReverse: false,
+                        dataImages: true,
+                    });
+                    const mapped: WildcardFile[] = (resp.files ?? [])
+                        .map((f) => {
+                            const name = typeof f.name === "string" ? f.name : "";
+                            const raw = typeof f.raw === "string" ? f.raw : "";
+                            if (!name) return null;
+                            // Existing UI expects ".txt" style names
+                            return { name: name.endsWith(".txt") ? name : `${name}.txt`, content: raw };
+                        })
+                        .filter((x): x is WildcardFile => x !== null);
+
+                    set({ wildcards: mapped, isLoadingWildcards: false });
+                } catch (e) {
+                    const msg = e instanceof Error ? e.message : "Failed to load wildcards";
+                    set({ isLoadingWildcards: false, wildcardsError: msg, wildcards: [] });
+                }
             },
 
             saveWildcard: async (name, content) => {
-                await new Promise(resolve => setTimeout(resolve, 500));
-                set(state => {
-                    const existing = state.wildcards.find(w => w.name === name);
+                const card = name.replace(/\.txt$/i, "").replace(/\\/g, "/").replace(/^\/+/, "");
+                await modelsService.editWildcard({ card, options: content.trimEnd() + "\n" });
+                set((state) => {
+                    const existing = state.wildcards.find((w) => w.name === name);
                     if (existing) {
-                        return {
-                            wildcards: state.wildcards.map(w => w.name === name ? { ...w, content } : w)
-                        };
-                    } else {
-                        return {
-                            wildcards: [...state.wildcards, { name, content }]
-                        };
+                        return { wildcards: state.wildcards.map((w) => (w.name === name ? { ...w, content } : w)) };
                     }
+                    return { wildcards: [...state.wildcards, { name, content }] };
                 });
             },
 
             deleteWildcard: async (name) => {
-                set(state => ({
-                    wildcards: state.wildcards.filter(w => w.name !== name)
-                }));
+                const card = name.replace(/\.txt$/i, "").replace(/\\/g, "/").replace(/^\/+/, "");
+                await modelsService.deleteWildcard(card);
+                set((state) => ({ wildcards: state.wildcards.filter((w) => w.name !== name) }));
             },
 
             startDownload: (url, name, type) => {
                 const id = crypto.randomUUID();
-                set(state => ({
-                    downloads: [...state.downloads, {
-                        id, url, name, type, progress: 0, status: 'pending'
-                    }]
+                set((state) => ({
+                    downloads: [...state.downloads, { id, url, name, type, progress: 0, status: "pending" }],
                 }));
 
-                // Mock download process
-                setTimeout(() => {
-                    set(state => ({
-                        downloads: state.downloads.map(d => d.id === id ? { ...d, status: 'downloading' } : d)
-                    }));
+                const backendUrl = useBackendStore.getState().backendUrl;
+                const wsUrl = `${backendUrl.replace(/^http/, "ws")}/API/DoModelDownloadWS`;
 
-                    let progress = 0;
-                    const interval = setInterval(() => {
-                        progress += 10;
-                        get().updateDownloadProgress(id, progress);
-                        if (progress >= 100) {
-                            clearInterval(interval);
-                            set(state => ({
-                                downloads: state.downloads.map(d => d.id === id ? { ...d, status: 'completed' } : d)
+                void (async () => {
+                    try {
+                        const sessionId = await useSessionStore.getState().ensureSession();
+                        const ws = new WebSocket(wsUrl);
+                        downloadSockets.set(id, ws);
+
+                        const setTask = (patch: Partial<DownloadTask>) => {
+                            set((state) => ({
+                                downloads: state.downloads.map((d) => (d.id === id ? { ...d, ...patch } : d)),
                             }));
-                        }
-                    }, 500);
-                }, 1000);
+                        };
+
+                        ws.onopen = () => {
+                            setTask({ status: "downloading" });
+                            ws.send(JSON.stringify({ session_id: sessionId, url, type, name }));
+                        };
+
+                        ws.onmessage = (evt) => {
+                            try {
+                                const msgUnknown: unknown = JSON.parse(typeof evt.data === "string" ? evt.data : "{}");
+                                if (typeof msgUnknown !== "object" || msgUnknown === null) return;
+                                const msg = msgUnknown as Record<string, unknown>;
+                                if (typeof msg.error === "string") {
+                                    setTask({ status: "error", error: msg.error });
+                                    ws.close();
+                                    return;
+                                }
+                                if (msg.success === true) {
+                                    setTask({ status: "completed", progress: 100 });
+                                    ws.close();
+                                    return;
+                                }
+
+                                const overall = typeof msg.overall_percent === "number" ? msg.overall_percent : undefined;
+                                const current = typeof msg.current_percent === "number" ? msg.current_percent : undefined;
+                                const pct = Math.max(0, Math.min(100, Math.round(((overall ?? current ?? 0) as number) * 100)));
+                                setTask({ progress: pct });
+                            } catch {
+                                // ignore parse failures
+                            }
+                        };
+
+                        ws.onerror = () => {
+                            setTask({ status: "error", error: "WebSocket error" });
+                        };
+                        ws.onclose = () => {
+                            downloadSockets.delete(id);
+                            // If user cancelled, task will already be removed.
+                        };
+                    } catch (e) {
+                        const msg = e instanceof Error ? e.message : "Failed to start download";
+                        set((state) => ({
+                            downloads: state.downloads.map((d) => (d.id === id ? { ...d, status: "error", error: msg } : d)),
+                        }));
+                    }
+                })();
             },
 
             cancelDownload: (id) => {
-                set(state => ({
-                    downloads: state.downloads.filter(d => d.id !== id)
-                }));
-            },
-
-            updateDownloadProgress: (id, progress) => {
-                set(state => ({
-                    downloads: state.downloads.map(d => d.id === id ? { ...d, progress } : d)
-                }));
+                const ws = downloadSockets.get(id);
+                if (ws) {
+                    try {
+                        ws.send(JSON.stringify({ signal: "cancel" }));
+                    } catch {
+                        // ignore
+                    }
+                    try {
+                        ws.close();
+                    } catch {
+                        // ignore
+                    }
+                    downloadSockets.delete(id);
+                }
+                set((state) => ({ downloads: state.downloads.filter((d) => d.id !== id) }));
             }
         }),
-        { name: 'ResourceStore' }
+        { name: "ResourceStore" }
     )
 );

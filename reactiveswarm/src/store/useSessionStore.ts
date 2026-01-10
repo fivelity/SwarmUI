@@ -6,6 +6,7 @@ import type { GetNewSessionResponse } from "@/types/session";
 export interface SessionState {
   sessionId: string | null;
   userId: string | null;
+  outputAppendUser: boolean;
   permissions: string[];
 
   ensureSession: (signal?: AbortSignal) => Promise<string>;
@@ -39,6 +40,7 @@ export const useSessionStore = create<SessionState>()(
       (set, get) => ({
         sessionId: null,
         userId: null,
+        outputAppendUser: false,
         permissions: [],
 
         ensureSession: async (signal) => {
@@ -54,6 +56,7 @@ export const useSessionStore = create<SessionState>()(
             set({
               sessionId: sess.session_id,
               userId: typeof sess.user_id === "string" ? sess.user_id : null,
+              outputAppendUser: sess.output_append_user === true,
               permissions: Array.isArray(sess.permissions) ? sess.permissions : [],
             });
             return sess.session_id;
@@ -69,6 +72,7 @@ export const useSessionStore = create<SessionState>()(
             set({
               sessionId: sess.session_id,
               userId: typeof sess.user_id === "string" ? sess.user_id : null,
+              outputAppendUser: sess.output_append_user === true,
               permissions: Array.isArray(sess.permissions) ? sess.permissions : [],
             });
             return sess.session_id;
@@ -78,13 +82,14 @@ export const useSessionStore = create<SessionState>()(
           return inflight;
         },
 
-        clearSession: () => set({ sessionId: null, userId: null, permissions: [] }),
+        clearSession: () => set({ sessionId: null, userId: null, outputAppendUser: false, permissions: [] }),
       }),
       {
         name: "session-storage",
         partialize: (state) => ({
           sessionId: state.sessionId,
           userId: state.userId,
+          outputAppendUser: state.outputAppendUser,
           permissions: state.permissions,
         }),
       },

@@ -1,5 +1,6 @@
-import { create } from 'zustand';
-import { devtools } from 'zustand/middleware';
+import { create } from "zustand";
+import { devtools } from "zustand/middleware";
+import { modelsService, type ModelSubtype, type ModelNetEntry } from "@/api/ModelsService";
 
 export interface Model {
     name: string;
@@ -16,6 +17,10 @@ interface ModelState {
   searchQuery: string;
   selectedFolder: string;
   selectedType: string | 'all';
+
+  isLoading: boolean;
+  error?: string;
+  fetchModels: (opts?: { depth?: number; allowRemote?: boolean }) => Promise<void>;
   
   setModels: (models: Model[]) => void;
   setFolders: (folders: string[]) => void;
@@ -24,30 +29,95 @@ interface ModelState {
   setSelectedFolder: (folder: string) => void;
   setSelectedType: (type: string) => void;
   
-  // Computed helpers (mocking backend logic for now)
+  // Computed helpers
   getFilteredModels: () => Model[];
 }
 
-const MOCK_MODELS: Model[] = [
-    { name: "stable-diffusion-v1-5", path: "/", type: "checkpoint", description: "Base SD 1.5 Model" },
-    { name: "stable-diffusion-xl-base-1.0", path: "/", type: "checkpoint", description: "SDXL Base" },
-    { name: "dreamshaper-8", path: "/Styles", type: "checkpoint", previewImage: "https://civitai.com/assets/4333" }, // Mock URL
-    { name: "realistic-vision-v5", path: "/Realism", type: "checkpoint" },
-    { name: "detailed_eye", path: "/", type: "lora" },
-    { name: "pixel_art", path: "/Styles", type: "lora" },
-];
+function modelSubtypeForUiType(type: string | "all"): ModelSubtype {
+  if (type === "lora") return "LoRA";
+  if (type === "embedding") return "Embedding";
+  if (type === "vae") return "VAE";
+  return "Stable-Diffusion";
+}
 
-const MOCK_FOLDERS = ["/", "/Styles", "/Realism", "/Characters"];
+function parsePathAndName(fullName: string): { path: string; name: string } {
+  const normalized = fullName.replace(/\\/g, "/").replace(/^\/+/, "");
+  const idx = normalized.lastIndexOf("/");
+  if (idx === -1) return { path: "/", name: normalized };
+  const path = `/${normalized.slice(0, idx)}`;
+  const name = normalized.slice(idx + 1);
+  return { path: path === "" ? "/" : path, name };
+}
+
+function toUiModel(entry: ModelNetEntry, uiType: Model["type"]): Model | null {
+  if (typeof entry.name !== "string" || entry.name.length === 0) return null;
+  const { path, name } = parsePathAndName(entry.name);
+  return {
+    name,
+    path,
+    type: uiType,
+    previewImage: typeof entry.preview_image === "string" ? entry.preview_image : undefined,
+    description: typeof entry.description === "string" ? entry.description : undefined,
+  };
+}
 
 export const useModelStore = create<ModelState>()(
   devtools(
     (set, get) => ({
-      models: MOCK_MODELS,
-      folders: MOCK_FOLDERS,
+      models: [],
+      folders: ["/"],
       selectedModel: null,
       searchQuery: "",
       selectedFolder: "/",
       selectedType: "all",
+
+      isLoading: false,
+      error: undefined,
+
+      fetchModels: async (opts) => {
+        set({ isLoading: true, error: undefined });
+        try {
+          const depth = opts?.depth ?? 4;
+          const allowRemote = opts?.allowRemote ?? true;
+
+          const type = get().selectedType;
+          const subtype = modelSubtypeForUiType(type);
+          const resp = await modelsService.listModels({
+            path: "",
+            depth,
+            subtype,
+            allowRemote,
+            sortBy: "Name",
+            sortReverse: false,
+            dataImages: false,
+          });
+
+          const uiType: Model["type"] =
+            type === "lora" ? "lora" : type === "embedding" ? "embedding" : type === "vae" ? "vae" : "checkpoint";
+
+          const mapped = (resp.files ?? [])
+            .map((f) => toUiModel(f, uiType))
+            .filter((m): m is Model => m !== null);
+
+          const folderSet = new Set<string>();
+          folderSet.add("/");
+          for (const f of resp.folders ?? []) {
+            const normalized = f.replace(/\\/g, "/").replace(/^\/+/, "");
+            folderSet.add(normalized === "" ? "/" : `/${normalized}`);
+          }
+
+          // Derive folders also from model paths (covers cases when folders list isn't exhaustive)
+          for (const m of mapped) {
+            folderSet.add(m.path);
+          }
+
+          const folders = Array.from(folderSet).sort((a, b) => a.localeCompare(b));
+          set({ models: mapped, folders, isLoading: false });
+        } catch (e) {
+          const msg = e instanceof Error ? e.message : "Failed to load models";
+          set({ isLoading: false, error: msg, models: [], folders: ["/"] });
+        }
+      },
       
       setModels: (models) => set({ models }),
       setFolders: (folders) => set({ folders }),
@@ -67,6 +137,6 @@ export const useModelStore = create<ModelState>()(
           });
       }
     }),
-    { name: 'ModelStore' }
+    { name: "ModelStore" }
   )
 );

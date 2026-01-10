@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useModelStore } from "@/stores/modelStore";
 import type { Model } from "@/stores/modelStore";
 import { ModelTree } from "./ModelTree";
@@ -22,11 +23,17 @@ export function ModelBrowser({ onSelect }: ModelBrowserProps) {
   const setSearchQuery = useModelStore((state) => state.setSearchQuery);
   const selectedType = useModelStore((state) => state.selectedType);
   const setSelectedType = useModelStore((state) => state.setSelectedType);
+  const isLoading = useModelStore((state) => state.isLoading);
+  const fetchModels = useModelStore((state) => state.fetchModels);
   const getFilteredModels = useModelStore((state) => state.getFilteredModels);
   const selectedModel = useModelStore((state) => state.selectedModel);
   const setSelectedModel = useModelStore((state) => state.setSelectedModel);
 
   const filteredModels = getFilteredModels();
+
+  useEffect(() => {
+    fetchModels({ depth: 4, allowRemote: true });
+  }, [fetchModels, selectedType]);
 
   const handleSelect = (model: Model) => {
       setSelectedModel(model);
@@ -69,7 +76,11 @@ export function ModelBrowser({ onSelect }: ModelBrowserProps) {
         {/* Grid */}
         <ScrollArea className="flex-1 bg-muted/5">
             <div className="p-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {filteredModels.length === 0 ? (
+                {isLoading ? (
+                    <div className="col-span-full h-40 flex items-center justify-center text-muted-foreground">
+                        Loading models...
+                    </div>
+                ) : filteredModels.length === 0 ? (
                     <div className="col-span-full h-40 flex items-center justify-center text-muted-foreground">
                         No models found.
                     </div>
