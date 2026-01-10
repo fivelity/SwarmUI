@@ -24,6 +24,8 @@ import { Toaster } from "@/components/ui/sonner";
 import { ImageEditor } from "@/components/editor/ImageEditor";
 import { ExtensionAssetLoader } from "@/components/extensions/ExtensionAssetLoader";
 
+type PanelSize = { asPercentage: number; inPixels: number };
+
 export function AppLayout() {
   const { 
       leftSidebarSize, 
@@ -190,7 +192,7 @@ export function AppLayout() {
                   collapsible={true}
                   collapsedSize={0}
                   className={cn("transition-all duration-300 ease-in-out", rightSidebarCollapsed && "min-w-0 w-0 border-none")}
-                  onResize={(size: any) => {
+                  onResize={(size: PanelSize) => {
                     const pct = size.asPercentage;
                     if (pct >= 5) {
                         setRightSidebarSize(pct);

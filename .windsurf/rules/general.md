@@ -27,12 +27,11 @@ trigger: always_on
 - Extensions: /API/ListExtensions, /API/InstallExtension, /API/RemoveExtension
 - System/Admin: /API/GetServerResourceInfo, /API/ListConnectedUsers, /API/ListLogTypes, /API/ListRecentLogMessages, /API/ListServerSettings, /API/ChangeServerSettings, /API/UpdateAndRestart, /API/ShutdownServer
 - WebSocket utilities (where applicable): DoLoraExtractionWS, DoTensorRTCreateWS
-- **Additional mandatory endpoints for SwarmUI parity:** `/API/GetFolderDetails`, `/API/ListImages`, `/API/GetImageMetadata`, `/API/GetCurrentStatus`
+- **Additional mandatory endpoints for SwarmUI parity:** `/API/ListImages`, `/API/GetImageMetadata`, `/API/GetCurrentStatus`
 
 # Notes:
 - Use swarm_token cookie when accounts are enabled.
 - For previews/progress, use the WebSocket route; do NOT send undocumented fields to REST (e.g., do not send `send_intermediates` to /API/GenerateText2Image).
-- `/API/GetFolderDetails` powers the recursive model sidebar tree (ModelsService).
 - `/API/ListImages` and `/API/GetImageMetadata` power Gallery/History + “Import Parameters” (GenerationService).
 - `/API/GetCurrentStatus` acts as heartbeat + GPU telemetry (BasicService) and should keep the session alive.
 
@@ -300,16 +299,6 @@ export class ModelsService {
     return res.json();
   }
 
-  async getFolderDetails(session_id: string, path: string): Promise<Record<string, unknown>> {
-    const res = await fetch(`${this.baseUrl}/API/GetFolderDetails`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ session_id, path }),
-    });
-    if (!res.ok) throw new Error("GetFolderDetails failed");
-    return res.json();
-  }
-}
 ```
 
 ## Workflows service
@@ -517,7 +506,7 @@ export class BasicService {
 1. **Type updates:** replace nested DTO fields (LoRA arrays, ControlNet arrays, etc.) with flattened dynamic key support.
 2. **Serializer helper:** add a utility that flattens structured UI state into `Record<string, string | number | boolean | undefined>` payloads.
 3. **WebSocket contract:** ensure every `/API/GenerateText2ImageWS` connection sends the payload immediately and maps preview/progress/result/error events exactly as above.
-4. **Route coverage:** wire `/API/GetFolderDetails`, `/API/ListImages`, `/API/GetImageMetadata`, and `/API/GetCurrentStatus` into their respective services/hooks.
+4. **Route coverage:** wire `/API/ListImages`, `/API/GetImageMetadata`, and `/API/GetCurrentStatus` into their respective services/hooks.
 5. **Testing:** add unit tests for the serializer and WebSocket event router; mock network calls only in tests.
 6. **Multi-job orchestration:** maintain a `Map<req_id, JobState>` (e.g., via Zustand) to track concurrent sockets; integrate once services are updated.
 

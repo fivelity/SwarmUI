@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { swarmApi } from "@/services/apiClient";
+import { swarmHttp } from "@/api/SwarmHttpClient";
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Activity, Cpu, Database, HardDrive } from "lucide-react";
 
@@ -26,6 +26,8 @@ interface ResourceInfo {
     }>;
 }
 
+type GpuInfo = ResourceInfo["gpus"][string];
+
 interface TelemetryPoint {
     time: string;
     cpu: number;
@@ -42,7 +44,7 @@ export function BackendTelemetry() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const data = await swarmApi.get<ResourceInfo>("/GetServerResourceInfo");
+                const data = await swarmHttp.post<ResourceInfo>("GetServerResourceInfo", {});
                 setResources(data);
 
                 setHistory(prev => {
@@ -52,7 +54,7 @@ export function BackendTelemetry() {
                                   now.getSeconds().toString().padStart(2, '0');
                     
                     // Aggregate GPU usage if multiple? Just take first for now.
-                    const firstGpu = data.gpus ? Object.values(data.gpus)[0] : null;
+                    const firstGpu: GpuInfo | undefined = (Object.values(data.gpus) as GpuInfo[])[0];
                     const gpuUsage = firstGpu ? firstGpu.utilization_gpu : 0;
                     const vramUsage = firstGpu && firstGpu.total_memory > 0 
                         ? (firstGpu.used_memory / firstGpu.total_memory) * 100 
@@ -84,8 +86,8 @@ export function BackendTelemetry() {
         // Fetch immediately
         fetchData();
 
-        // Poll every 1s
-        const interval = setInterval(fetchData, 1000);
+        // Telemetry should be medium-frequency (5-10s)
+        const interval = setInterval(fetchData, 5000);
         return () => clearInterval(interval);
     }, []);
 
@@ -106,7 +108,7 @@ export function BackendTelemetry() {
         );
     }
 
-    const firstGpu = resources.gpus ? Object.values(resources.gpus)[0] : null;
+    const firstGpu: GpuInfo | undefined = (Object.values(resources.gpus) as GpuInfo[])[0];
 
     return (
         <div className="space-y-6 animate-in fade-in duration-500">

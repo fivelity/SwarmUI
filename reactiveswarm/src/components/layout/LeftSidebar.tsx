@@ -6,8 +6,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Play, Sparkles, ChevronDown, Square, XCircle } from "lucide-react";
-import { generateImage, interruptGeneration, cancelGeneration } from "@/services/generationService";
+import { Play, Sparkles, ChevronDown, Square } from "lucide-react";
+import { generateImage, interruptGeneration } from "@/services/generationService";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -183,10 +183,6 @@ export function LeftSidebar() {
                     <DropdownMenuItem onClick={() => interruptGeneration(false)} disabled={!isGenerating}>
                         <Square className="w-4 h-4 me-2" />
                         Interrupt
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={cancelGeneration} disabled={!isGenerating}>
-                        <XCircle className="w-4 h-4 me-2" />
-                        Cancel
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={() => interruptGeneration(true)} disabled={!isGenerating}>

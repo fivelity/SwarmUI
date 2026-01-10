@@ -125,7 +125,6 @@ Handle `session_id` injection centrally and recover automatically on session exp
 
 ### ModelsService
 
-- **Navigation**: `/API/GetFolderDetails` (Required for the directory-tree browser).
 - **Discovery**: `/API/ListModels` (Filter by `subtype`: LoRA, VAE, etc.).
 - **Operations**: `/API/DescribeModel`, `/API/SelectModelWS`.
 - **Wildcards**: `/API/EditWildcard`, `/API/DeleteWildcard`.
@@ -162,7 +161,6 @@ Handle `session_id` injection centrally and recover automatically on session exp
 
 5. **Model & Folder Parity**  
    - `useModelStore` caches subtype-segmented model lists (Stable Diffusion, LoRA, ControlNet, VAE).  
-   - Rebuild the sidebar tree recursively by calling `/API/GetFolderDetails` per node, matching SwarmUI’s navigation experience.
 
 6. **Image Editor vs. Inpainting Workflow**  
    - “Image Editor” denotes the canvas environment entered via Init Image → Edit Image (paintbrush, masking, zoom, layer clearing).  

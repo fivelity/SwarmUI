@@ -1,4 +1,3 @@
-import { useLayoutStore } from "@/stores/layoutStore";
 import { useHistoryStore } from "@/stores/historyStore";
 import { useUIStore } from "@/stores/uiStore";
 import { ScrollArea } from "@/components/ui/scroll-area";

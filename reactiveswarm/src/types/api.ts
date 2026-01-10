@@ -5,6 +5,19 @@ export interface SwarmError {
     data?: unknown;
 }
 
+export interface SwarmApiError {
+    code: string;
+    message: string;
+    details?: unknown;
+}
+
+export interface SwarmErrorEnvelope {
+    error?: string;
+    error_id?: string;
+    error_message?: string;
+    [key: string]: unknown;
+}
+
 export interface SwarmResponse<T = unknown> {
     data?: T;
     error_id?: string;

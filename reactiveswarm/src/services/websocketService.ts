@@ -1,4 +1,4 @@
-import { useBackendStore } from "@/stores/backendStore";
+import { useBackendStore } from "@/store/useBackendStore";
 import { useGenerationStore } from "@/stores/generationStore";
 import type { WSMessage } from "@/types/api";
 
