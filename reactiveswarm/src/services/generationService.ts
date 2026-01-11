@@ -92,6 +92,12 @@ export const generateImage = async () => {
     flat[key] = value;
   }
 
+  const t2iParamsState = useT2IParamsStore.getState();
+  const stableList = t2iParamsState.models["Stable-Diffusion"];
+  if ((!Array.isArray(stableList) || stableList.length === 0) && !t2iParamsState.isLoading) {
+    await t2iParamsState.load().catch(() => undefined);
+  }
+
   if (typeof flat.model !== "string" || flat.model.trim().length === 0) {
     const fallback = await resolveModelFallback().catch(() => undefined);
     if (typeof fallback === "string" && fallback.trim().length > 0) {
@@ -116,7 +122,7 @@ export const generateImage = async () => {
 
     await runText2ImageWS(flat, {
       requestId,
-      openTimeoutMs: 800,
+      openTimeoutMs: 4000,
       onEvent: (evt) => {
         if (evt.type === "progress") {
           const overallRaw = typeof evt.gen_progress.overall_percent === "number" ? evt.gen_progress.overall_percent : genStore.progress;

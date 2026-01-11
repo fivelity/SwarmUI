@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import {
   type PanelImperativeHandle,
+  type PanelSize,
 } from "react-resizable-panels";
 import {
   ResizablePanelGroup,
@@ -19,12 +20,14 @@ import { ToolsPage } from "@/components/resources/ToolsPage";
 import { useLayoutStore } from "@/stores/layoutStore";
 import { useUIStore } from "@/stores/uiStore";
 import { useServerStore } from "@/stores/serverStore";
+import { useT2IParamsStore } from "@/stores/t2iParamsStore";
+import { useParameterStore } from "@/stores/parameterStore";
 import { cn } from "@/lib/utils";
 import { Toaster } from "@/components/ui/sonner";
 import { ImageEditor } from "@/components/editor/ImageEditor";
 import { ExtensionAssetLoader } from "@/components/extensions/ExtensionAssetLoader";
 
-type PanelSize = { asPercentage: number; inPixels: number };
+const COLLAPSE_SNAP_PCT = 4;
 
 export function AppLayout() {
   const { 
@@ -42,6 +45,11 @@ export function AppLayout() {
 
   const { activeTab, setIsMobile, editingImage, setEditingImage } = useUIStore();
 
+  const selectedModel = useParameterStore((s) => s.model);
+  const setSelectedModel = useParameterStore((s) => s.setModel);
+  const modelsBySubtype = useT2IParamsStore((s) => s.models);
+  const modelsLoadedAt = useT2IParamsStore((s) => s.lastLoadedAt);
+
   const leftPanelRef = useRef<PanelImperativeHandle>(null);
   const rightPanelRef = useRef<PanelImperativeHandle>(null);
 
@@ -49,8 +57,18 @@ export function AppLayout() {
 
   useEffect(() => {
     useServerStore.getState().start();
+    void useT2IParamsStore.getState().load();
     return () => useServerStore.getState().stop();
   }, []);
+
+  useEffect(() => {
+    if (selectedModel.trim().length > 0) return;
+    const stable = modelsBySubtype["Stable-Diffusion"];
+    if (!Array.isArray(stable)) return;
+    const first = stable.find((m): m is string => typeof m === "string" && m.trim().length > 0);
+    if (!first) return;
+    setSelectedModel(first.trim());
+  }, [modelsBySubtype, modelsLoadedAt, selectedModel, setSelectedModel]);
 
   // Handle Window Resize (Mobile Detection)
   useEffect(() => {
@@ -103,7 +121,7 @@ export function AppLayout() {
         
         if (Math.abs(currentSize - targetSize) > 0.1 || currentSize < 5) {
              panel.expand(); 
-             panel.resize(String(targetSize));
+             panel.resize(targetSize);
         }
       }
     }
@@ -120,7 +138,7 @@ export function AppLayout() {
         
         if (Math.abs(currentSize - targetSize) > 0.1 || currentSize < 5) {
             panel.expand();
-            panel.resize(String(targetSize));
+            panel.resize(targetSize);
         }
       }
     }
@@ -142,20 +160,21 @@ export function AppLayout() {
               {/* Left Sidebar Panel */}
               <ResizablePanel 
                   panelRef={leftPanelRef}
-                  defaultSize={String(leftSidebarSize < 5 ? 20 : leftSidebarSize)} 
-                  minSize="15" 
-                  maxSize="30"
+                  defaultSize={leftSidebarSize < 5 ? 20 : leftSidebarSize}
+                  minSize={1}
+                  maxSize={30}
                   collapsible={true}
-                  collapsedSize="0"
+                  collapsedSize={0}
                   className={cn("min-w-0 overflow-hidden transition-all duration-300 ease-in-out", leftSidebarCollapsed && "w-0 border-none")}
                   onResize={(size: PanelSize) => {
                     const pct = size.asPercentage;
-                    if (pct >= 5) {
-                         setLeftSidebarSize(pct);
-                         if (leftSidebarCollapsed) setLeftSidebarCollapsed(false);
-                    } else if (pct < 1) {
-                         if (!leftSidebarCollapsed) setLeftSidebarCollapsed(true);
+                    if (pct <= COLLAPSE_SNAP_PCT) {
+                      if (!leftSidebarCollapsed) setLeftSidebarCollapsed(true);
+                      return;
                     }
+
+                    setLeftSidebarSize(pct);
+                    if (leftSidebarCollapsed) setLeftSidebarCollapsed(false);
                   }}
               >
                   <LeftSidebar />
@@ -169,8 +188,8 @@ export function AppLayout() {
 
               {/* Main Content */}
               <ResizablePanel
-                defaultSize={String(100 - (leftSidebarSize < 5 ? 20 : leftSidebarSize) - (rightSidebarSize < 5 ? 20 : rightSidebarSize))}
-                minSize="30"
+                defaultSize={100 - (leftSidebarSize < 5 ? 20 : leftSidebarSize) - (rightSidebarSize < 5 ? 20 : rightSidebarSize)}
+                minSize={30}
                 className="min-w-0 overflow-hidden"
               >
                 <MainCanvas />
@@ -185,20 +204,21 @@ export function AppLayout() {
               {/* Right Sidebar Panel */}
               <ResizablePanel 
                   panelRef={rightPanelRef}
-                  defaultSize={String(rightSidebarSize < 5 ? 20 : rightSidebarSize)} 
-                  minSize="15" 
-                  maxSize="30"
+                  defaultSize={rightSidebarSize < 5 ? 20 : rightSidebarSize}
+                  minSize={1}
+                  maxSize={30}
                   collapsible={true}
-                  collapsedSize="0"
+                  collapsedSize={0}
                   className={cn("min-w-0 overflow-hidden transition-all duration-300 ease-in-out", rightSidebarCollapsed && "w-0 border-none")}
                   onResize={(size: PanelSize) => {
                     const pct = size.asPercentage;
-                    if (pct >= 5) {
-                        setRightSidebarSize(pct);
-                        if (rightSidebarCollapsed) setRightSidebarCollapsed(false);
-                    } else if (pct < 1) {
-                        if (!rightSidebarCollapsed) setRightSidebarCollapsed(true);
+                    if (pct <= COLLAPSE_SNAP_PCT) {
+                      if (!rightSidebarCollapsed) setRightSidebarCollapsed(true);
+                      return;
                     }
+
+                    setRightSidebarSize(pct);
+                    if (rightSidebarCollapsed) setRightSidebarCollapsed(false);
                   }}
               >
                 <RightSidebar />

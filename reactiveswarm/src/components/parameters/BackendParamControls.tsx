@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, useTransition } from "react";
+import { memo, useCallback, useEffect, useMemo, useState, useTransition } from "react";
 import { useT2IParamsStore } from "@/stores/t2iParamsStore";
 import { useT2IParamValuesStore } from "@/stores/t2iParamValuesStore";
 import type { T2IParamDataType, T2IParamGroupNet, T2IParamNet, T2IParamValue, T2IParamViewType } from "@/types/t2iParams";
@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import {
   Select,
   SelectContent,
@@ -116,6 +117,47 @@ function isPromptView(param: T2IParamNet): boolean {
   return param.view_type === "prompt";
 }
 
+function numOr(v: unknown, fallback: number): number {
+  if (typeof v !== "number") return fallback;
+  if (!Number.isFinite(v)) return fallback;
+  return v;
+}
+
+function paramInfoText(param: T2IParamNet): string {
+  const lines: string[] = [];
+  if (param.description) lines.push(param.description);
+  const id = typeof param.id === "string" && param.id.length > 0 ? param.id : "";
+  if (id) lines.push(`id: ${id}`);
+  if (typeof param.default === "string" && param.default.length > 0) lines.push(`default: ${param.default}`);
+  if (param.type === "integer" || param.type === "decimal") {
+    const min = numOr(param.min, 0);
+    const max = numOr(param.max, min);
+    const step = numOr(param.step, 1);
+    lines.push(`range: ${min} - ${max} (step ${step})`);
+  }
+  return lines.join("\n");
+}
+
+const InfoTip = memo(function InfoTip({ text }: { text: string }) {
+  if (!text) return null;
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <button
+          type="button"
+          className="text-[10px] text-muted-foreground hover:text-foreground rounded px-1 py-0.5 border border-border/60"
+          aria-label="Parameter info"
+        >
+          (i)
+        </button>
+      </TooltipTrigger>
+      <TooltipContent className="max-w-[320px] whitespace-pre-wrap text-xs" side="right">
+        {text}
+      </TooltipContent>
+    </Tooltip>
+  );
+});
+
 function modelOptions(param: T2IParamNet, models: Record<string, string[]>): string[] {
   if (param.type !== "model") return [];
   const subtype = param.subtype ?? "Stable-Diffusion";
@@ -132,9 +174,13 @@ function modelOptions(param: T2IParamNet, models: Record<string, string[]>): str
   return out;
 }
 
-function ParamRow({ param }: { param: T2IParamNet }) {
-  const models = useT2IParamsStore((s) => s.models);
-  const allParams = useT2IParamsStore((s) => s.params);
+type ParamRowProps = {
+  param: T2IParamNet;
+  models: Record<string, string[]>;
+  paramsById: Map<string, T2IParamNet>;
+};
+
+const ParamRow = memo(function ParamRow({ param, models, paramsById }: ParamRowProps) {
   const storedValue = useT2IParamValuesStore((s) => s.values[param.id]);
   const enabled = useT2IParamValuesStore((s) => s.enabled[param.id]);
   const setValue = useT2IParamValuesStore((s) => s.setValue);
@@ -152,29 +198,34 @@ function ParamRow({ param }: { param: T2IParamNet }) {
 
   const dependencySatisfied = useMemo(() => {
     if (!depId) return true;
-    const dep = allParams.find((p) => p.id === depId);
+    const dep = paramsById.get(depId);
     if (!dep) return true;
     if ((depEnabled ?? true) === false) return false;
     if (depValue === undefined) return false;
     const depDefault = parseDefaultValue(dep);
     return depValue !== depDefault;
-  }, [allParams, depEnabled, depId, depValue]);
+  }, [depEnabled, depId, depValue, paramsById]);
 
-  const onChangeValue = (next: T2IParamValue) => {
-    startTransition(() => {
-      setValue(param.id, next);
-      // When user interacts with a toggleable param, consider it enabled.
-      if (param.toggleable) {
-        setEnabled(param.id, true);
-      }
-    });
-  };
+  const onChangeValue = useCallback(
+    (next: T2IParamValue) => {
+      startTransition(() => {
+        setValue(param.id, next);
+        if (param.toggleable) {
+          setEnabled(param.id, true);
+        }
+      });
+    },
+    [param.id, param.toggleable, setEnabled, setValue, startTransition],
+  );
 
-  const onToggle = (next: boolean) => {
-    startTransition(() => {
-      setEnabled(param.id, next);
-    });
-  };
+  const onToggle = useCallback(
+    (next: boolean) => {
+      startTransition(() => {
+        setEnabled(param.id, next);
+      });
+    },
+    [param.id, setEnabled, startTransition],
+  );
 
   const commonDisabled = isPending || !selfEnabled;
 
@@ -198,13 +249,18 @@ function ParamRow({ param }: { param: T2IParamNet }) {
       }
 
       case "dropdown": {
-        const raw = param.values ?? [];
+        const rawValues = Array.isArray(param.values) ? param.values : [];
+        const rawNames = Array.isArray(param.value_names) ? param.value_names : null;
         const seen = new Set<string>();
-        const opts = raw.filter((x) => {
-          if (seen.has(x)) return false;
-          seen.add(x);
-          return true;
-        });
+        const opts: Array<{ value: string; label: string }> = [];
+        for (let i = 0; i < rawValues.length; i++) {
+          const value = rawValues[i];
+          if (typeof value !== "string") continue;
+          if (seen.has(value)) continue;
+          seen.add(value);
+          const label = rawNames?.[i];
+          opts.push({ value, label: typeof label === "string" && label.length > 0 ? label : value });
+        }
         const v = typeof effectiveValue === "string" ? effectiveValue : String(effectiveValue);
         return (
           <Select value={v} onValueChange={(nv) => onChangeValue(coerceValue(param, nv))} disabled={commonDisabled}>
@@ -212,9 +268,9 @@ function ParamRow({ param }: { param: T2IParamNet }) {
               <SelectValue placeholder={param.default || "Select..."} />
             </SelectTrigger>
             <SelectContent>
-              {opts.map((o, idx) => (
-                <SelectItem key={`${o}__${idx}`} value={o}>
-                  {o}
+              {opts.map((o) => (
+                <SelectItem key={o.value} value={o.value}>
+                  {o.label}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -299,9 +355,11 @@ function ParamRow({ param }: { param: T2IParamNet }) {
         }
 
         if (shouldUseSlider(param.type, param.view_type)) {
-          const min = typeof param.view_min === "number" ? param.view_min : param.min;
-          const max = typeof param.view_max === "number" ? param.view_max : param.max;
-          const step = typeof param.step === "number" && param.step > 0 ? param.step : 1;
+          const minRaw = typeof param.view_min === "number" ? param.view_min : numOr(param.min, 0);
+          const maxRaw = typeof param.view_max === "number" ? param.view_max : numOr(param.max, minRaw);
+          const min = Number.isFinite(minRaw) ? minRaw : 0;
+          const max = Number.isFinite(maxRaw) ? Math.max(maxRaw, min) : min;
+          const step = typeof param.step === "number" && param.step > 0 ? param.step : param.type === "decimal" ? 0.1 : 1;
           const clamped = clamp(n, min, max);
 
           return (
@@ -406,14 +464,131 @@ function ParamRow({ param }: { param: T2IParamNet }) {
   return (
     <div className={cn("space-y-1", !selfEnabled && "opacity-60")}>
       <div className="flex items-center justify-between gap-3">
-        <Label className="text-xs">{param.name}</Label>
+        <div className="flex items-center gap-2 min-w-0">
+          <InfoTip text={paramInfoText(param)} />
+          <Label className="text-xs truncate">{param.name}</Label>
+        </div>
         {param.toggleable && <Switch checked={selfEnabled} onCheckedChange={onToggle} disabled={isPending} />}
       </div>
       {renderControl()}
       {param.description ? <div className="text-[10px] text-muted-foreground">{param.description}</div> : null}
     </div>
   );
-}
+});
+
+type GroupSectionProps = {
+  groupId: string;
+  depth: number;
+  groupsById: Map<string, T2IParamGroupNet>;
+  groupChildren: Map<string, string[]>;
+  paramsByGroup: Map<string, T2IParamNet[]>;
+  descendantGroupIdsByGroup: Map<string, string[]>;
+  open: boolean;
+  getOpen: (groupId: string) => boolean;
+  toggleOpen: (groupId: string) => void;
+  models: Record<string, string[]>;
+  paramsById: Map<string, T2IParamNet>;
+};
+
+const GroupSection = memo(function GroupSection({
+  groupId,
+  depth,
+  groupsById,
+  groupChildren,
+  paramsByGroup,
+  descendantGroupIdsByGroup,
+  open,
+  getOpen,
+  toggleOpen,
+  models,
+  paramsById,
+}: GroupSectionProps) {
+  const setEnabledMany = useT2IParamValuesStore((s) => s.setEnabledMany);
+  const clearParams = useT2IParamValuesStore((s) => s.clearParams);
+  const groupEnabled = useT2IParamValuesStore((s) => s.enabled[groupId]);
+
+  const group = groupsById.get(groupId);
+  const childIds = groupChildren.get(groupId) ?? [];
+  const groupParams = paramsByGroup.get(groupId) ?? [];
+  const hasAnyContent = groupParams.length > 0 || childIds.length > 0;
+  if (!hasAnyContent) return null;
+
+  const effectiveGroupEnabled = groupEnabled ?? true;
+
+  return (
+    <div key={groupId} className={cn("space-y-3", depth > 0 && "pl-3 border-l border-border/60")}>
+      <div className="flex items-center justify-between gap-2">
+        <button type="button" className="text-left flex-1" onClick={() => toggleOpen(groupId)}>
+          <div className="text-xs font-semibold">{groupLabel(group)}</div>
+          {group?.description ? <div className="text-[10px] text-muted-foreground">{group.description}</div> : null}
+        </button>
+
+        <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-8 px-2 text-xs"
+            onClick={() => {
+              const descendantGroupIds = descendantGroupIdsByGroup.get(groupId) ?? [];
+              const idsToClear: string[] = [groupId, ...groupParams.map((p) => p.id), ...descendantGroupIds];
+              for (const dg of descendantGroupIds) {
+                const dgParams = paramsByGroup.get(dg) ?? [];
+                idsToClear.push(...dgParams.map((p) => p.id));
+              }
+              clearParams(idsToClear);
+            }}
+            title="Reset this group"
+          >
+            Reset
+          </Button>
+          {group?.toggles ? (
+            <Switch
+              checked={effectiveGroupEnabled !== false}
+              onCheckedChange={(v) => {
+                const updates: Record<string, boolean> = {};
+                updates[groupId] = v;
+                for (const p of groupParams) updates[p.id] = v;
+
+                const descendants = descendantGroupIdsByGroup.get(groupId) ?? [];
+                for (const dg of descendants) {
+                  updates[dg] = v;
+                  const dgParams = paramsByGroup.get(dg) ?? [];
+                  for (const p of dgParams) updates[p.id] = v;
+                }
+
+                setEnabledMany(updates);
+              }}
+            />
+          ) : null}
+        </div>
+      </div>
+
+      {open ? (
+        <div className="space-y-3">
+          {groupParams.map((p) => (
+            <ParamRow key={p.id} param={p} models={models} paramsById={paramsById} />
+          ))}
+          {childIds.map((cid) => (
+            <GroupSection
+              key={cid}
+              groupId={cid}
+              depth={depth + 1}
+              groupsById={groupsById}
+              groupChildren={groupChildren}
+              paramsByGroup={paramsByGroup}
+              descendantGroupIdsByGroup={descendantGroupIdsByGroup}
+              open={getOpen(cid)}
+              getOpen={getOpen}
+              toggleOpen={toggleOpen}
+              models={models}
+              paramsById={paramsById}
+            />
+          ))}
+        </div>
+      ) : null}
+    </div>
+  );
+});
 
 function groupLabel(group: T2IParamGroupNet | null | undefined): string {
   if (!group) return "Ungrouped";
@@ -430,9 +605,8 @@ export function BackendParamControls() {
   const load = useT2IParamsStore((s) => s.load);
   const params = useT2IParamsStore((s) => s.params);
   const groups = useT2IParamsStore((s) => s.groups);
+  const models = useT2IParamsStore((s) => s.models);
 
-  const setEnabled = useT2IParamValuesStore((s) => s.setEnabled);
-  const enabledMap = useT2IParamValuesStore((s) => s.enabled);
   const clearParams = useT2IParamValuesStore((s) => s.clearParams);
 
   const [query, setQuery] = useState("");
@@ -451,6 +625,14 @@ export function BackendParamControls() {
     }
     return map;
   }, [groups]);
+
+  const paramsById = useMemo(() => {
+    const map = new Map<string, T2IParamNet>();
+    for (const p of params) {
+      map.set(p.id, p);
+    }
+    return map;
+  }, [params]);
 
   const filteredParams = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -517,83 +699,37 @@ export function BackendParamControls() {
     return roots;
   }, [groups]);
 
+  const getOpen = useCallback(
+    (groupId: string) => {
+      const group = groupsById.get(groupId);
+      return openGroups[groupId] ?? (group?.open !== false);
+    },
+    [groupsById, openGroups],
+  );
+
+  const toggleOpen = useCallback((groupId: string) => {
+    setOpenGroups((s) => ({
+      ...s,
+      [groupId]: !(s[groupId] ?? true),
+    }));
+  }, []);
+
   const renderGroup = (groupId: string, depth: number) => {
-    const group = groupsById.get(groupId);
-    const open = openGroups[groupId] ?? (group?.open !== false);
-    const childIds = groupChildren.get(groupId) ?? [];
-    const groupParams = paramsByGroup.get(groupId) ?? [];
-    const groupEnabled = enabledMap[groupId] ?? true;
-
-    const hasAnyContent = groupParams.length > 0 || childIds.length > 0;
-    if (!hasAnyContent) return null;
-
     return (
-      <div key={groupId} className={cn("space-y-3", depth > 0 && "pl-3 border-l border-border/60")}> 
-        <div className="flex items-center justify-between gap-2">
-          <button
-            type="button"
-            className="text-left flex-1"
-            onClick={() =>
-              setOpenGroups((s) => ({
-                ...s,
-                [groupId]: !(s[groupId] ?? true),
-              }))
-            }
-          >
-            <div className="text-xs font-semibold">{groupLabel(group)}</div>
-            {group?.description ? <div className="text-[10px] text-muted-foreground">{group.description}</div> : null}
-          </button>
-
-          <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-8 px-2 text-xs"
-              onClick={() => {
-                const descendantGroupIds = descendantGroupIdsByGroup.get(groupId) ?? [];
-                const idsToClear: string[] = [groupId, ...groupParams.map((p) => p.id), ...descendantGroupIds];
-                for (const dg of descendantGroupIds) {
-                  const dgParams = paramsByGroup.get(dg) ?? [];
-                  idsToClear.push(...dgParams.map((p) => p.id));
-                }
-                clearParams(idsToClear);
-              }}
-              title="Reset this group"
-            >
-              Reset
-            </Button>
-            {group?.toggles ? (
-              <Switch
-                checked={groupEnabled !== false}
-                onCheckedChange={(v) => {
-                  setEnabled(groupId, v);
-                  for (const p of groupParams) {
-                    setEnabled(p.id, v);
-                  }
-
-                  const descendants = descendantGroupIdsByGroup.get(groupId) ?? [];
-                  for (const dg of descendants) {
-                    setEnabled(dg, v);
-                    const dgParams = paramsByGroup.get(dg) ?? [];
-                    for (const p of dgParams) {
-                      setEnabled(p.id, v);
-                    }
-                  }
-                }}
-              />
-            ) : null}
-          </div>
-        </div>
-
-        {open ? (
-          <div className="space-y-3">
-            {groupParams.map((p) => (
-              <ParamRow key={p.id} param={p} />
-            ))}
-            {childIds.map((cid) => renderGroup(cid, depth + 1))}
-          </div>
-        ) : null}
-      </div>
+      <GroupSection
+        key={groupId}
+        groupId={groupId}
+        depth={depth}
+        groupsById={groupsById}
+        groupChildren={groupChildren}
+        paramsByGroup={paramsByGroup}
+        descendantGroupIdsByGroup={descendantGroupIdsByGroup}
+        open={getOpen(groupId)}
+        getOpen={getOpen}
+        toggleOpen={toggleOpen}
+        models={models}
+        paramsById={paramsById}
+      />
     );
   };
 
@@ -636,7 +772,7 @@ export function BackendParamControls() {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => clearParams(Object.keys(useT2IParamValuesStore.getState().values).concat(Object.keys(useT2IParamValuesStore.getState().enabled)))}
+            onClick={() => useT2IParamValuesStore.getState().clear()}
             disabled={isLoading}
             title="Clear all backend parameter overrides"
           >
@@ -663,7 +799,7 @@ export function BackendParamControls() {
                 </Button>
               </div>
               {ungrouped.map((p) => (
-                <ParamRow key={p.id} param={p} />
+                <ParamRow key={p.id} param={p} models={models} paramsById={paramsById} />
               ))}
             </div>
           ) : null}

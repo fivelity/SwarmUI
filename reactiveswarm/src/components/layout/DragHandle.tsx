@@ -13,7 +13,12 @@ export function DragHandle({ collapsed, onToggle, direction, className }: DragHa
   const isLeft = direction === 'left';
   
   return (
-    <Separator className={cn("w-px bg-border transition-colors hover:bg-primary/50 relative flex items-center justify-center z-50", className)}>
+    <Separator
+      className={cn(
+        "relative z-50 flex w-3 cursor-col-resize touch-none select-none items-center justify-center bg-border/60 transition-colors hover:bg-primary/20",
+        className
+      )}
+    >
       <button 
         onClick={onToggle}
         className={cn(

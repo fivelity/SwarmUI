@@ -8,6 +8,7 @@ export interface T2IParamValuesState {
 
   setValue: (id: string, value: T2IParamValue) => void;
   setEnabled: (id: string, enabled: boolean) => void;
+  setEnabledMany: (updates: Record<string, boolean>) => void;
   clearParam: (id: string) => void;
   clearParams: (ids: string[]) => void;
   clear: () => void;
@@ -33,6 +34,17 @@ export const useT2IParamValuesStore = create<T2IParamValuesState>()(
           set((state) => ({
             enabled: { ...state.enabled, [normalizeId(id)]: enabled },
           })),
+
+        setEnabledMany: (updates) =>
+          set((state) => {
+            const normalizedUpdates: Record<string, boolean> = {};
+            for (const [k, v] of Object.entries(updates)) {
+              normalizedUpdates[normalizeId(k)] = v;
+            }
+            return {
+              enabled: { ...state.enabled, ...normalizedUpdates },
+            };
+          }),
 
         clearParam: (id) =>
           set((state) => {

@@ -75,6 +75,13 @@ export class ModelsService {
     });
   }
 
+  selectModel(params: { model: string; backendId?: string | null }): Promise<{ success: boolean } | { error: string }> {
+    return swarmHttp.post("SelectModel", {
+      model: params.model,
+      backendId: params.backendId ?? null,
+    });
+  }
+
   editWildcard(params: { card: string; options: string; preview_image?: string | null; preview_image_metadata?: string | null }): Promise<{ success: boolean } | { error: string }> {
     return swarmHttp.post("EditWildcard", {
       card: params.card,

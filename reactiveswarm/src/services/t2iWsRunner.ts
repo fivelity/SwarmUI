@@ -34,7 +34,7 @@ export async function runText2ImageWS(flatPayload: FlatParamRecord, options?: T2
 
   const wsUrl = resolveWsUrl("GenerateText2ImageWS", backendUrl);
   const requestId = options?.requestId ?? createRequestId();
-  const openTimeoutMs = options?.openTimeoutMs ?? 800;
+  const openTimeoutMs = options?.openTimeoutMs ?? 4000;
 
   useJobStore.getState().ensureJob(requestId);
 

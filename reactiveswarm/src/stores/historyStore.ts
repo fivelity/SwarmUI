@@ -85,6 +85,17 @@ function parseFromMetadata(metadata: string | undefined): {
   return out;
 }
 
+function withQueryParam(url: string, key: string, value: string): string {
+  try {
+    const u = new URL(url, typeof window === "undefined" ? "http://localhost" : window.location.origin);
+    u.searchParams.set(key, value);
+    return u.toString();
+  } catch {
+    const joiner = url.includes("?") ? "&" : "?";
+    return `${url}${joiner}${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
+  }
+}
+
 export const useHistoryStore = create<HistoryState>()(
   devtools(
     (set) => ({
@@ -113,7 +124,7 @@ export const useHistoryStore = create<HistoryState>()(
             const meta = parseFromMetadata(typeof f.metadata === "string" ? f.metadata : undefined);
             const url = resolveOutputImageUrl(src);
             const isHtml = src.toLowerCase().endsWith(".html");
-            const thumb = isHtml ? undefined : `${url}?preview=true`;
+            const thumb = isHtml ? undefined : withQueryParam(url, "preview", "true");
             return {
               id: src,
               url,
