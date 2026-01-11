@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import { useParameterStore } from "@/stores/parameterStore";
-import { useModelStore } from "@/stores/modelStore";
+import { useParameterStore } from "@/stores/useParameterStore";
+import { useModelStore } from "@/stores/useModelStore";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import {

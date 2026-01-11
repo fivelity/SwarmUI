@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { usePresetStore } from "@/stores/presetStore";
-import { useParameterStore } from "@/stores/parameterStore";
+import { usePresetStore } from "@/stores/usePresetStore";
+import { useParameterStore } from "@/stores/useParameterStore";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {

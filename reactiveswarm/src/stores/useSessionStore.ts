@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
-import { useBackendStore } from "@/stores/backendStore";
+import { useBackendStore } from "@/stores/useBackendStore";
 import { resolveApiUrl } from "@/lib/config/swarmEndpoints";
 import type { GetNewSessionResponse } from "@/types/session";
 

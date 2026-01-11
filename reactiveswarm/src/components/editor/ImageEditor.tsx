@@ -19,7 +19,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
-import { useParameterStore } from "@/stores/parameterStore";
+import { useParameterStore } from "@/stores/useParameterStore";
 
 interface ImageEditorProps {
     imageUrl: string;

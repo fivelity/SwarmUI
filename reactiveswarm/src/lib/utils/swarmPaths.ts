@@ -1,5 +1,5 @@
-import { useBackendStore } from "@/stores/backendStore";
-import { useSessionStore } from "@/stores/sessionStore";
+import { useBackendStore } from "@/stores/useBackendStore";
+import { useSessionStore } from "@/stores/useSessionStore";
 import { resolveSwarmUiUrl } from "@/lib/config/swarmEndpoints";
 
 export function getImageOutPrefix(): string {

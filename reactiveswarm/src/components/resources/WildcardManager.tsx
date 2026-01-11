@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useResourceStore } from "@/stores/resourceStore";
+import { useResourceStore } from "@/stores/useResourceStore";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

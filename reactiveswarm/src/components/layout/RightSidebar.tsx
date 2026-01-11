@@ -1,6 +1,6 @@
 import { useEffect } from "react";
-import { useHistoryStore } from "@/stores/historyStore";
-import { useUIStore } from "@/stores/uiStore";
+import { useHistoryStore } from "@/stores/useHistoryStore";
+import { useUIStore } from "@/stores/useUIStore";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
@@ -49,7 +49,7 @@ export function RightSidebar() {
   };
 
   return (
-    <div className="h-full w-full bg-card border-s border-border flex flex-col">
+    <div className="h-full w-full bg-card flex flex-col">
        <Tabs defaultValue="gallery" className="flex-1 flex flex-col">
             <div className="p-2 border-b border-border flex flex-col gap-2">
                 <TabsList className="w-full grid grid-cols-3">

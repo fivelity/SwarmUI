@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useExtensionStore } from "@/stores/extensionStore";
+import { useExtensionStore } from "@/stores/useExtensionStore";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";

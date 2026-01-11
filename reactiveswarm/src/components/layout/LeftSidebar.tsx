@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { useLayoutStore } from "@/stores/layoutStore";
-import { useGenerationStore } from "@/stores/generationStore";
+import { useLayoutStore } from "@/stores/useLayoutStore";
+import { useGenerationStore } from "@/stores/useGenerationStore";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
@@ -123,7 +123,7 @@ export function LeftSidebar() {
   };
 
   return (
-    <div className="h-full w-full bg-card border-e border-border flex flex-col">
+    <div className="h-full w-full bg-card flex flex-col">
       <div className="p-4 border-b border-border flex items-center justify-between bg-card/50 backdrop-blur-sm z-10">
          <h2 className="font-semibold flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-primary" />

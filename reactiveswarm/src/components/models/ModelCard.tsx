@@ -1,4 +1,4 @@
-import type { Model } from "@/stores/modelStore";
+import type { Model } from "@/stores/useModelStore";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { Box, File } from "lucide-react";

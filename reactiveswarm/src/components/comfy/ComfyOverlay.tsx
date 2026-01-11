@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/select";
 import { Download, Upload, Cpu } from "lucide-react";
 import { useMemo } from "react";
-import { useServerStore } from "@/stores/serverStore";
+import { useServerStore } from "@/stores/useServerStore";
 
 export function ComfyOverlay() {
   const resources = useServerStore((s) => s.resources);

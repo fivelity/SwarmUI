@@ -1,13 +1,13 @@
 import { t2iService } from "@/api/T2IService";
 import { swarmHttp } from "@/api/SwarmHttpClient";
 import { ParamSerializer } from "@/lib/utils/ParamSerializer";
-import { useParameterStore } from "@/stores/parameterStore";
-import { useGenerationStore } from "@/stores/generationStore";
-import { useJobStore } from "@/stores/jobStore";
+import { useParameterStore } from "@/stores/useParameterStore";
+import { useGenerationStore } from "@/stores/useGenerationStore";
+import { useJobStore } from "@/stores/useJobStore";
 import { runText2ImageWS } from "@/services/t2iWsRunner";
 import { resolveSwarmPath } from "@/lib/utils/swarmPaths";
-import { useT2IParamValuesStore } from "@/stores/t2iParamValuesStore";
-import { useT2IParamsStore } from "@/stores/t2iParamsStore";
+import { useT2IParamValuesStore } from "@/stores/useT2IParamValuesStore";
+import { useT2IParamsStore } from "@/stores/useT2IParamsStore";
 import { modelsService } from "@/api/ModelsService";
 
 function resolveWsImage(img: string): string {

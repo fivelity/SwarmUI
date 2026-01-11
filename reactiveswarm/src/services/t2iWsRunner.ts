@@ -1,8 +1,8 @@
 import { WsDispatcher } from "@/lib/utils/WsDispatcher";
 import type { FlatParamRecord } from "@/lib/utils/ParamSerializer";
-import { useBackendStore } from "@/stores/backendStore";
-import { useJobStore } from "@/stores/jobStore";
-import { useSessionStore } from "@/stores/sessionStore";
+import { useBackendStore } from "@/stores/useBackendStore";
+import { useJobStore } from "@/stores/useJobStore";
+import { useSessionStore } from "@/stores/useSessionStore";
 import { resolveWsUrl } from "@/lib/config/swarmEndpoints";
 import type { SwarmWsEvent } from "@/types/t2i";
 

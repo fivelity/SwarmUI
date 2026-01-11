@@ -32,10 +32,10 @@ import {
   Box,
 } from 'lucide-react';
 
-import { useUIStore } from '@/stores/uiStore';
-import { useAuthStore } from '@/stores/authStore';
-import { useGenerationStore } from '@/stores/generationStore';
-import { useJobStore } from '@/stores/jobStore';
+import { useUIStore } from '@/stores/useUIStore';
+import { useAuthStore } from '@/stores/useAuthStore';
+import { useGenerationStore } from '@/stores/useGenerationStore';
+import { useJobStore } from '@/stores/useJobStore';
 
 type NavTab = ReturnType<typeof useUIStore.getState>["activeTab"]; // keeps in sync without any
 

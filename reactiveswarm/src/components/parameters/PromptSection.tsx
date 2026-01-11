@@ -1,4 +1,4 @@
-import { useParameterStore } from "@/stores/parameterStore";
+import { useParameterStore } from "@/stores/useParameterStore";
 import { Label } from "@/components/ui/label";
 import { PromptEditor } from "@/components/ui/prompt-editor";
 

@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Activity, Cpu, Database, HardDrive } from "lucide-react";
-import { useServerStore } from "@/stores/serverStore";
+import { useServerStore } from "@/stores/useServerStore";
 import type { ServerGpuInfo } from "@/types/server";
 
 type GpuInfo = ServerGpuInfo;

@@ -1,5 +1,5 @@
 import { ComfyOverlay } from "@/components/comfy/ComfyOverlay";
-import { useBackendStore } from "@/stores/backendStore";
+import { useBackendStore } from "@/stores/useBackendStore";
 import { resolveSwarmUiUrl } from "@/lib/config/swarmEndpoints";
 
 export function ComfyUIFrame() {

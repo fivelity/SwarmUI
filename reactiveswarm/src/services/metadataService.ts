@@ -1,4 +1,4 @@
-import { useParameterStore, type T2IParameters } from "@/stores/parameterStore";
+import { useParameterStore, type T2IParameters } from "@/stores/useParameterStore";
 
 /**
  * Service to handle reading metadata from SwarmUI generated images (PNG).

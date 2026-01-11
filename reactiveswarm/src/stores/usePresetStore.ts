@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
-import type { T2IParameters } from './parameterStore';
+import type { T2IParameters } from './useParameterStore';
 
 export interface Preset {
   id: string;

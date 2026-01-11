@@ -1,6 +1,6 @@
-import { useUIStore } from "@/stores/uiStore";
-import { useGenerationStore } from "@/stores/generationStore";
-import { useT2IParamsStore } from "@/stores/t2iParamsStore";
+import { useUIStore } from "@/stores/useUIStore";
+import { useGenerationStore } from "@/stores/useGenerationStore";
+import { useT2IParamsStore } from "@/stores/useT2IParamsStore";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { 

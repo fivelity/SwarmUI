@@ -1,6 +1,6 @@
 import { memo, useCallback, useEffect, useMemo, useState, useTransition } from "react";
-import { useT2IParamsStore } from "@/stores/t2iParamsStore";
-import { useT2IParamValuesStore } from "@/stores/t2iParamValuesStore";
+import { useT2IParamsStore } from "@/stores/useT2IParamsStore";
+import { useT2IParamValuesStore } from "@/stores/useT2IParamValuesStore";
 import type { T2IParamDataType, T2IParamGroupNet, T2IParamNet, T2IParamValue, T2IParamViewType } from "@/types/t2iParams";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

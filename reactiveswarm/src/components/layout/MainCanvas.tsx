@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
-import { useGenerationStore } from "@/stores/generationStore";
-import { useUIStore } from "@/stores/uiStore";
+import { useGenerationStore } from "@/stores/useGenerationStore";
+import { useUIStore } from "@/stores/useUIStore";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Loader2, Image as ImageIcon, Edit, UploadCloud } from "lucide-react";

@@ -1,6 +1,6 @@
 import { useEffect } from "react";
-import { useModelStore } from "@/stores/modelStore";
-import type { Model } from "@/stores/modelStore";
+import { useModelStore } from "@/stores/useModelStore";
+import type { Model } from "@/stores/useModelStore";
 import { ModelTree } from "./ModelTree";
 import { ModelCard } from "./ModelCard";
 import { ScrollArea } from "@/components/ui/scroll-area";

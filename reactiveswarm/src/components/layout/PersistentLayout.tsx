@@ -1,15 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import type { PanelImperativeHandle, PanelSize } from 'react-resizable-panels';
-import { ResizablePanelGroup, ResizablePanel } from '@/components/ui/resizable';
+import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
 import { PanelLeft, PanelRight } from 'lucide-react';
-import { DragHandle } from '@/components/layout/DragHandle';
-import { useLayoutStore } from '@/stores/layoutStore';
+import { useLayoutStore } from '@/stores/useLayoutStore';
 
 interface PersistentLayoutProps {
   children: ReactNode; // Main content for the center area
@@ -58,7 +57,7 @@ export function PersistentLayout({
     const currentSize = panel.getSize().asPercentage;
     if (Math.abs(currentSize - targetSize) > 0.1 || currentSize < 5) {
       panel.expand();
-      panel.resize(targetSize);
+      panel.resize(`${targetSize}%`);
     }
   }, [leftSidebar, leftSidebarCollapsed, leftSidebarSize]);
 
@@ -76,7 +75,7 @@ export function PersistentLayout({
     const currentSize = panel.getSize().asPercentage;
     if (Math.abs(currentSize - targetSize) > 0.1 || currentSize < 5) {
       panel.expand();
-      panel.resize(targetSize);
+      panel.resize(`${targetSize}%`);
     }
   }, [rightSidebar, rightSidebarCollapsed, rightSidebarSize]);
 
@@ -161,11 +160,11 @@ export function PersistentLayout({
         <ResizablePanel
           id="left-sidebar"
           panelRef={leftPanelRef}
-          defaultSize={leftSidebar ? (leftSidebarSize < 5 ? 20 : leftSidebarSize) : 0}
-          minSize={leftSidebar ? 1 : 0}
-          maxSize={leftSidebar ? 35 : 0}
+          defaultSize={leftSidebar ? `${leftSidebarSize < 5 ? 20 : leftSidebarSize}%` : '0%'}
+          minSize={leftSidebar ? '1%' : '0%'}
+          maxSize={leftSidebar ? '35%' : '0%'}
           collapsible={true}
-          collapsedSize={0}
+          collapsedSize="0%"
           className={cn("min-w-0", leftSidebarCollapsed && "border-none")}
           onResize={(size: PanelSize) => {
             if (!leftSidebar) return;
@@ -189,10 +188,13 @@ export function PersistentLayout({
         </ResizablePanel>
 
         {leftSidebar && (
-          <DragHandle
-            collapsed={leftSidebarCollapsed}
+          <ResizableHandle
+            withHandle
             onToggle={toggleLeftSidebar}
+            collapsed={leftSidebarCollapsed}
             direction="left"
+            onDoubleClick={toggleLeftSidebar}
+            title={leftSidebarCollapsed ? "Double-click to expand sidebar" : "Drag to resize. Double-click to collapse."}
             className="z-40"
           />
         )}
@@ -200,8 +202,8 @@ export function PersistentLayout({
         {/* Main Content Area */}
         <ResizablePanel
           id="main-content"
-          defaultSize={100 - (leftSidebar ? (leftSidebarSize < 5 ? 20 : leftSidebarSize) : 0) - (rightSidebar ? (rightSidebarSize < 5 ? 20 : rightSidebarSize) : 0)}
-          minSize={30}
+          defaultSize={`${100 - (leftSidebar ? (leftSidebarSize < 5 ? 20 : leftSidebarSize) : 0) - (rightSidebar ? (rightSidebarSize < 5 ? 20 : rightSidebarSize) : 0)}%`}
+          minSize="30%"
           className="min-w-0"
         >
           <div className="h-full flex flex-col overflow-hidden">
@@ -213,21 +215,24 @@ export function PersistentLayout({
 
         {/* Right Sidebar */}
         {rightSidebar && (
-          <DragHandle
-            collapsed={rightSidebarCollapsed}
+          <ResizableHandle
+            withHandle
             onToggle={toggleRightSidebar}
+            collapsed={rightSidebarCollapsed}
             direction="right"
+            onDoubleClick={toggleRightSidebar}
+            title={rightSidebarCollapsed ? "Double-click to expand" : "Drag to resize. Double-click to collapse."}
             className="z-40"
           />
         )}
         <ResizablePanel
           id="right-sidebar"
           panelRef={rightPanelRef}
-          defaultSize={rightSidebar ? (rightSidebarSize < 5 ? 20 : rightSidebarSize) : 0}
-          minSize={rightSidebar ? 1 : 0}
-          maxSize={rightSidebar ? 50 : 0}
+          defaultSize={rightSidebar ? `${rightSidebarSize < 5 ? 20 : rightSidebarSize}%` : '0%'}
+          minSize={rightSidebar ? '1%' : '0%'}
+          maxSize={rightSidebar ? '50%' : '0%'}
           collapsible={true}
-          collapsedSize={0}
+          collapsedSize="0%"
           className={cn("min-w-0", rightSidebarCollapsed && "border-none")}
           onResize={(size: PanelSize) => {
             if (!rightSidebar) return;

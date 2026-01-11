@@ -1,4 +1,4 @@
-import { useModelStore } from "@/stores/modelStore";
+import { useModelStore } from "@/stores/useModelStore";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";

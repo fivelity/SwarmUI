@@ -1,28 +1,41 @@
+import * as React from "react"
+import { GripVerticalIcon, ChevronLeft, ChevronRight } from "lucide-react"
 import {
   Group,
   Panel,
   Separator,
   type GroupProps,
-  type SeparatorProps,
+  type PanelProps,
+  type PanelImperativeHandle,
 } from "react-resizable-panels"
 import { cn } from "@/lib/utils"
 
-//
-// PANEL GROUP
-//
+type Orientation = "horizontal" | "vertical"
 
-export interface ResizablePanelGroupProps extends GroupProps {
-  className?: string
+interface ResizablePanelGroupProps
+  extends GroupProps {
+  /** Preferred v4 prop */
+  orientation?: Orientation
+  /** Back-compat alias */
+  direction?: Orientation
 }
 
-export function ResizablePanelGroup({
+function ResizablePanelGroup({
   className,
+  orientation,
+  direction,
   ...props
 }: ResizablePanelGroupProps) {
+  const effectiveOrientation = orientation ?? direction ?? "horizontal"
+  const isVertical = effectiveOrientation === "vertical"
+
   return (
     <Group
+      data-slot="resizable-panel-group"
+      orientation={effectiveOrientation}
       className={cn(
-        "flex h-full w-full data-[orientation=vertical]:flex-col",
+        "flex h-full w-full min-h-0 min-w-0",
+        isVertical ? "flex-col" : "flex-row",
         className
       )}
       {...props}
@@ -30,55 +43,178 @@ export function ResizablePanelGroup({
   )
 }
 
-//
-// PANEL
-//
+type ResizablePanelProps = PanelProps
 
-export const ResizablePanel = Panel
+const ResizablePanel = React.forwardRef<
+  PanelImperativeHandle,
+  ResizablePanelProps
+>(function ResizablePanelInner({ className, panelRef, ...props }, forwardedRef) {
+    return (
+      <Panel
+        data-slot="resizable-panel"
+        className={cn("min-w-0 min-h-0", className)}
+        panelRef={
+          panelRef ??
+          (forwardedRef as React.Ref<PanelImperativeHandle | null> | undefined)
+        }
+        {...props}
+      />
+    )
+  })
 
-//
-// HANDLE
-//
-
-export interface ResizableHandleProps extends SeparatorProps {
+interface ResizableHandleProps
+  extends Omit<React.ComponentProps<typeof Separator>, "children"> {
   withHandle?: boolean
-  className?: string
+  onToggle?: () => void
+  collapsed?: boolean
+  direction?: "left" | "right"
+  orientation?: Orientation
 }
 
-export function ResizableHandle({
+function ResizableHandle({
   withHandle,
   className,
+  onToggle,
+  collapsed,
+  direction = "left",
+  orientation = "horizontal",
+  onDoubleClick,
   ...props
 }: ResizableHandleProps) {
+  const expandRequestedRef = React.useRef(false)
+  const dragStartRef = React.useRef<{ x: number; y: number } | null>(null)
+
+  React.useEffect(() => {
+    if (collapsed) {
+      expandRequestedRef.current = false
+    }
+  }, [collapsed])
+
+  const CollapseChevron = direction === "left" ? ChevronLeft : ChevronRight
+  const ExpandChevron = direction === "left" ? ChevronRight : ChevronLeft
+  const Chevron = collapsed ? ExpandChevron : CollapseChevron
+
+  const requestExpand = React.useCallback(() => {
+    if (!collapsed) return
+    if (expandRequestedRef.current) return
+    expandRequestedRef.current = true
+    onToggle?.()
+  }, [collapsed, onToggle])
+
+  const handleDoubleClick: React.MouseEventHandler<HTMLDivElement> = (e) => {
+    e.stopPropagation()
+    onDoubleClick?.(e)
+    if (collapsed) {
+      requestExpand()
+    } else {
+      onToggle?.()
+    }
+  }
+
+  const isHorizontal = orientation === "horizontal"
+
+  if (collapsed) {
+    return (
+      <Separator
+        data-slot="resizable-handle"
+        className={cn(
+          "relative z-20 flex select-none items-center justify-center bg-transparent",
+          isHorizontal ? "h-full w-[6px]" : "h-[6px] w-full",
+          "group/expander",
+          isHorizontal ? "cursor-col-resize" : "cursor-row-resize",
+          className
+        )}
+        onClick={(e) => {
+          const target = e.target as HTMLElement | null
+          if (target?.closest("button")) return
+          requestExpand()
+        }}
+        onPointerDownCapture={(e) => {
+          if (e.button !== 0) return
+          const target = e.target as HTMLElement | null
+          if (target?.closest("button")) return
+          dragStartRef.current = { x: e.clientX, y: e.clientY }
+        }}
+        onPointerMoveCapture={(e) => {
+          const start = dragStartRef.current
+          if (!start) return
+          const dx = Math.abs(e.clientX - start.x)
+          const dy = Math.abs(e.clientY - start.y)
+          if (dx > 2 || dy > 2) {
+            dragStartRef.current = null
+            requestExpand()
+          }
+        }}
+        onPointerUpCapture={() => {
+          dragStartRef.current = null
+        }}
+        onDoubleClick={handleDoubleClick}
+        {...props}
+      >
+        <button
+          type="button"
+          aria-label={direction === "left" ? "Expand left sidebar" : "Expand right sidebar"}
+          onClick={(e) => {
+            e.stopPropagation()
+            requestExpand()
+          }}
+          className={cn(
+            "pointer-events-auto flex items-center justify-center rounded-full border border-border/40 bg-background/80 p-1 text-muted-foreground shadow-sm backdrop-blur-sm",
+            "opacity-0",
+            direction === "left" ? "-translate-x-1" : "translate-x-1",
+            "transition-[opacity,transform] duration-0 ease-[cubic-bezier(0.2,0.8,0.2,1)]",
+            "group-hover/expander:opacity-100 group-hover/expander:translate-x-0 group-hover/expander:duration-200"
+          )}
+        >
+          <Chevron className="h-3 w-3" />
+        </button>
+      </Separator>
+    )
+  }
+
   return (
     <Separator
+      data-slot="resizable-handle"
       className={cn(
-        "relative flex w-px items-center justify-center bg-border " +
-          "data-[orientation=vertical]:h-px data-[orientation=vertical]:w-full " +
-          "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1",
+        "relative z-20 flex select-none items-center justify-center bg-border/60",
+        isHorizontal ? "h-full w-px" : "h-px w-full",
+        "focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1",
+        isHorizontal
+          ? "after:absolute after:inset-y-0 after:left-1/2 after:w-[6px] after:-translate-x-1/2"
+          : "after:absolute after:inset-x-0 after:top-1/2 after:h-[6px] after:-translate-y-1/2",
+        "after:content-[''] after:bg-transparent",
+        "group/handle",
         className
       )}
+      onDoubleClick={handleDoubleClick}
       {...props}
     >
       {withHandle && (
-        <div className="z-10 flex h-4 w-3 items-center justify-center rounded-sm border bg-border">
-          <svg
-            width="15"
-            height="15"
-            viewBox="0 0 15 15"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-2.5 w-2.5"
-          >
-            <path
-              d="M5.5 4.625C6.12132 4.625 6.625 4.12132 6.625 3.5C6.625 2.87868 6.12132 2.375 5.5 2.375C4.87868 2.375 4.375 2.87868 4.375 3.5C4.375 4.12132 4.87868 4.625 5.5 4.625ZM9.5 4.625C10.1213 4.625 10.625 4.12132 10.625 3.5C10.625 2.87868 10.1213 2.375 9.5 2.375C8.87868 2.375 8.375 2.87868 8.375 3.5C8.375 4.12132 8.87868 4.625 9.5 4.625ZM10.625 7.5C10.625 8.12132 10.1213 8.625 9.5 8.625C8.87868 8.625 8.375 8.12132 8.375 7.5C8.375 6.87868 8.87868 6.375 9.5 6.375C10.1213 6.375 10.625 6.87868 10.625 7.5ZM5.5 8.625C6.12132 8.625 6.625 8.12132 6.625 7.5C6.625 6.87868 6.12132 6.375 5.5 6.375C4.87868 6.375 4.375 6.87868 4.375 7.5C4.375 8.12132 4.87868 8.625 5.5 8.625ZM10.625 11.5C10.625 12.1213 10.1213 12.625 9.5 12.625C8.87868 12.625 8.375 12.1213 8.375 11.5C8.375 10.8787 8.87868 10.375 9.5 10.375C10.1213 10.375 10.625 10.8787 10.625 11.5ZM5.5 12.625C6.12132 12.625 6.625 12.1213 6.625 11.5C6.625 10.8787 6.12132 10.375 5.5 10.375C4.87868 10.375 4.375 10.8787 4.375 11.5C4.375 12.1213 4.87868 12.625 5.5 12.625Z"
-              fill="currentColor"
-              fillRule="evenodd"
-              clipRule="evenodd"
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+          <div className="pointer-events-auto flex items-center gap-1 rounded-full border border-border/70 bg-background/90 px-1.5 py-0.5 text-muted-foreground shadow-sm backdrop-blur-sm opacity-0 group-hover/handle:opacity-100 transition-opacity duration-150">
+            <GripVerticalIcon
+              className={cn(
+                "h-3 w-3",
+                !isHorizontal && "rotate-90"
+              )}
             />
-          </svg>
+            <button
+              type="button"
+              aria-label={direction === "left" ? "Collapse left sidebar" : "Collapse right sidebar"}
+              onClick={(e) => {
+                e.stopPropagation()
+                onToggle?.()
+              }}
+              className="flex h-4 w-4 items-center justify-center rounded-full hover:bg-muted"
+            >
+              <Chevron className="h-3 w-3" />
+            </button>
+          </div>
         </div>
       )}
     </Separator>
   )
 }
+
+export { ResizablePanelGroup, ResizablePanel, ResizableHandle }
+export type { PanelImperativeHandle as PanelHandle }
