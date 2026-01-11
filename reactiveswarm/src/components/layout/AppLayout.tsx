@@ -53,7 +53,13 @@ export function AppLayout() {
   const leftPanelRef = useRef<PanelImperativeHandle>(null);
   const rightPanelRef = useRef<PanelImperativeHandle>(null);
 
-  // SwarmUI generation sockets are per-request (active WS pattern). No global socket.
+  const wasMobileRef = useRef<boolean>(false);
+  const preMobileLayoutRef = useRef<{
+    leftSidebarCollapsed: boolean;
+    rightSidebarCollapsed: boolean;
+    leftSidebarSize: number;
+    rightSidebarSize: number;
+  } | null>(null);
 
   useEffect(() => {
     useServerStore.getState().start();
@@ -70,32 +76,51 @@ export function AppLayout() {
     setSelectedModel(first.trim());
   }, [modelsBySubtype, modelsLoadedAt, selectedModel, setSelectedModel]);
 
-  // Handle Window Resize (Mobile Detection)
   useEffect(() => {
     const checkMobile = () => {
       const mobile = window.innerWidth < 768; // md breakpoint
       setIsMobile(mobile);
-      if (mobile) {
-        if (!useLayoutStore.getState().leftSidebarCollapsed) toggleLeftSidebar();
-        if (!useLayoutStore.getState().rightSidebarCollapsed) toggleRightSidebar();
+
+      const wasMobile = wasMobileRef.current;
+      const store = useLayoutStore.getState();
+
+      if (mobile && !wasMobile) {
+        preMobileLayoutRef.current = {
+          leftSidebarCollapsed: store.leftSidebarCollapsed,
+          rightSidebarCollapsed: store.rightSidebarCollapsed,
+          leftSidebarSize: store.leftSidebarSize,
+          rightSidebarSize: store.rightSidebarSize,
+        };
+
+        if (!store.leftSidebarCollapsed) setLeftSidebarCollapsed(true);
+        if (!store.rightSidebarCollapsed) setRightSidebarCollapsed(true);
       }
+
+      if (!mobile && wasMobile) {
+        const snapshot = preMobileLayoutRef.current;
+        if (snapshot) {
+          setLeftSidebarSize(snapshot.leftSidebarSize);
+          setRightSidebarSize(snapshot.rightSidebarSize);
+          setLeftSidebarCollapsed(snapshot.leftSidebarCollapsed);
+          setRightSidebarCollapsed(snapshot.rightSidebarCollapsed);
+        } else {
+          if (store.leftSidebarCollapsed) setLeftSidebarCollapsed(false);
+          if (store.rightSidebarCollapsed) setRightSidebarCollapsed(false);
+        }
+        preMobileLayoutRef.current = null;
+      }
+
+      wasMobileRef.current = mobile;
     };
 
-    // Check on mount
     checkMobile();
 
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, [setIsMobile, toggleLeftSidebar, toggleRightSidebar]);
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, [setIsMobile, setLeftSidebarCollapsed, setRightSidebarCollapsed, setLeftSidebarSize, setRightSidebarSize]);
 
-  // Handle Keyboard Shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Ignore if typing in an input
-      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
-        return;
-      }
-
       if ((e.metaKey || e.ctrlKey) && e.key === '[') {
         e.preventDefault();
         toggleLeftSidebar();
@@ -120,8 +145,8 @@ export function AppLayout() {
         const targetSize = leftSidebarSize < 5 ? 20 : leftSidebarSize;
         
         if (Math.abs(currentSize - targetSize) > 0.1 || currentSize < 5) {
-             panel.expand(); 
-             panel.resize(targetSize);
+          panel.expand(); 
+          panel.resize(targetSize);
         }
       }
     }
@@ -137,16 +162,15 @@ export function AppLayout() {
         const targetSize = rightSidebarSize < 5 ? 20 : rightSidebarSize;
         
         if (Math.abs(currentSize - targetSize) > 0.1 || currentSize < 5) {
-            panel.expand();
-            panel.resize(targetSize);
+          panel.expand();
+          panel.resize(targetSize);
         }
       }
     }
   }, [rightSidebarCollapsed, rightSidebarSize]);
 
   const handleSaveMask = (maskData: string) => {
-      console.log("Saved mask:", maskData);
-      // TODO: Handle mask save (e.g. send to API or store in state)
+    void maskData;
   };
 
   return (
@@ -165,7 +189,7 @@ export function AppLayout() {
                   maxSize={30}
                   collapsible={true}
                   collapsedSize={0}
-                  className={cn("min-w-0 overflow-hidden transition-all duration-300 ease-in-out", leftSidebarCollapsed && "w-0 border-none")}
+                  className={cn("min-w-0 overflow-hidden transition-all duration-300 ease-in-out", leftSidebarCollapsed && "border-none")}
                   onResize={(size: PanelSize) => {
                     const pct = size.asPercentage;
                     if (pct <= COLLAPSE_SNAP_PCT) {
@@ -209,7 +233,7 @@ export function AppLayout() {
                   maxSize={30}
                   collapsible={true}
                   collapsedSize={0}
-                  className={cn("min-w-0 overflow-hidden transition-all duration-300 ease-in-out", rightSidebarCollapsed && "w-0 border-none")}
+                  className={cn("min-w-0 overflow-hidden transition-all duration-300 ease-in-out", rightSidebarCollapsed && "border-none")}
                   onResize={(size: PanelSize) => {
                     const pct = size.asPercentage;
                     if (pct <= COLLAPSE_SNAP_PCT) {

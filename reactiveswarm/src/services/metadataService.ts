@@ -104,7 +104,6 @@ export const metadataService = {
         
         if (Object.keys(updates).length > 0) {
             store.setAllParameters(updates);
-            console.log("Applied metadata:", updates);
             return true;
         }
         return false;

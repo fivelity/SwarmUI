@@ -1,46 +1,64 @@
-import { 
+import {
   Group,
-  Panel, 
+  Panel,
   Separator,
   type GroupProps,
-  type SeparatorProps
+  type SeparatorProps,
 } from "react-resizable-panels"
-import type { PropsWithChildren } from "react"
 import { cn } from "@/lib/utils"
 
-type ResizablePanelGroupProps = PropsWithChildren<GroupProps> & {
-  className?: string;
+//
+// PANEL GROUP
+//
+
+export interface ResizablePanelGroupProps extends GroupProps {
+  className?: string
 }
 
-const ResizablePanelGroup = (props: ResizablePanelGroupProps) => {
-  const { className, ...rest } = props;
+export function ResizablePanelGroup({
+  className,
+  ...props
+}: ResizablePanelGroupProps) {
   return (
     <Group
       className={cn(
-        "flex h-full w-full",
+        "flex h-full w-full data-[orientation=vertical]:flex-col",
         className
       )}
-      {...rest}
+      {...props}
     />
-  );
+  )
 }
 
-const ResizablePanel = Panel
+//
+// PANEL
+//
 
-interface ResizableHandleProps extends SeparatorProps {
-  withHandle?: boolean;
-  className?: string;
+export const ResizablePanel = Panel
+
+//
+// HANDLE
+//
+
+export interface ResizableHandleProps extends SeparatorProps {
+  withHandle?: boolean
+  className?: string
 }
 
-const ResizableHandle = (props: ResizableHandleProps) => {
-  const { withHandle, className, ...rest } = props;
+export function ResizableHandle({
+  withHandle,
+  className,
+  ...props
+}: ResizableHandleProps) {
   return (
     <Separator
       className={cn(
-        "relative flex w-px items-center justify-center bg-border after:absolute after:inset-y-0 after:left-1/2 after:w-1 after:-translate-x-1/2 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1",
+        "relative flex w-px items-center justify-center bg-border " +
+          "data-[orientation=vertical]:h-px data-[orientation=vertical]:w-full " +
+          "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1",
         className
       )}
-      {...rest}
+      {...props}
     >
       {withHandle && (
         <div className="z-10 flex h-4 w-3 items-center justify-center rounded-sm border bg-border">
@@ -57,12 +75,10 @@ const ResizableHandle = (props: ResizableHandleProps) => {
               fill="currentColor"
               fillRule="evenodd"
               clipRule="evenodd"
-            ></path>
+            />
           </svg>
         </div>
       )}
     </Separator>
-  );
+  )
 }
-
-export { ResizablePanelGroup, ResizablePanel, ResizableHandle }
