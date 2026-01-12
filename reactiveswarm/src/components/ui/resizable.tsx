@@ -52,7 +52,7 @@ const ResizablePanel = React.forwardRef<
     return (
       <Panel
         data-slot="resizable-panel"
-        className={cn("min-w-0 min-h-0", className)}
+        className={cn("h-full w-full min-w-0 min-h-0", className)}
         panelRef={
           panelRef ??
           (forwardedRef as React.Ref<PanelImperativeHandle | null> | undefined)
@@ -176,41 +176,57 @@ function ResizableHandle({
     <Separator
       data-slot="resizable-handle"
       className={cn(
-        "relative z-20 flex select-none items-center justify-center bg-border/60",
-        isHorizontal ? "h-full w-px" : "h-px w-full",
+        "relative z-20 flex select-none items-center justify-center bg-transparent",
+        // Make the actual draggable hit area wider than 1px
+        isHorizontal ? "h-full w-[6px]" : "h-[6px] w-full",
         "focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1",
+        // 1px visual separator line centered in the hit area
         isHorizontal
-          ? "after:absolute after:inset-y-0 after:left-1/2 after:w-[6px] after:-translate-x-1/2"
-          : "after:absolute after:inset-x-0 after:top-1/2 after:h-[6px] after:-translate-y-1/2",
-        "after:content-[''] after:bg-transparent",
+          ? "before:absolute before:inset-y-0 before:left-1/2 before:w-px before:-translate-x-1/2 before:bg-border/60"
+          : "before:absolute before:inset-x-0 before:top-1/2 before:h-px before:-translate-y-1/2 before:bg-border/60",
+        "before:content-['']",
         "group/handle",
+        isHorizontal ? "cursor-col-resize" : "cursor-row-resize",
         className
       )}
       onDoubleClick={handleDoubleClick}
       {...props}
     >
       {withHandle && (
-        <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-          <div className="pointer-events-auto flex items-center gap-1 rounded-full border border-border/70 bg-background/90 px-1.5 py-0.5 text-muted-foreground shadow-sm backdrop-blur-sm opacity-0 group-hover/handle:opacity-100 transition-opacity duration-150">
-            <GripVerticalIcon
-              className={cn(
-                "h-3 w-3",
-                !isHorizontal && "rotate-90"
-              )}
-            />
-            <button
-              type="button"
-              aria-label={direction === "left" ? "Collapse left sidebar" : "Collapse right sidebar"}
-              onClick={(e) => {
-                e.stopPropagation()
-                onToggle?.()
-              }}
-              className="flex h-4 w-4 items-center justify-center rounded-full hover:bg-muted"
-            >
-              <Chevron className="h-3 w-3" />
-            </button>
+        <>
+          <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+            <div className="pointer-events-none flex items-center gap-1 rounded-full border border-border/70 bg-background/90 px-1.5 py-0.5 text-muted-foreground shadow-sm backdrop-blur-sm opacity-0 group-hover/handle:opacity-100 transition-opacity duration-150">
+              <GripVerticalIcon
+                className={cn(
+                  "h-3 w-3",
+                  !isHorizontal && "rotate-90"
+                )}
+              />
+            </div>
           </div>
-        </div>
+
+          <button
+            type="button"
+            aria-label={
+              direction === "left"
+                ? "Collapse left sidebar"
+                : "Collapse right sidebar"
+            }
+            onClick={(e) => {
+              e.stopPropagation()
+              onToggle?.()
+            }}
+            className={cn(
+              "pointer-events-auto absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2",
+              "flex h-5 w-5 items-center justify-center rounded-full",
+              "bg-background/90 text-muted-foreground shadow-sm backdrop-blur-sm",
+              "opacity-0 group-hover/handle:opacity-100 transition-opacity duration-150",
+              "hover:bg-muted"
+            )}
+          >
+            <Chevron className="h-3 w-3" />
+          </button>
+        </>
       )}
     </Separator>
   )

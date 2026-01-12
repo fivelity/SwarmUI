@@ -123,7 +123,7 @@ export function LeftSidebar() {
   };
 
   return (
-    <div className="h-full w-full bg-card flex flex-col">
+    <div className="h-full w-full min-h-0 bg-card flex flex-col">
       <div className="p-4 border-b border-border flex items-center justify-between bg-card/50 backdrop-blur-sm z-10">
          <h2 className="font-semibold flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-primary" />
@@ -131,7 +131,7 @@ export function LeftSidebar() {
          </h2>
       </div>
 
-      <ScrollArea className="flex-1">
+      <ScrollArea className="min-h-0 flex-1">
         <div className="p-4 space-y-4">
           {/* Fixed Preset Manager */}
           <div className="mb-4">
@@ -158,7 +158,7 @@ export function LeftSidebar() {
         </div>
       </ScrollArea>
 
-      <div className="p-4 border-t border-border bg-card">
+      <div className="shrink-0 p-4 border-t border-border bg-card">
         <div className="flex w-full shadow-lg shadow-primary/20 rounded-md">
             <Button 
                 size="lg" 

@@ -1,4 +1,5 @@
-import { useEffect, useRef } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
+
 import {
   ResizablePanelGroup,
   ResizablePanel,
@@ -23,7 +24,7 @@ import { cn } from "@/lib/utils"
 import { Toaster } from "@/components/ui/sonner"
 import { ImageEditor } from "@/components/editor/ImageEditor"
 import { ExtensionAssetLoader } from "@/components/extensions/ExtensionAssetLoader"
-import type { PanelSize } from "react-resizable-panels"
+import type { Layout } from "react-resizable-panels"
 
 const COLLAPSE_SNAP_PCT = 4
 
@@ -35,13 +36,16 @@ export function AppLayout() {
     setRightSidebarSize,
     leftSidebarCollapsed,
     rightSidebarCollapsed,
-    toggleLeftSidebar,
-    toggleRightSidebar,
     setLeftSidebarCollapsed,
     setRightSidebarCollapsed,
   } = useLayoutStore()
 
-  const { activeTab, setIsMobile, editingImage, setEditingImage } = useUIStore()
+  const {
+    activeTab,
+    setIsMobile,
+    editingImage,
+    setEditingImage,
+  } = useUIStore()
 
   const selectedModel = useParameterStore((s) => s.model)
   const setSelectedModel = useParameterStore((s) => s.setModel)
@@ -58,6 +62,50 @@ export function AppLayout() {
     leftSidebarSize: number
     rightSidebarSize: number
   } | null>(null)
+
+  const toggleLeft = useCallback(() => {
+    const store = useLayoutStore.getState()
+    const collapsed = store.leftSidebarCollapsed
+    const panel = leftPanelRef.current
+
+    if (collapsed) {
+      setLeftSidebarCollapsed(false)
+      if (panel) {
+        panel.expand()
+      }
+      return
+    }
+
+    if (panel) {
+      const current = panel.getSize().asPercentage
+      if (current > COLLAPSE_SNAP_PCT) setLeftSidebarSize(current)
+      panel.collapse()
+    }
+
+    setLeftSidebarCollapsed(true)
+  }, [setLeftSidebarCollapsed, setLeftSidebarSize])
+
+  const toggleRight = useCallback(() => {
+    const store = useLayoutStore.getState()
+    const collapsed = store.rightSidebarCollapsed
+    const panel = rightPanelRef.current
+
+    if (collapsed) {
+      setRightSidebarCollapsed(false)
+      if (panel) {
+        panel.expand()
+      }
+      return
+    }
+
+    if (panel) {
+      const current = panel.getSize().asPercentage
+      if (current > COLLAPSE_SNAP_PCT) setRightSidebarSize(current)
+      panel.collapse()
+    }
+
+    setRightSidebarCollapsed(true)
+  }, [setRightSidebarCollapsed, setRightSidebarSize])
 
   // Server + model bootstrap
   useEffect(() => {
@@ -132,59 +180,17 @@ export function AppLayout() {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === "[") {
         e.preventDefault()
-        toggleLeftSidebar()
+        toggleLeft()
       }
       if ((e.metaKey || e.ctrlKey) && e.key === "]") {
         e.preventDefault()
-        toggleRightSidebar()
+        toggleRight()
       }
     }
 
     window.addEventListener("keydown", handleKeyDown)
     return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [toggleLeftSidebar, toggleRightSidebar])
-
-  // Sync left panel with store (collapse / expand / resize)
-  useEffect(() => {
-    const panel = leftPanelRef.current
-    if (!panel) return
-
-    if (leftSidebarCollapsed) {
-      panel.collapse()
-      return
-    }
-
-    const currentSize = panel.getSize().asPercentage
-    const targetSize = leftSidebarSize < 5 ? 20 : leftSidebarSize
-
-    if (Math.abs(currentSize - targetSize) > 0.1 || currentSize < 5) {
-      panel.expand()
-      panel.resize(targetSize)
-    }
-  }, [leftSidebarCollapsed, leftSidebarSize])
-
-  // Sync right panel with store (collapse / expand / resize)
-  useEffect(() => {
-    const panel = rightPanelRef.current
-    if (!panel) return
-
-    if (rightSidebarCollapsed) {
-      panel.collapse()
-      return
-    }
-
-    const currentSize = panel.getSize().asPercentage
-    const targetSize = rightSidebarSize < 5 ? 20 : rightSidebarSize
-
-    if (Math.abs(currentSize - targetSize) > 0.1 || currentSize < 5) {
-      panel.expand()
-      panel.resize(targetSize)
-    }
-  }, [rightSidebarCollapsed, rightSidebarSize])
-
-  const handleSaveMask = (maskData: string) => {
-    void maskData
-  }
+  }, [toggleLeft, toggleRight])
 
   const effectiveLeftSize = leftSidebarCollapsed
     ? 0
@@ -203,59 +209,91 @@ export function AppLayout() {
     100 - effectiveLeftSize - effectiveRightSize
   )
 
+  // IMPORTANT: defaultLayout must be stable. If it changes across renders,
+  // react-resizable-panels may re-apply it and fight the user's drag.
+  const [defaultLayout] = useState<Layout>(() => {
+    return {
+      "left-sidebar": effectiveLeftSize,
+      "main-content": mainDefaultSize,
+      "right-sidebar": effectiveRightSize,
+    }
+  })
+
+  const handleLayoutChange = useCallback(
+    (layout: Layout) => {
+      const left = layout["left-sidebar"]
+      const right = layout["right-sidebar"]
+
+      if (typeof left === "number") {
+        if (left <= COLLAPSE_SNAP_PCT) {
+          if (!useLayoutStore.getState().leftSidebarCollapsed) {
+            setLeftSidebarCollapsed(true)
+          }
+        } else {
+          setLeftSidebarSize(left)
+          if (useLayoutStore.getState().leftSidebarCollapsed) {
+            setLeftSidebarCollapsed(false)
+          }
+        }
+      }
+
+      if (typeof right === "number") {
+        if (right <= COLLAPSE_SNAP_PCT) {
+          if (!useLayoutStore.getState().rightSidebarCollapsed) {
+            setRightSidebarCollapsed(true)
+          }
+        } else {
+          setRightSidebarSize(right)
+          if (useLayoutStore.getState().rightSidebarCollapsed) {
+            setRightSidebarCollapsed(false)
+          }
+        }
+      }
+    },
+    [
+      setLeftSidebarCollapsed,
+      setLeftSidebarSize,
+      setRightSidebarCollapsed,
+      setRightSidebarSize,
+    ]
+  )
+
+  const handleSaveMask = (maskData: string) => {
+    void maskData
+  }
+
   return (
     <div className="flex h-screen w-screen flex-col overflow-hidden bg-background text-foreground">
       <TopNavigation />
 
-      <div className="relative flex-1 overflow-hidden">
+      <div className="relative flex-1 min-h-0 overflow-hidden">
         {activeTab === "generate" && (
           <ResizablePanelGroup
             orientation="horizontal"
             className="h-full w-full"
+            defaultLayout={defaultLayout}
+            onLayoutChange={handleLayoutChange}
           >
             {/* Left Sidebar Panel */}
             <ResizablePanel
-              ref={leftPanelRef}
-              defaultSize={effectiveLeftSize}
-              minSize={1}
-              maxSize={30}
+              id="left-sidebar"
+              panelRef={leftPanelRef}
+              minSize="1%"
+              maxSize="30%"
               collapsible
-              collapsedSize={0}
+              collapsedSize="0%"
               className={cn(
-                "min-w-0 overflow-hidden transition-[background,border-color] duration-200 ease-in-out",
+                "h-full min-w-0 min-h-0 overflow-hidden transition-[background,border-color] duration-200 ease-in-out",
                 leftSidebarCollapsed && "border-none"
               )}
-              onResize={(size: PanelSize) => {
-                const pct = size.asPercentage
-                if (pct <= COLLAPSE_SNAP_PCT) {
-                  if (!leftSidebarCollapsed) setLeftSidebarCollapsed(true)
-                  return
-                }
-
-                setLeftSidebarSize(pct)
-                if (leftSidebarCollapsed) setLeftSidebarCollapsed(false)
-              }}
             >
               <LeftSidebar />
             </ResizablePanel>
 
             <ResizableHandle
               withHandle
-              onToggle={() => {
-                const collapsed = useLayoutStore.getState().leftSidebarCollapsed
-                if (collapsed) {
-                  setLeftSidebarCollapsed(false)
-                  const panel = leftPanelRef.current
-                  if (panel) {
-                    const target = leftSidebarSize < 5 ? 20 : leftSidebarSize
-                    panel.expand()
-                    panel.resize(target)
-                  }
-                } else {
-                  setLeftSidebarCollapsed(true)
-                  leftPanelRef.current?.collapse()
-                }
-              }}
+              orientation="horizontal"
+              onToggle={toggleLeft}
               collapsed={leftSidebarCollapsed}
               direction="left"
               title={
@@ -267,30 +305,17 @@ export function AppLayout() {
 
             {/* Main Content */}
             <ResizablePanel
-              defaultSize={mainDefaultSize}
-              minSize={30}
-              className="min-w-0 overflow-hidden"
+              id="main-content"
+              minSize="30%"
+              className="h-full min-w-0 min-h-0 overflow-hidden"
             >
               <MainCanvas />
             </ResizablePanel>
 
             <ResizableHandle
               withHandle
-              onToggle={() => {
-                const collapsed = useLayoutStore.getState().rightSidebarCollapsed
-                if (collapsed) {
-                  setRightSidebarCollapsed(false)
-                  const panel = rightPanelRef.current
-                  if (panel) {
-                    const target = rightSidebarSize < 5 ? 20 : rightSidebarSize
-                    panel.expand()
-                    panel.resize(target)
-                  }
-                } else {
-                  setRightSidebarCollapsed(true)
-                  rightPanelRef.current?.collapse()
-                }
-              }}
+              orientation="horizontal"
+              onToggle={toggleRight}
               collapsed={rightSidebarCollapsed}
               direction="right"
               title={
@@ -302,26 +327,16 @@ export function AppLayout() {
 
             {/* Right Sidebar Panel */}
             <ResizablePanel
-              ref={rightPanelRef}
-              defaultSize={effectiveRightSize}
-              minSize={1}
-              maxSize={30}
+              id="right-sidebar"
+              panelRef={rightPanelRef}
+              minSize="1%"
+              maxSize="30%"
               collapsible
-              collapsedSize={0}
+              collapsedSize="0%"
               className={cn(
-                "min-w-0 overflow-hidden transition-[background,border-color] duration-200 ease-in-out",
+                "h-full min-w-0 min-h-0 overflow-hidden transition-[background,border-color] duration-200 ease-in-out",
                 rightSidebarCollapsed && "border-none"
               )}
-              onResize={(size: PanelSize) => {
-                const pct = size.asPercentage
-                if (pct <= COLLAPSE_SNAP_PCT) {
-                  if (!rightSidebarCollapsed) setRightSidebarCollapsed(true)
-                  return
-                }
-
-                setRightSidebarSize(pct)
-                if (rightSidebarCollapsed) setRightSidebarCollapsed(false)
-              }}
             >
               <RightSidebar />
             </ResizablePanel>

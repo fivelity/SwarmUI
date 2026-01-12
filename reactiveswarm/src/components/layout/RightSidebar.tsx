@@ -49,8 +49,8 @@ export function RightSidebar() {
   };
 
   return (
-    <div className="h-full w-full bg-card flex flex-col">
-       <Tabs defaultValue="gallery" className="flex-1 flex flex-col">
+    <div className="h-full w-full min-h-0 bg-card flex flex-col">
+       <Tabs defaultValue="gallery" className="min-h-0 flex-1 flex flex-col">
             <div className="p-2 border-b border-border flex flex-col gap-2">
                 <TabsList className="w-full grid grid-cols-3">
                     <TabsTrigger value="gallery" className="flex gap-2">
@@ -110,7 +110,7 @@ export function RightSidebar() {
                 </div>
             </div>
 
-            <TabsContent value="gallery" className="flex-1 m-0 overflow-hidden">
+            <TabsContent value="gallery" className="min-h-0 flex-1 m-0 overflow-hidden">
                 <ScrollArea className="h-full">
                     <div className="p-2 grid grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-2">
                         {isLoading ? (
