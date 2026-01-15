@@ -23,9 +23,9 @@
 - This is only for experienced sys-admins, not for normal people.
 - You should not host publicly without an authentication layer in front.
     - Some Swarm API routes can be used maliciously, such as the routes that forward raw ComfyUI access.
+    - Multi-user-support with Swarm-provided authentication handling is available in an initial experimental form, but you should still have a barrier in front until it is validated. See [Sharing Your Swarm](/docs/Sharing%20Your%20Swarm.md) for more info on user accounts.
 - Apache2/Nginx reverse-proxy setups can be built with an authentication layer easily enough if you know what you're doing.
 - Ensure your instance has https (eg use LetsEncrypt certbot, which grants free https keys), raw http hosting may cause issues.
-- Multi-user-support with Swarm-provided authentication handling is available in an initial experimental form, but you should still have a barrier in front until it is validated
 
 ## Custom Workflows (ComfyUI)
 
@@ -98,3 +98,5 @@ Triton is a Linux-only AI acceleration library that you can hack into working on
     - Set the other paths to sub-folder names. For example, `SDModelFolder` can be `checkpoints` for comfy-style folders, or `Stable-Diffusion;checkpoints` to allow both Auto1111 and ComfyUI style paths.
         - The first one in this list is favored for both loading and downloading.
         - Note, do not set full system paths in most case. This is just the sub-folder name.
+
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>

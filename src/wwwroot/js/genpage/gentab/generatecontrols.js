@@ -4,6 +4,9 @@ function makeWSRequestT2I(url, in_data, callback, errorHandle = null) {
         if (data.status) {
             updateCurrentStatusDirect(data.status);
         }
+        else if (data.raw_swarm_data) {
+            // we don't use this in js
+        }
         else {
             callback(data);
         }
@@ -23,7 +26,7 @@ let genForeverInterval, genPreviewsInterval;
 let lastGenForeverParams = null;
 
 function doGenForeverOnce(minQueueSize) {
-    if (num_current_gens >= minQueueSize) {
+    if (num_waiting_gens >= minQueueSize) {
         return;
     }
     let allParams = getGenInput();
@@ -107,7 +110,7 @@ function needsNewPreview() {
         return;
     }
     let max = getRequiredElementById('usersettings_maxsimulpreviews').value;
-    if (num_current_gens < max) {
+    if (num_waiting_gens < max) {
         genOnePreview();
     }
 }
@@ -161,7 +164,7 @@ function toggleGeneratePreviews(override_preview_req = false) {
         }
         button.innerText = stopGeneratingPreviewsTranslatable.get();
         genPreviewsInterval = setInterval(() => {
-            if (num_current_gens == 0) {
+            if (num_waiting_gens == 0) {
                 genOnePreview();
             }
         }, 100);

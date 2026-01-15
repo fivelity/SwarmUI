@@ -12,89 +12,13 @@ using System.Net;
 using SwarmUI.WebAPI;
 using SwarmUI.Accounts;
 using Microsoft.Extensions.Primitives;
+using System.Threading.Tasks;
 
 namespace SwarmUI.Builtin_ComfyUIBackend;
 
 /// <summary>Helper class for network redirections for the '/ComfyBackendDirect' url path.</summary>
 public class ComfyUIRedirectHelper
 {
-    // TODO: Should have an identity attached in a cookie so we can backtrack to the original user.
-    /// <summary>A known ComfyUI page viewer. Uniquely identified by temporary SIDs, not actual underlying user.</summary>
-    public class ComfyUser
-    {
-        public ConcurrentDictionary<ComfyClientData, ComfyClientData> Clients = new();
-
-        public string MasterSID;
-
-        public int TotalQueue => Clients.Values.Sum(c => c.QueueRemaining);
-
-        public SemaphoreSlim Lock = new(1, 1);
-
-        public volatile JObject LastExecuting, LastProgress;
-
-        public int BackendOffset = 0;
-
-        public ComfyClientData Reserved;
-
-        public void Unreserve()
-        {
-            if (Reserved is not null)
-            {
-                Interlocked.Decrement(ref Reserved.Backend.Reservations);
-                Reserved = null;
-            }
-        }
-    }
-
-    /// <summary>Data about a specific connection from a ComfyUI user to a backend. This class is focused on the backend side, for the user side see <see cref="ComfyUser"/>.</summary>
-    public class ComfyClientData
-    {
-        public ClientWebSocket Socket;
-
-        public string SID;
-
-        public volatile int QueueRemaining;
-
-        public string LastNode;
-
-        public volatile JObject LastExecuting, LastProgress;
-
-        public string Address;
-
-        public AbstractT2IBackend Backend;
-
-        public static HashSet<string> ModelNameInputNames = ["ckpt_name", "vae_name", "lora_name", "clip_name", "control_net_name", "style_model_name", "model_path", "lora_names"];
-
-        /// <summary>Auto-fixer for some workflow features, notably Windows vs Linux instances need different file path formats (backslash vs forward slash).</summary>
-        public void FixUpPrompt(JObject prompt)
-        {
-            bool isBackSlash = Backend.SupportedFeatures.Contains("folderbackslash");
-            foreach (JProperty node in prompt.Properties())
-            {
-                JObject inputs = node.Value["inputs"] as JObject;
-                if (inputs is not null)
-                {
-                    foreach (JProperty input in inputs.Properties())
-                    {
-                        if (ModelNameInputNames.Contains(input.Name) && input.Value.Type == JTokenType.String)
-                        {
-                            string val = input.Value.ToString();
-                            if (isBackSlash)
-                            {
-                                val = val.Replace("/", "\\");
-                            }
-                            else
-                            {
-                                val = val.Replace("\\", "/");
-                            }
-                            input.Value = val;
-                        }
-                    }
-                }
-            }
-        }
-    }
-
     /// <summary>Map of all currently connected users.</summary>
     public static ConcurrentDictionary<string, ComfyUser> Users = new();
 
@@ -106,6 +30,9 @@ public class ComfyUIRedirectHelper
 
     /// <summary>Backup for <see cref="ObjectInfoReadCacher"/>.</summary>
     public static volatile JObject LastObjectInfo;
+
+    /// <summary>Event-action fired when a new comfy user is connected.</summary>
+    public static Action<ComfyUser> NewUserEvent;
 
     /// <summary>Cache handler to prevent "object_info" reads from spamming and killing the comfy backend (which handles them sequentially, and rather slowly per call).</summary>
     public static SingleValueExpiringCacheAsync<JObject> ObjectInfoReadCacher = new(() =>
@@ -157,7 +84,7 @@ public class ComfyUIRedirectHelper
         {
             context.Response.ContentType = "text/html";
             context.Response.StatusCode = 401;
-            await context.Response.WriteAsync("<!DOCTYPE html><html><head><stylesheet>body{background-color:#101010;color:#eeeeee;}</stylesheet></head><body><span class=\"comfy-failed-to-load\">Permission denied.</span></body></html>");
+            await context.Response.WriteAsync("<!DOCTYPE html>\n<html>\n<head>\n<style>body{background-color:#101010;color:#eeeeee;}</style>\n</head>\n<body>\n<span class=\"comfy-failed-to-load\">Permission denied.</span>\n</body>\n</html>");
             await context.Response.CompleteAsync();
             return;
         }
@@ -171,13 +98,17 @@ public class ComfyUIRedirectHelper
         {
             context.Response.ContentType = "text/html";
             context.Response.StatusCode = 400;
-            await context.Response.WriteAsync("<!DOCTYPE html><html><head><stylesheet>body{background-color:#101010;color:#eeeeee;}</stylesheet></head><body><span class=\"comfy-failed-to-load\">No ComfyUI backend available, loading failed.</span></body></html>");
+            await context.Response.WriteAsync("<!DOCTYPE html>\n<html>\n<head>\n<style>body{background-color:#101010;color:#eeeeee;}</style>\n</head>\n<body>\n<span class=\"comfy-failed-to-load\">No ComfyUI backend available, loading failed.</span>\n</body>\n</html>");
             await context.Response.CompleteAsync();
             return;
         }
-        bool hasMulti = context.Request.Cookies.TryGetValue("comfy_domulti", out string doMultiStr);
-        bool shouldReserve = hasMulti && doMultiStr == "reserve";
-        if (!shouldReserve && (!hasMulti || doMultiStr != "true"))
+        if (!context.Request.Cookies.TryGetValue("comfy_domulti", out string doMultiStr))
+        {
+            doMultiStr = "false";
+        }
+        bool wantsMulti = doMultiStr == "true" || doMultiStr == "queue";
+        bool shouldReserve = doMultiStr == "reserve";
+        if (!shouldReserve && !wantsMulti)
         {
             allBackends = [new(webClient, apiAddress, webAddress, backend)];
         }
@@ -196,7 +127,10 @@ public class ComfyUIRedirectHelper
             Logs.Debug($"Comfy backend direct websocket request to {path}, have {allBackends.Count} backends available");
             WebSocket socket = await context.WebSockets.AcceptWebSocketAsync();
             List<Task> tasks = [];
-            ComfyUser user = new();
+            ComfyUser user = new() { Socket = socket, SwarmUser = swarmUser, WantsAllBackends = wantsMulti, WantsQueuing = doMultiStr == "queue", WantsReserve = doMultiStr == "reserve" };
+            user.RunSendTask();
+            user.RunClientReceiveTask();
+            NewUserEvent?.Invoke(user);
             // Order all evens then all odds - eg 0, 2, 4, 6, 1, 3, 5, 7 (to reduce chance of overlap when sharing)
             int[] vals = [.. Enumerable.Range(0, allBackends.Count)];
             vals = [.. vals.Where(v => v % 2 == 0), .. vals.Where(v => v % 2 == 1)];
@@ -229,12 +163,12 @@ public class ComfyUIRedirectHelper
                 outSocket.Options.KeepAliveInterval = TimeSpan.FromSeconds(30);
                 await outSocket.ConnectAsync(new Uri($"{scheme}://{addr}/{path}"), Program.GlobalProgramCancel);
                 ComfyClientData client = new() { Address = localback.WebAddress, Backend = localback.Backend, Socket = outSocket };
-                user.Clients.TryAdd(client, client);
+                await user.AddClient(client);
                 tasks.Add(Task.Run(async () =>
                 {
                     try
                     {
-                        byte[] recvBuf = new byte[10 * 1024 * 1024];
+                        byte[] recvBuf = new byte[20 * 1024 * 1024];
                         while (true)
                         {
                             WebSocketReceiveResult received = await outSocket.ReceiveAsync(recvBuf, Program.GlobalProgramCancel);
@@ -284,8 +218,7 @@ public class ComfyUIRedirectHelper
                                                     }
                                                     else
                                                     {
-                                                        parsed["data"]["sid"] = user.MasterSID;
-                                                        toSend = Encoding.UTF8.GetBytes(parsed.ToString());
+                                                        dataObj["sid"] = user.MasterSID;
                                                     }
                                                 }
                                                 if (dataObj.TryGetValue("node", out JToken nodeTok))
@@ -299,6 +232,7 @@ public class ComfyUIRedirectHelper
                                                     client.QueueRemaining = queueRemTok.Value<int>();
                                                     dataObj["status"]["exec_info"]["queue_remaining"] = user.TotalQueue;
                                                 }
+                                                toSend = Encoding.UTF8.GetBytes(parsed.ToString());
                                             }
                                         }
                                         catch (Exception ex)
@@ -306,20 +240,20 @@ public class ComfyUIRedirectHelper
                                             Logs.Error($"Failed to parse ComfyUI message \"{rawText.Replace('\n', ' ')}\": {ex.ReadableString()}");
                                         }
                                     }
-                                    if (!isJson)
+                                    else
                                     {
                                         if (client.LastExecuting is not null && (client.LastExecuting != user.LastExecuting || client.LastProgress != user.LastProgress))
                                         {
                                             user.LastExecuting = client.LastExecuting;
-                                            await socket.SendAsync(StringConversionHelper.UTF8Encoding.GetBytes(client.LastExecuting.ToString()), WebSocketMessageType.Text, true, Program.GlobalProgramCancel);
+                                            user.NewMessageToClient(StringConversionHelper.UTF8Encoding.GetBytes(client.LastExecuting.ToString()), WebSocketMessageType.Text, true);
                                         }
                                         if (client.LastProgress is not null && (client.LastExecuting != user.LastExecuting || client.LastProgress != user.LastProgress))
                                         {
                                             user.LastProgress = client.LastProgress;
-                                            await socket.SendAsync(StringConversionHelper.UTF8Encoding.GetBytes(client.LastProgress.ToString()), WebSocketMessageType.Text, true, Program.GlobalProgramCancel);
+                                            user.NewMessageToClient(StringConversionHelper.UTF8Encoding.GetBytes(client.LastProgress.ToString()), WebSocketMessageType.Text, true);
                                         }
                                     }
-                                    await socket.SendAsync(toSend, received.MessageType, received.EndOfMessage, Program.GlobalProgramCancel);
+                                    user.NewMessageToClient(toSend, received.MessageType, received.EndOfMessage);
                                 }
                                 finally
                                 {
@@ -328,7 +262,6 @@ public class ComfyUIRedirectHelper
                             }
                             if (socket.CloseStatus.HasValue)
                             {
-                                await socket.CloseAsync(socket.CloseStatus.Value, socket.CloseStatusDescription, Program.GlobalProgramCancel);
                                 return;
                             }
                         }
@@ -364,49 +297,12 @@ public class ComfyUIRedirectHelper
                     }
                 }));
             }
-            tasks.Add(Task.Run(async () =>
+            tasks.Add(Task.WhenAny(Task.Delay(Timeout.Infinite, Program.GlobalProgramCancel), Task.Delay(Timeout.Infinite, user.ClientIsClosed.Token)));
+            try
             {
-                try
-                {
-                    byte[] recvBuf = new byte[10 * 1024 * 1024];
-                    while (true)
-                    {
-                        // TODO: Should this input be allowed to remain open forever? Need a timeout, but the ComfyUI websocket doesn't seem to keepalive properly.
-                        WebSocketReceiveResult received = await socket.ReceiveAsync(recvBuf, Program.GlobalProgramCancel);
-                        foreach (ComfyClientData client in user.Clients.Values)
-                        {
-                            if (received.MessageType != WebSocketMessageType.Close)
-                            {
-                                await client.Socket.SendAsync(recvBuf.AsMemory(0, received.Count), received.MessageType, received.EndOfMessage, Program.GlobalProgramCancel);
-                            }
-                            if (socket.CloseStatus.HasValue)
-                            {
-                                await client.Socket.CloseAsync(socket.CloseStatus.Value, socket.CloseStatusDescription, Program.GlobalProgramCancel);
-                                return;
-                            }
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    if (ex is OperationCanceledException)
-                    {
-                        return;
-                    }
-                    Logs.Debug($"ComfyUI redirection failed (in-socket, user {swarmUser.UserID} with {user.Clients.Count} active sockets): {ex.ReadableString()}");
-                }
-                finally
-                {
-                    Users.TryRemove(user.MasterSID, out _);
-                    user.Unreserve();
-                    socket.Dispose();
-                    foreach (ComfyClientData client in user.Clients.Values)
-                    {
-                        client.Socket.Dispose();
-                    }
-                }
-            }));
-            await Task.WhenAll(tasks);
+                await Task.WhenAll(tasks);
+            }
+            catch (OperationCanceledException) { }
             return;
         }
         HttpResponseMessage response = null;
@@ -416,9 +312,17 @@ public class ComfyUIRedirectHelper
             {
                 context.Response.ContentType = "text/html";
                 context.Response.StatusCode = 401;
-                await context.Response.WriteAsync("<!DOCTYPE html><html><head><stylesheet>body{background-color:#101010;color:#eeeeee;}</stylesheet></head><body><span class=\"comfy-failed-to-load\">Permission denied.</span></body></html>");
+                await context.Response.WriteAsync("<!DOCTYPE html>\n<html>\n<head><style>body{background-color:#101010;color:#eeeeee;}</style></head>\n<body>\n<span class=\"comfy-failed-to-load\">Permission denied.</span>\n</body>\n</html>");
                 await context.Response.CompleteAsync();
                 return;
+            }
+            void givePostError(string error)
+            {
+                Logs.Debug($"Comfy direct POST request gave Swarm-side error: {error}");
+                context.Response.ContentType = "application/json";
+                context.Response.StatusCode = 400;
+                context.Response.WriteAsync(new JObject() { ["error"] = error }.ToString());
+                context.Response.CompleteAsync();
             }
             HttpContent content = null;
             if (path == "prompt" || path == "api/prompt")
@@ -439,58 +343,29 @@ public class ComfyUIRedirectHelper
                             try
                             {
                                 JObject prompt = parsed["prompt"] as JObject;
-                                int preferredBackendIndex = prompt["swarm_prefer"]?.Value<int>() ?? -1;
                                 prompt.Remove("swarm_prefer");
-                                ComfyClientData[] available = user.Clients.Values.ToArray().Shift(user.BackendOffset);
-                                ComfyClientData client = available.MinBy(c => c.QueueRemaining);
-                                if (preferredBackendIndex >= 0)
+                                if (user.WantsQueuing)
                                 {
-                                    client = available[preferredBackendIndex % available.Length];
-                                }
-                                else if (available.Length > 1)
-                                {
-                                    string[] classTypes = [.. prompt.Properties().Select(p => p.Value is JObject jobj ? (string)jobj["class_type"] : null).Where(ct => ct is not null)];
-                                    ComfyClientData[] validClients = [.. available.Where(c => c.Backend is not ComfyUIAPIAbstractBackend comfy || classTypes.All(ct => comfy.NodeTypes.Contains(ct)))];
-                                    if (validClients.Length == 0)
-                                    {
-                                        Logs.Debug("It looks like no available backends support all relevant comfy node class types?!");
-                                        Logs.Verbose($"Expected class types: [{classTypes.JoinString(", ")}]");
-                                    }
-                                    else if (validClients.Length != available.Length)
-                                    {
-                                        Logs.Debug($"Required {classTypes.Length} class types, and {validClients.Length} out of {available.Length} backends support them.");
-                                        client = validClients.MinBy(c => c.QueueRemaining);
-                                    }
-                                }
-                                if (shouldReserve)
-                                {
-                                    if (user.Reserved is not null)
-                                    {
-                                        client = user.Reserved;
-                                    }
-                                    else
-                                    {
-                                        user.Reserved = available.FirstOrDefault(c => c.Backend.Reservations == 0) ?? available.FirstOrDefault();
-                                        if (user.Reserved is not null)
-                                        {
-                                            client = user.Reserved;
-                                            Interlocked.Increment(ref client.Backend.Reservations);
-                                            client.Backend.BackendData.UpdateLastReleaseTime();
-                                        }
-                                    }
-                                }
-                                if (client?.SID is not null)
-                                {
-                                    client.QueueRemaining++;
-                                    webAddress = client.Address;
-                                    backend = client.Backend;
-                                    parsed["client_id"] = client.SID;
-                                    client.FixUpPrompt(parsed["prompt"] as JObject);
-                                    string userText = $" (from user {swarmUser.UserID})";
-                                    swarmUser.UpdateLastUsedTime();
-                                    Logs.Info($"Sent Comfy backend direct prompt requested to backend #{backend.BackendData.ID}{userText}");
-                                    backend.BackendData.UpdateLastReleaseTime();
+                                    (_, JObject responseJson) = user.SendPromptQueue(prompt);
+                                    response = new HttpResponseMessage(HttpStatusCode.OK) { Content = Utilities.JSONContent(responseJson) };
                                     redirected = true;
+                                    Logs.Info($"Sent Comfy backend direct prompt requested to general queue (from user {swarmUser.UserID})");
+                                }
+                                else
+                                {
+                                    ComfyClientData client = await user.SendPromptRegular(prompt, givePostError);
+                                    if (client?.SID is not null)
+                                    {
+                                        client.QueueRemaining++;
+                                        webAddress = client.Address;
+                                        backend = client.Backend;
+                                        parsed["client_id"] = client.SID;
+                                        client.FixUpPrompt(prompt);
+                                        swarmUser.UpdateLastUsedTime();
+                                        Logs.Info($"Sent Comfy backend direct prompt requested to backend #{backend.BackendData.ID} (from user {swarmUser.UserID})");
+                                        backend.BackendData.UpdateLastReleaseTime();
+                                        redirected = true;
+                                    }
                                 }
                             }
                             finally
@@ -498,10 +373,28 @@ public class ComfyUIRedirectHelper
                                 user.Lock.Release();
                             }
                         }
+                        else if (doMultiStr == "queue")
+                        {
+                            givePostError("[SwarmUI] SwarmQueue requested, but Client ID got mixed up. Refresh the page to fix this.");
+                            return;
+                        }
                     }
                     if (!redirected)
                     {
+                        if (backend.MaxUsages <= 0)
+                        {
+                            if (ComfyUIBackendExtension.ComfyBackendsDirect().Any(b => b.Backend.CanLoadModels && b.Backend.MaxUsages > 0))
+                            {
+                                givePostError("[SwarmUI] No functional comfy backend available to run this request, but valid backends exist. Hit MultiGPU -> Use All to ensure you're able to use other backends.");
+                            }
+                            else
+                            {
+                                givePostError("[SwarmUI] No functional comfy backend available to run this request. Is a backend-scaling currently in progress?");
+                            }
+                            return;
+                        }
                         Logs.Debug($"Was not able to redirect Comfy backend direct prompt request");
+                        Logs.Verbose($"Above is for prompt: {parsed.ToDenseDebugString()}");
                         backend.BackendData.UpdateLastReleaseTime();
                         Logs.Info($"Sent Comfy backend improper API call direct prompt requested to backend #{backend.BackendData.ID}");
                     }
@@ -545,7 +438,7 @@ public class ComfyUIRedirectHelper
         }
         else
         {
-            if (path.StartsWith("view?filename=") || path.StartsWith("api/view?filename="))
+            if (path.StartsWith("view?filename=") || path.StartsWith("api/view?filename=") || path.StartsWith("api/vhs/queryvideo?filename="))
             {
                 List<Task<HttpResponseMessage>> requests = [];
                 foreach (ComfyUIBackendExtension.ComfyBackendData localBack in allBackends)
@@ -564,7 +457,7 @@ public class ComfyUIRedirectHelper
                 }
                 response = new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(data.ToString(), Encoding.UTF8, "application/json") };
             }
-            else if (path == "user.css" || path == "api/user.css")
+            else if (path == "user.css" || path == "api/userdata/user.css" || path == "api/user.css")
             {
                 HttpResponseMessage rawResponse = await webClient.GetAsync($"{webAddress}/{path}");
                 string remoteUserThemeText = rawResponse.StatusCode == HttpStatusCode.OK ? await rawResponse.Content.ReadAsStringAsync() : "";
@@ -602,9 +495,9 @@ public class ComfyUIRedirectHelper
         {
             Logs.Debug($"ComfyUI redirection gave non-200 code: '{code}' for URL: {context.Request.Method} '{path}'");
         }
-        Logs.Verbose($"Comfy Redir status code {code} from {context.Response.StatusCode} and type {response.Content.Headers.ContentType} for {context.Request.Method} '{path}'");
+        //Logs.Verbose($"Comfy Redir status code {code} from {context.Response.StatusCode} and type {response.Content.Headers.ContentType} for {context.Request.Method} '{path}'");
         context.Response.StatusCode = code;
-        if (response.Content is not null)
+        if (response.Content is not null && code != 204)
         {
             if (response.Content.Headers.ContentType is not null)
             {
