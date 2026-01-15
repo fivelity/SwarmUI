@@ -28,7 +28,7 @@ Currently, SwarmUI is only validated to be safely usable by **Friends and Family
 - Preset serverwide sharing
 - User-local model organization/notes for non-admin users
 - User-local wildcards
-- Many convenience features for remote users, eg a way to download image history as a batch zip
+- Many convenience features for remote users, eg a way to download history as a batch zip
 - Convenient user auth session management and bot token interface
 
 ## Basic Setup Guide
@@ -79,3 +79,5 @@ Currently, SwarmUI is only validated to be safely usable by **Friends and Family
 You can hook up someone else's shared SwarmUI instance as a backend in your own Swarm!
 
 (TODO: Explain how to. Need easy way to gen and apply account auth stuff.)
+
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>

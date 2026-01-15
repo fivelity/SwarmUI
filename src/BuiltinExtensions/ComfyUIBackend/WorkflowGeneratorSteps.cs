@@ -1,9 +1,11 @@
-﻿using FreneticUtilities.FreneticExtensions;
+﻿using System;
+using FreneticUtilities.FreneticExtensions;
 using Newtonsoft.Json.Linq;
 using SwarmUI.Core;
 using SwarmUI.Text2Image;
 using SwarmUI.Utils;
-using System.IO;
+
+using static SwarmUI.Builtin_ComfyUIBackend.WorkflowGenerator;
 
 namespace SwarmUI.Builtin_ComfyUIBackend;
 
@@ -58,7 +60,7 @@ public class WorkflowGeneratorSteps
                 throw new SwarmUserErrorException($"No model input given. Did your UI load properly?");
             }
             g.FinalLoadedModelList = [g.FinalLoadedModel];
-            (g.FinalLoadedModel, g.FinalModel, g.FinalClip, g.FinalVae) = g.CreateStandardModelLoader(g.FinalLoadedModel, "Base", "4");
+            (g.FinalLoadedModel, g.FinalModel, g.FinalClip, g.FinalVae) = g.CreateStandardModelLoader(g.FinalLoadedModel, "Base", "4", sectionId: T2IParamInput.SectionID_BaseOnly);
         }, -15);
         AddModelGenStep(g =>
         {
@@ -68,7 +70,7 @@ public class WorkflowGeneratorSteps
             }
             else if (!g.NoVAEOverride && g.UserInput.TryGet(T2IParamTypes.VAE, out T2IModel vae))
             {
-                if (g.FinalLoadedModel.ModelClass?.ID == "stable-diffusion-v3-medium" && vae.ModelClass?.CompatClass != "stable-diffusion-v3")
+                if (g.FinalLoadedModel.ModelClass?.ID == "stable-diffusion-v3-medium" && vae.ModelClass?.CompatClass?.ID != "stable-diffusion-v3")
                 {
                     Logs.Warning($"Model {g.FinalLoadedModel.Title} is an SD3 model, but you have VAE {vae.Title} selected. If that VAE is not an SD3 specific VAE, this is likely a mistake. Errors may follow. If this breaks, disable the custom VAE.");
                 }
@@ -76,7 +78,7 @@ public class WorkflowGeneratorSteps
             }
             else if (!g.NoVAEOverride && g.UserInput.Get(T2IParamTypes.AutomaticVAE, false))
             {
-                string clazz = g.FinalLoadedModel.ModelClass?.CompatClass;
+                string clazz = g.FinalLoadedModel.ModelClass?.CompatClass?.ID;
                 string vaeName = null;
                 if (clazz == "stable-diffusion-xl-v1")
                 {
@@ -198,6 +200,14 @@ public class WorkflowGeneratorSteps
                 });
                 g.LoadingModel = [patched, 0];
             }
+            if (g.UserInput.Get(ComfyUIBackendExtension.UseTCFG, false))
+            {
+                string patched = g.CreateNode("TCFG", new JObject()
+                {
+                    ["model"] = g.LoadingModel
+                });
+                g.LoadingModel = [patched, 0];
+            }
         }, -7);
         AddModelGenStep(g =>
         {
@@ -246,7 +256,7 @@ public class WorkflowGeneratorSteps
                 {
                     Logs.Warning($"Ignore TeaCache Mode parameter because the current model is Nunchaku which does not support TeaCache. Use 'Nunchaku Cache Threshold' for a similar effect to TeaCache.");
                 }
-                else if (g.IsFlux())
+                else if (g.IsFlux() || g.IsFlux2())
                 {
                     if (teaCacheMode != "video only")
                     {
@@ -371,7 +381,7 @@ public class WorkflowGeneratorSteps
                     string maskNode = g.CreateLoadImageNode(mask, "${maskimage}", true);
                     maskImageNode = g.CreateNode("ImageToMask", new JObject()
                     {
-                        ["image"] = new JArray() { maskNode, 0 },
+                        ["image"] = NodePath(maskNode, 0),
                         ["channel"] = "red"
                     });
                     g.EnableDifferential();
@@ -379,7 +389,7 @@ public class WorkflowGeneratorSteps
                     {
                         maskImageNode = g.CreateNode("SwarmMaskGrow", new JObject()
                         {
-                            ["mask"] = new JArray() { maskImageNode, 0 },
+                            ["mask"] = NodePath(maskImageNode, 0),
                             ["grow"] = growAmount,
                         });
                     }
@@ -387,7 +397,7 @@ public class WorkflowGeneratorSteps
                     {
                         maskImageNode = g.CreateNode("SwarmMaskBlur", new JObject()
                         {
-                            ["mask"] = new JArray() { maskImageNode, 0 },
+                            ["mask"] = NodePath(maskImageNode, 0),
                             ["blur_radius"] = blurAmount,
                             ["sigma"] = 1.0
                         });
@@ -414,7 +424,7 @@ public class WorkflowGeneratorSteps
                             ["min"] = 0.5,
                             ["max"] = 1.0
                         });
-                        noiseInput["mask"] = new JArray() { thresholded, 0 };
+                        noiseInput["mask"] = NodePath(thresholded, 0);
                     }
                     string noised = g.CreateNode("SwarmImageNoise", noiseInput);
                     g.FinalInputImage = [noised, 0];
@@ -478,7 +488,7 @@ public class WorkflowGeneratorSteps
                         string blended = g.CreateNode("SwarmLatentBlendMasked", new JObject()
                         {
                             ["samples0"] = g.FinalLatentImage,
-                            ["samples1"] = new JArray() { emptyImg, 0 },
+                            ["samples1"] = NodePath(emptyImg, 0),
                             ["mask"] = currentMask,
                             ["blend_factor"] = resetFactor
                         });
@@ -488,7 +498,7 @@ public class WorkflowGeneratorSteps
                     {
                         string emptyMultiplied = g.CreateNode("LatentMultiply", new JObject()
                         {
-                            ["samples"] = new JArray() { emptyImg, 0 },
+                            ["samples"] = NodePath(emptyImg, 0),
                             ["multiplier"] = resetFactor
                         });
                         string originalMultiplied = g.CreateNode("LatentMultiply", new JObject()
@@ -498,8 +508,8 @@ public class WorkflowGeneratorSteps
                         });
                         string added = g.CreateNode("LatentAdd", new JObject()
                         {
-                            ["samples1"] = new JArray() { emptyMultiplied, 0 },
-                            ["samples2"] = new JArray() { originalMultiplied, 0 }
+                            ["samples1"] = NodePath(emptyMultiplied, 0),
+                            ["samples2"] = NodePath(originalMultiplied, 0)
                         });
                         g.FinalLatentImage = [added, 0];
                     }
@@ -538,15 +548,15 @@ public class WorkflowGeneratorSteps
                         string imageLoader = g.CreateLoadImageNode(images[i], "${promptimages." + i + "}", false);
                         string encoded = g.CreateNode("CLIPVisionEncode", new JObject()
                         {
-                            ["clip_vision"] = new JArray() { $"{styleModelClipLoader}", 0 },
-                            ["image"] = new JArray() { $"{imageLoader}", 0 },
+                            ["clip_vision"] = NodePath($"{styleModelClipLoader}", 0),
+                            ["image"] = NodePath($"{imageLoader}", 0),
                             ["crop"] = "none"
                         });
                         string styled = g.CreateNode("StyleModelApply", new JObject()
                         {
                             ["conditioning"] = g.FinalPrompt,
-                            ["clip_vision_output"] = new JArray() { $"{encoded}", 0 },
-                            ["style_model"] = new JArray() { $"{styleModelLoader}", 0 },
+                            ["clip_vision_output"] = NodePath($"{encoded}", 0),
+                            ["style_model"] = NodePath($"{styleModelLoader}", 0),
                             ["strength_type"] = "multiply",
                             ["strength"] = g.UserInput.Get(ComfyUIBackendExtension.StyleModelMultiplyStrength, 1)
                         });
@@ -554,7 +564,7 @@ public class WorkflowGeneratorSteps
                         {
                             styled = g.CreateNode("ConditioningAverage", new JObject()
                             {
-                                ["conditioning_to"] = new JArray() { styled, 0 },
+                                ["conditioning_to"] = NodePath(styled, 0),
                                 ["conditioning_from"] = g.FinalPrompt,
                                 ["conditioning_to_strength"] = mergeStrength
                             });
@@ -569,14 +579,14 @@ public class WorkflowGeneratorSteps
                             });
                             string cond2 = g.CreateNode("ConditioningSetTimestepRange", new JObject()
                             {
-                                ["conditioning"] = new JArray() { styled, 0 },
+                                ["conditioning"] = NodePath(styled, 0),
                                 ["start"] = applyAt,
                                 ["end"] = 1
                             });
                             string combined = g.CreateNode("ConditioningCombine", new JObject()
                             {
-                                ["conditioning_1"] = new JArray() { cond1, 0 },
-                                ["conditioning_2"] = new JArray() { cond2, 0 },
+                                ["conditioning_1"] = NodePath(cond1, 0),
+                                ["conditioning_2"] = NodePath(cond2, 0),
                             });
                             g.FinalPrompt = [combined, 0];
                         }
@@ -622,7 +632,7 @@ public class WorkflowGeneratorSteps
                         g.FinalNegativePrompt = [zeroed, 0];
                     }
                     if (!g.UserInput.TryGet(T2IParamTypes.Model, out T2IModel model) || model.ModelClass is null || 
-                        (model.ModelClass.CompatClass != "stable-diffusion-xl-v1"/* && model.ModelClass.CompatClass != "stable-diffusion-v3-medium"*/))
+                        (model.ModelClass.CompatClass?.ID != "stable-diffusion-xl-v1"/* && model.ModelClass.CompatClass?.ID != "stable-diffusion-v3-medium"*/))
                     {
                         throw new SwarmUserErrorException($"Model type must be SDXL for ReVision (currently is {model?.ModelClass?.Name ?? "Unknown"}). Set ReVision Strength to 0 if you just want IP-Adapter.");
                     }
@@ -631,14 +641,14 @@ public class WorkflowGeneratorSteps
                         string imageLoader = g.CreateLoadImageNode(images[i], "${promptimages." + i + "}", false);
                         string encoded = g.CreateNode("CLIPVisionEncode", new JObject()
                         {
-                            ["clip_vision"] = new JArray() { $"{getVisionLoader()}", 0 },
-                            ["image"] = new JArray() { $"{imageLoader}", 0 },
+                            ["clip_vision"] = NodePath($"{getVisionLoader()}", 0),
+                            ["image"] = NodePath($"{imageLoader}", 0),
                             ["crop"] = "none"
                         });
                         string unclipped = g.CreateNode("unCLIPConditioning", new JObject()
                         {
                             ["conditioning"] = g.FinalPrompt,
-                            ["clip_vision_output"] = new JArray() { $"{encoded}", 0 },
+                            ["clip_vision_output"] = NodePath($"{encoded}", 0),
                             ["strength"] = revisionStrength,
                             ["noise_augmentation"] = 0
                         });
@@ -655,14 +665,14 @@ public class WorkflowGeneratorSteps
                         string newVae = g.CreateVAEEncode(g.FinalVae, [newImg, 0]);
                         lastVae = g.CreateNode("LatentBatch", new JObject()
                         {
-                            ["samples1"] = new JArray() { lastVae, 0 },
-                            ["samples2"] = new JArray() { newVae, 0 }
+                            ["samples1"] = NodePath(lastVae, 0),
+                            ["samples2"] = NodePath(newVae, 0)
                         });
                     }
                     string referencedModel = g.CreateNode("SwarmReferenceOnly", new JObject()
                     {
                         ["model"] = g.FinalModel,
-                        ["reference"] = new JArray() { lastVae, 0 },
+                        ["reference"] = NodePath(lastVae, 0),
                         ["latent"] = g.FinalLatentImage
                     });
                     g.FinalModel = [referencedModel, 0];
@@ -699,8 +709,8 @@ public class WorkflowGeneratorSteps
                         string newImg = g.CreateLoadImageNode(images[i], "${promptimages." + i + "}", false);
                         lastImage = g.CreateNode("ImageBatch", new JObject()
                         {
-                            ["image1"] = new JArray() { lastImage, 0 },
-                            ["image2"] = new JArray() { newImg, 0 }
+                            ["image1"] = NodePath(lastImage, 0),
+                            ["image2"] = NodePath(newImg, 0)
                         });
                     }
                     if (g.Features.Contains("cubiqipadapterunified"))
@@ -848,15 +858,15 @@ public class WorkflowGeneratorSteps
                             string ipAdapterNode = g.CreateNode("IPAdapterAdvanced", new JObject()
                             {
                                 ["model"] = g.FinalModel,
-                                ["ipadapter"] = new JArray() { ipAdapterLoader, 0 },
-                                ["image"] = new JArray() { lastImage, 0 },
+                                ["ipadapter"] = NodePath(ipAdapterLoader, 0),
+                                ["image"] = NodePath(lastImage, 0),
                                 ["weight"] = g.UserInput.Get(ComfyUIBackendExtension.IPAdapterWeight, 1),
                                 ["start_at"] = ipAdapterStart,
                                 ["end_at"] = ipAdapterEnd,
                                 ["weight_type"] = weightType,
                                 ["combine_embeds"] = "concat",
                                 ["embeds_scaling"] = "V only",
-                                ["clip_vision"] = new JArray() { getVisionLoader(), 0 }
+                                ["clip_vision"] = NodePath(getVisionLoader(), 0)
                             });
                             g.FinalModel = [ipAdapterNode, 0];
                         }
@@ -865,9 +875,9 @@ public class WorkflowGeneratorSteps
                             string ipAdapterNode = g.CreateNode("IPAdapter", new JObject()
                             {
 
-                                ["model"] = new JArray() { ipAdapterLoader, 0 },
-                                ["ipadapter"] = new JArray() { ipAdapterLoader, 1 },
-                                ["image"] = new JArray() { lastImage, 0 },
+                                ["model"] = NodePath(ipAdapterLoader, 0),
+                                ["ipadapter"] = NodePath(ipAdapterLoader, 1),
+                                ["image"] = NodePath(lastImage, 0),
                                 ["weight"] = g.UserInput.Get(ComfyUIBackendExtension.IPAdapterWeight, 1),
                                 ["start_at"] = ipAdapterStart,
                                 ["end_at"] = ipAdapterEnd,
@@ -884,10 +894,10 @@ public class WorkflowGeneratorSteps
                         });
                         string ipAdapterNode = g.CreateNode("IPAdapterApply", new JObject()
                         {
-                            ["ipadapter"] = new JArray() { ipAdapterLoader, 0 },
+                            ["ipadapter"] = NodePath(ipAdapterLoader, 0),
                             ["model"] = g.FinalModel,
-                            ["image"] = new JArray() { lastImage, 0 },
-                            ["clip_vision"] = new JArray() { getIPAvisionLoader(), 0 },
+                            ["image"] = NodePath(lastImage, 0),
+                            ["clip_vision"] = NodePath(getIPAvisionLoader(), 0),
                             ["weight"] = g.UserInput.Get(ComfyUIBackendExtension.IPAdapterWeight, 1),
                             ["noise"] = 0,
                             ["weight_type"] = "original"
@@ -899,8 +909,8 @@ public class WorkflowGeneratorSteps
                         string ipAdapterNode = g.CreateNode("IPAdapter", new JObject()
                         {
                             ["model"] = g.FinalModel,
-                            ["image"] = new JArray() { lastImage, 0 },
-                            ["clip_vision"] = new JArray() { getIPAvisionLoader(), 0 },
+                            ["image"] = NodePath(lastImage, 0),
+                            ["clip_vision"] = NodePath(getIPAvisionLoader(), 0),
                             ["weight"] = g.UserInput.Get(ComfyUIBackendExtension.IPAdapterWeight, 1),
                             ["model_name"] = ipAdapter,
                             ["dtype"] = "fp16" // TODO: ...???
@@ -1040,6 +1050,23 @@ public class WorkflowGeneratorSteps
                     {
                         throw new SwarmUserErrorException("Cannot use ControlNet without a model selected.");
                     }
+                    if (controlModel.ModelClass?.ID?.EndsWith("/control-diffpatch") ?? false)
+                    {
+                        string modelPatchLoader = g.CreateNode("ModelPatchLoader", new JObject()
+                        {
+                            ["name"] = controlModel.ToString(g.ModelFolderFormat)
+                        });
+                        string diffsynthNode = g.CreateNode("QwenImageDiffsynthControlnet", new JObject()
+                        {
+                            ["model"] = g.FinalModel,
+                            ["model_patch"] = NodePath(modelPatchLoader, 0),
+                            ["vae"] = g.FinalVae,
+                            ["image"] = imageNodeActual,
+                            ["strength"] = controlStrength
+                        });
+                        g.FinalModel = [diffsynthNode, 0];
+                        continue;
+                    }
                     string controlModelNode = g.CreateNode("ControlNetLoader", new JObject()
                     {
                         ["control_net_name"] = controlModel.ToString(g.ModelFolderFormat)
@@ -1048,7 +1075,7 @@ public class WorkflowGeneratorSteps
                     {
                         controlModelNode = g.CreateNode("SetUnionControlNetType", new JObject()
                         {
-                            ["control_net"] = new JArray() { $"{controlModelNode}", 0 },
+                            ["control_net"] = NodePath(controlModelNode, 0),
                             ["type"] = unionType
                         });
                     }
@@ -1063,7 +1090,7 @@ public class WorkflowGeneratorSteps
                         {
                             ["positive"] = g.FinalPrompt,
                             ["negative"] = g.FinalNegativePrompt,
-                            ["control_net"] = new JArray() { $"{controlModelNode}", 0 },
+                            ["control_net"] = NodePath(controlModelNode, 0),
                             ["vae"] = g.FinalVae,
                             ["image"] = imageNodeActual,
                             ["mask"] = g.FinalMask,
@@ -1072,13 +1099,13 @@ public class WorkflowGeneratorSteps
                             ["end_percent"] = g.UserInput.Get(controlnetParams.End, 1)
                         });
                     }
-                    else if (g.IsSD3() || g.IsFlux() || g.IsChroma() || g.IsQwenImage())
+                    else if (g.IsSD3() || g.IsFlux() || g.IsFlux2() || g.IsChroma() || g.IsQwenImage())
                     {
                         applyNode = g.CreateNode("ControlNetApplyAdvanced", new JObject()
                         {
                             ["positive"] = g.FinalPrompt,
                             ["negative"] = g.FinalNegativePrompt,
-                            ["control_net"] = new JArray() { $"{controlModelNode}", 0 },
+                            ["control_net"] = NodePath(controlModelNode, 0),
                             ["vae"] = g.FinalVae,
                             ["image"] = imageNodeActual,
                             ["strength"] = controlStrength,
@@ -1092,7 +1119,7 @@ public class WorkflowGeneratorSteps
                         {
                             ["positive"] = g.FinalPrompt,
                             ["negative"] = g.FinalNegativePrompt,
-                            ["control_net"] = new JArray() { $"{controlModelNode}", 0 },
+                            ["control_net"] = NodePath(controlModelNode, 0),
                             ["image"] = imageNodeActual,
                             ["strength"] = controlStrength,
                             ["start_percent"] = g.UserInput.Get(controlnetParams.Start, 0),
@@ -1167,7 +1194,7 @@ public class WorkflowGeneratorSteps
                 {
                     string fromBatch = g.CreateNode("LatentFromBatch", new JObject()
                     {
-                        ["samples"] = new JArray() { "10", 0 },
+                        ["samples"] = NodePath("10", 0),
                         ["batch_index"] = 1,
                         ["length"] = 1
                     });
@@ -1221,7 +1248,7 @@ public class WorkflowGeneratorSteps
                     {
                         modelMustReencode = false;
                     }
-                    if (refineModel.ModelClass?.CompatClass == "stable-diffusion-xl-v1-refiner" && baseModel.ModelClass?.CompatClass == "stable-diffusion-xl-v1")
+                    if (refineModel.ModelClass?.CompatClass?.ID == "stable-diffusion-xl-v1-refiner" && baseModel.ModelClass?.CompatClass?.ID == "stable-diffusion-xl-v1")
                     {
                         modelMustReencode = false;
                     }
@@ -1234,7 +1261,7 @@ public class WorkflowGeneratorSteps
                 g.NoVAEOverride = refineModel.ModelClass?.CompatClass != baseModel.ModelClass?.CompatClass;
                 g.FinalLoadedModel = refineModel;
                 g.FinalLoadedModelList = [refineModel];
-                (g.FinalLoadedModel, g.FinalModel, g.FinalClip, g.FinalVae) = g.CreateStandardModelLoader(refineModel, "Refiner", loaderNodeId);
+                (g.FinalLoadedModel, g.FinalModel, g.FinalClip, g.FinalVae) = g.CreateStandardModelLoader(refineModel, "Refiner", loaderNodeId, sectionId: T2IParamInput.SectionID_Refiner);
                 g.NoVAEOverride = false;
                 prompt = g.CreateConditioning(g.UserInput.Get(T2IParamTypes.Prompt), g.FinalClip, g.FinalLoadedModel, true, isRefiner: true);
                 negPrompt = g.CreateConditioning(g.UserInput.Get(T2IParamTypes.NegativePrompt), g.FinalClip, g.FinalLoadedModel, false, isRefiner: true);
@@ -1243,6 +1270,10 @@ public class WorkflowGeneratorSteps
                 string upscaleMethod = g.UserInput.Get(ComfyUIBackendExtension.RefinerUpscaleMethod, "None");
                 // TODO: Better same-VAE check
                 bool doPixelUpscale = doUspcale && (upscaleMethod.StartsWith("pixel-") || upscaleMethod.StartsWith("model-"));
+                int width = (int)Math.Round(g.UserInput.GetImageWidth() * refineUpscale);
+                int height = (int)Math.Round(g.UserInput.GetImageHeight() * refineUpscale);
+                width = (width / 16) * 16; // avoid unworkable output sizes
+                height = (height / 16) * 16;
                 if (modelMustReencode || doPixelUpscale || doSave || g.MaskShrunkInfo.BoundsNode is not null)
                 {
                     g.CreateVAEDecode(origVae, g.FinalSamples, "24");
@@ -1254,10 +1285,6 @@ public class WorkflowGeneratorSteps
                     }
                     if (doPixelUpscale)
                     {
-                        int width = (int)Math.Round(g.UserInput.GetImageWidth() * refineUpscale);
-                        int height = (int)Math.Round(g.UserInput.GetImageHeight() * refineUpscale);
-                        width = (width / 16) * 16; // avoid unworkable output sizes
-                        height = (height / 16) * 16;
                         if (upscaleMethod.StartsWith("pixel-"))
                         {
                             g.CreateNode("ImageScale", new JObject()
@@ -1277,12 +1304,12 @@ public class WorkflowGeneratorSteps
                             }, "27");
                             g.CreateNode("ImageUpscaleWithModel", new JObject()
                             {
-                                ["upscale_model"] = new JArray() { "27", 0 },
+                                ["upscale_model"] = NodePath("27", 0),
                                 ["image"] = pixelsNode
                             }, "28");
                             g.CreateNode("ImageScale", new JObject()
                             {
-                                ["image"] = new JArray() { "28", 0 },
+                                ["image"] = NodePath("28", 0),
                                 ["width"] = width,
                                 ["height"] = height,
                                 ["upscale_method"] = "lanczos",
@@ -1311,6 +1338,58 @@ public class WorkflowGeneratorSteps
                         ["scale_by"] = refineUpscale
                     }, "26");
                     g.FinalSamples = ["26", 0];
+                }
+                else if (doUspcale && upscaleMethod.StartsWith("latentmodel-"))
+                {
+                    g.CreateNode("LatentUpscaleModelLoader", new JObject()
+                    {
+                        ["model_name"] = upscaleMethod.After("latentmodel-")
+                    }, "27");
+                    if (g.IsHunyuanVideo15())
+                    {
+                        g.CreateNode("HunyuanVideo15LatentUpscaleWithModel", new JObject()
+                        {
+                            ["model"] = NodePath("27", 0),
+                            ["samples"] = g.FinalSamples,
+                            ["upscale_method"] = "bilinear",
+                            ["width"] = width,
+                            ["height"] = height,
+                            ["crop"] = "disabled"
+                        }, "26");
+                        g.FinalSamples = ["26", 0];
+                    }
+                    else if (g.IsLTXV2())
+                    {
+                        string separated = g.CreateNode("LTXVSeparateAVLatent", new JObject()
+                        {
+                            ["av_latent"] = g.FinalSamples
+                        });
+                        g.FinalLatentAudio = [separated, 1];
+                        string cropGuides = g.CreateNode("LTXVCropGuides", new JObject()
+                        {
+                            ["positive"] = prompt,
+                            ["negative"] = negPrompt,
+                            ["latent"] = NodePath(separated, 0)
+                        });
+                        prompt = [cropGuides, 0];
+                        negPrompt = [cropGuides, 1];
+                        g.CreateNode("LTXVLatentUpsampler", new JObject()
+                        {
+                            ["vae"] = g.FinalVae,
+                            ["samples"] = NodePath(cropGuides, 2),
+                            ["upscale_model"] = NodePath("27", 0)
+                        }, "26");
+                        string reconcat = g.CreateNode("LTXVConcatAVLatent", new JObject()
+                        {
+                            ["video_latent"] = NodePath("26", 0),
+                            ["audio_latent"] = g.FinalLatentAudio
+                        });
+                        g.FinalSamples = [reconcat, 0];
+                    }
+                    else
+                    {
+                        throw new SwarmUserErrorException($"Cannot latent-upscale for {g.CurrentCompatClass()}");
+                    }
                 }
                 JArray model = g.FinalModel;
                 if (g.UserInput.TryGet(ComfyUIBackendExtension.RefinerHyperTile, out int tileSize))
@@ -1367,7 +1446,7 @@ public class WorkflowGeneratorSteps
                     }
                     t2iModel = segmentModel;
                     g.FinalLoadedModel = segmentModel;
-                    (t2iModel, model, clip, vae) = g.CreateStandardModelLoader(t2iModel, "Refiner");
+                    (t2iModel, model, clip, vae) = g.CreateStandardModelLoader(t2iModel, "Refiner", sectionId: parts[0].ContextID);
                     g.FinalLoadedModel = t2iModel;
                     g.FinalModel = model;
                 }
@@ -1424,7 +1503,7 @@ public class WorkflowGeneratorSteps
                         {
                             string imageNode = g.CreateNode("MaskToImage", new JObject()
                             {
-                                ["mask"] = new JArray() { newSegmentNode, 0 }
+                                ["mask"] = NodePath(newSegmentNode, 0)
                             });
                             g.CreateImageSaveNode([imageNode, 0], g.GetStableDynamicID(50000, 0));
                         }
@@ -1436,8 +1515,8 @@ public class WorkflowGeneratorSteps
                         {
                             segmentNode = g.CreateNode("MaskComposite", new JObject()
                             {
-                                ["destination"] = new JArray() { segmentNode, 0 },
-                                ["source"] = new JArray() { newSegmentNode, 0 },
+                                ["destination"] = NodePath(segmentNode, 0),
+                                ["source"] = NodePath(newSegmentNode, 0),
                                 ["operation"] = "add",
                                 ["x"] = 0,
                                 ["y"] = 0
@@ -1448,7 +1527,7 @@ public class WorkflowGeneratorSteps
                     {
                         segmentNode = g.CreateNode("InvertMask", new JObject()
                         {
-                            ["mask"] = new JArray() { segmentNode, 0 }
+                            ["mask"] = NodePath(segmentNode, 0)
                         });
                     }
                     int blurAmt = g.UserInput.Get(T2IParamTypes.SegmentMaskBlur, 10);
@@ -1456,7 +1535,7 @@ public class WorkflowGeneratorSteps
                     {
                         segmentNode = g.CreateNode("SwarmMaskBlur", new JObject()
                         {
-                            ["mask"] = new JArray() { segmentNode, 0 },
+                            ["mask"] = NodePath(segmentNode, 0),
                             ["blur_radius"] = blurAmt,
                             ["sigma"] = 1
                         });
@@ -1466,7 +1545,7 @@ public class WorkflowGeneratorSteps
                     {
                         segmentNode = g.CreateNode("GrowMask", new JObject()
                         {
-                            ["mask"] = new JArray() { segmentNode, 0 },
+                            ["mask"] = NodePath(segmentNode, 0),
                             ["expand"] = growAmt,
                             ["tapered_corners"] = true
                         });
@@ -1475,7 +1554,7 @@ public class WorkflowGeneratorSteps
                     {
                         string imageNode = g.CreateNode("MaskToImage", new JObject()
                         {
-                            ["mask"] = new JArray() { segmentNode, 0 }
+                            ["mask"] = NodePath(segmentNode, 0)
                         });
                         g.CreateImageSaveNode([imageNode, 0], g.GetStableDynamicID(50000, 0));
                     }
@@ -1521,25 +1600,25 @@ public class WorkflowGeneratorSteps
                 {
                     segmentNode = g.CreateNode("InvertMask", new JObject()
                     {
-                        ["mask"] = new JArray() { segmentNode, 0 }
+                        ["mask"] = NodePath(segmentNode, 0)
                     });
                 }
                 string blurNode = g.CreateNode("SwarmMaskBlur", new JObject()
                 {
-                    ["mask"] = new JArray() { segmentNode, 0 },
+                    ["mask"] = NodePath(segmentNode, 0),
                     ["blur_radius"] = 10,
                     ["sigma"] = 1
                 });
                 string thresholded = g.CreateNode("SwarmMaskThreshold", new JObject()
                 {
-                    ["mask"] = new JArray() { blurNode, 0 },
+                    ["mask"] = NodePath(blurNode, 0),
                     ["min"] = 0.2,
                     ["max"] = 0.6
                 });
                 string joined = g.CreateNode("JoinImageWithAlpha", new JObject()
                 {
                     ["image"] = g.FinalImageOut,
-                    ["alpha"] = new JArray() { thresholded, 0 }
+                    ["alpha"] = NodePath(thresholded, 0)
                 });
                 g.FinalImageOut = [joined, 0];
             }
@@ -1576,21 +1655,13 @@ public class WorkflowGeneratorSteps
                         });
                         g.FinalImageOut = [trimNode, 0];
                     }
-                    if (g.UserInput.TryGet(ComfyUIBackendExtension.Text2VideoFrameInterpolationMethod, out string method)
-                        && g.UserInput.TryGet(ComfyUIBackendExtension.Text2VideoFrameInterpolationMultiplier, out int mult) && mult > 1
+                    if (g.UserInput.TryGet(ComfyUIBackendExtension.VideoFrameInterpolationMethod, out string method)
+                        && g.UserInput.TryGet(ComfyUIBackendExtension.VideoFrameInterpolationMultiplier, out int mult) && mult > 1
                         && g.UserInput.Get(T2IParamTypes.Text2VideoFrames, 99) > 1)
                     {
                         if (g.UserInput.Get(T2IParamTypes.OutputIntermediateImages, false))
                         {
-                            g.CreateNode("SwarmSaveAnimationWS", new JObject()
-                            {
-                                ["images"] = g.FinalImageOut,
-                                ["fps"] = g.Text2VideoFPS(),
-                                ["lossless"] = false,
-                                ["quality"] = 95,
-                                ["method"] = "default",
-                                ["format"] = g.UserInput.Get(T2IParamTypes.Text2VideoFormat, "webp")
-                            }, g.GetStableDynamicID(50000, 0));
+                            g.CreateAnimationSaveNode(g.FinalImageOut, g.Text2VideoFPS(), g.UserInput.Get(T2IParamTypes.Text2VideoFormat, "mp4"), g.GetStableDynamicID(50000, 0));
                         }
                         g.FinalImageOut = g.DoInterpolation(g.FinalImageOut, method, mult);
                         int fps = g.Text2VideoFPS();
@@ -1623,7 +1694,7 @@ public class WorkflowGeneratorSteps
                 int? videoFps = g.UserInput.TryGet(T2IParamTypes.VideoFPS, out int fpsRaw) ? fpsRaw : null;
                 double? videoCfg = g.UserInput.GetNullable(T2IParamTypes.CFGScale, T2IParamInput.SectionID_Video, false) ?? g.UserInput.GetNullable(T2IParamTypes.VideoCFG, T2IParamInput.SectionID_Video);
                 int steps = g.UserInput.GetNullable(T2IParamTypes.Steps, T2IParamInput.SectionID_Video, false) ?? g.UserInput.Get(T2IParamTypes.VideoSteps, 20, sectionId: T2IParamInput.SectionID_Video);
-                string format = g.UserInput.Get(T2IParamTypes.VideoFormat, "webp").ToLowerFast();
+                string format = g.UserInput.Get(T2IParamTypes.VideoFormat, "h264-mp4").ToLowerFast();
                 string resFormat = g.UserInput.Get(T2IParamTypes.VideoResolution, "Model Preferred");
                 long seed = g.UserInput.Get(T2IParamTypes.Seed) + 42;
                 string prompt = g.UserInput.Get(T2IParamTypes.Prompt, "");
@@ -1639,7 +1710,7 @@ public class WorkflowGeneratorSteps
                 int imageWidth = g.UserInput.GetImageWidth();
                 int imageHeight = g.UserInput.GetImageHeight();
                 int resPrecision = 64;
-                if (vidModel.ModelClass?.CompatClass == "hunyuan-video")
+                if (vidModel.ModelClass?.CompatClass?.ID == "hunyuan-video")
                 {
                     resPrecision = 16; // wants 720x720, which is wonky x16 and not x32 or x64
                 }
@@ -1665,7 +1736,7 @@ public class WorkflowGeneratorSteps
                         height = (int)Math.Round(height * scale);
                     }
                 }
-                void altLatent(WorkflowGenerator.ImageToVideoGenInfo genInfo)
+                void altLatent(ImageToVideoGenInfo genInfo)
                 {
                     if (g.UserInput.TryGet(T2IParamTypes.Video2VideoCreativity, out double v2vCreativity))
                     {
@@ -1679,12 +1750,12 @@ public class WorkflowGeneratorSteps
                         string reEncode = g.CreateNode("VAEEncode", new JObject()
                         {
                             ["vae"] = genInfo.Vae,
-                            ["pixels"] = new JArray() { fromBatch, 0 }
+                            ["pixels"] = NodePath(fromBatch, 0)
                         });
                         genInfo.Latent = [reEncode, 0];
                     }
                 }
-                WorkflowGenerator.ImageToVideoGenInfo genInfo = new()
+                ImageToVideoGenInfo genInfo = new()
                 {
                     Generator = g,
                     VideoModel = vidModel,
@@ -1702,23 +1773,17 @@ public class WorkflowGeneratorSteps
                     AltLatent = altLatent,
                     BatchIndex = batchInd,
                     BatchLen = batchLen,
-                    ContextID = T2IParamInput.SectionID_Video
+                    ContextID = T2IParamInput.SectionID_Video,
+                    VideoEndFrame = g.UserInput.Get(T2IParamTypes.VideoEndFrame, null)
                 };
                 g.CreateImageToVideo(genInfo);
                 videoFps = genInfo.VideoFPS;
-                if (g.UserInput.TryGet(ComfyUIBackendExtension.VideoFrameInterpolationMethod, out string method) && g.UserInput.TryGet(ComfyUIBackendExtension.VideoFrameInterpolationMultiplier, out int mult) && mult > 1)
+                bool hasExtend = prompt.Contains("<extend:");
+                if (!hasExtend && g.UserInput.TryGet(ComfyUIBackendExtension.VideoFrameInterpolationMethod, out string method) && g.UserInput.TryGet(ComfyUIBackendExtension.VideoFrameInterpolationMultiplier, out int mult) && mult > 1)
                 {
                     if (g.UserInput.Get(T2IParamTypes.OutputIntermediateImages, false))
                     {
-                        g.CreateNode("SwarmSaveAnimationWS", new JObject()
-                        {
-                            ["images"] = g.FinalImageOut,
-                            ["fps"] = videoFps,
-                            ["lossless"] = false,
-                            ["quality"] = 95,
-                            ["method"] = "default",
-                            ["format"] = format
-                        }, g.GetStableDynamicID(50000, 0));
+                        g.CreateAnimationSaveNode(g.FinalImageOut, videoFps.Value, format, g.GetStableDynamicID(50000, 0));
                     }
                     g.FinalImageOut = g.DoInterpolation(g.FinalImageOut, method, mult);
                     videoFps *= mult;
@@ -1732,19 +1797,11 @@ public class WorkflowGeneratorSteps
                     g.FinalImageOut = [bounced, 0];
                 }
                 string nodeId = "9";
-                if (prompt.Contains("<extend:"))
+                if (hasExtend)
                 {
                     nodeId = $"{g.GetStableDynamicID(50000, 0)}";
                 }
-                g.CreateNode("SwarmSaveAnimationWS", new JObject()
-                {
-                    ["images"] = g.FinalImageOut,
-                    ["fps"] = videoFps,
-                    ["lossless"] = false,
-                    ["quality"] = 95,
-                    ["method"] = "default",
-                    ["format"] = format
-                }, nodeId);
+                g.CreateAnimationSaveNode(g.FinalImageOut, videoFps.Value, format, nodeId);
             }
         }, 11);
         #endregion
@@ -1757,7 +1814,7 @@ public class WorkflowGeneratorSteps
                 string negPrompt = g.UserInput.Get(T2IParamTypes.NegativePrompt, "");
                 long seed = g.UserInput.Get(T2IParamTypes.Seed) + 600;
                 int? videoFps = g.UserInput.TryGet(T2IParamTypes.VideoFPS, out int fpsRaw) ? fpsRaw : null;
-                string format = g.UserInput.Get(T2IParamTypes.VideoExtendFormat, "webp").ToLowerFast();
+                string format = g.UserInput.Get(T2IParamTypes.VideoExtendFormat, "mp4").ToLowerFast();
                 int frameExtendOverlap = g.UserInput.Get(T2IParamTypes.VideoExtendFrameOverlap, 9);
                 bool saveIntermediate = g.UserInput.Get(T2IParamTypes.OutputIntermediateImages, false);
                 T2IModel extendModel = g.UserInput.Get(T2IParamTypes.VideoExtendModel, null) ?? throw new SwarmUserErrorException("You have an '<extend:' block in your prompt, but you don't have a 'Video Extend Model' selected.");
@@ -1825,21 +1882,13 @@ public class WorkflowGeneratorSteps
                     videoFps = genInfo.VideoFPS;
                     if (saveIntermediate)
                     {
-                        g.CreateNode("SwarmSaveAnimationWS", new JObject()
-                        {
-                            ["images"] = g.FinalImageOut,
-                            ["fps"] = genInfo.VideoFPS,
-                            ["lossless"] = false,
-                            ["quality"] = 95,
-                            ["method"] = "default",
-                            ["format"] = format
-                        }, $"{g.GetStableDynamicID(50000, 0)}");
+                        g.CreateAnimationSaveNode(g.FinalImageOut, videoFps.Value, format, g.GetStableDynamicID(50000, 0));
                     }
                     string cutNode = g.CreateNode("ImageFromBatch", new JObject()
                     {
                         ["image"] = g.FinalImageOut,
                         ["batch_index"] = frameExtendOverlap,
-                        ["length"] = frameCount
+                        ["length"] = frames.Value - frameExtendOverlap
                     });
                     JArray cut = [cutNode, 0];
                     g.FinalImageOut = cut;
@@ -1852,15 +1901,16 @@ public class WorkflowGeneratorSteps
                     conjoinedLast = [batchedNode, 0];
                 }
                 g.FinalImageOut = conjoinedLast;
-                g.CreateNode("SwarmSaveAnimationWS", new JObject()
+                if (g.UserInput.TryGet(ComfyUIBackendExtension.VideoFrameInterpolationMethod, out string method) && g.UserInput.TryGet(ComfyUIBackendExtension.VideoFrameInterpolationMultiplier, out int mult) && mult > 1)
                 {
-                    ["images"] = g.FinalImageOut,
-                    ["fps"] = videoFps,
-                    ["lossless"] = false,
-                    ["quality"] = 95,
-                    ["method"] = "default",
-                    ["format"] = format
-                }, "9");
+                    if (saveIntermediate)
+                    {
+                        g.CreateAnimationSaveNode(g.FinalImageOut, videoFps.Value, format, g.GetStableDynamicID(50000, 0));
+                    }
+                    g.FinalImageOut = g.DoInterpolation(g.FinalImageOut, method, mult);
+                    videoFps *= mult;
+                }
+                g.CreateAnimationSaveNode(g.FinalImageOut, videoFps.Value, format, "9");
             }
         }, 12);
         #endregion
@@ -1880,9 +1930,25 @@ public class WorkflowGeneratorSteps
                 JArray source = data["inputs"]["samples"] as JArray;
                 string sourceNode = $"{source[0]}";
                 JObject actualNode = g.Workflow[sourceNode] as JObject;
-                if ($"{actualNode["class_type"]}" == "VAEEncode")
+                JArray myVae = data["inputs"]["vae"] as JArray;
+                if ($"{actualNode["class_type"]}" == "LTXVSeparateAVLatent")
                 {
-                    JArray myVae = data["inputs"]["vae"] as JArray;
+                    JArray subSource = actualNode["inputs"]["av_latent"] as JArray;
+                    string subSourceNode = $"{subSource[0]}";
+                    JObject actualSubNode = g.Workflow[subSourceNode] as JObject;
+                    if ($"{actualSubNode["class_type"]}" == "VAEEncode")
+                    {
+                        JArray srcVae = actualSubNode["inputs"]["vae"] as JArray;
+                        if ($"{myVae[0]}" == $"{srcVae[0]}" && $"{myVae[1]}" == $"{srcVae[1]}")
+                        {
+                            JArray srcImage = actualSubNode["inputs"]["pixels"] as JArray;
+                            g.ReplaceNodeConnection([id, 0], srcImage);
+                            g.Workflow.Remove(id);
+                        }
+                    }
+                }
+                else if ($"{actualNode["class_type"]}" == "VAEEncode")
+                {
                     JArray srcVae = actualNode["inputs"]["vae"] as JArray;
                     if ($"{myVae[0]}" == $"{srcVae[0]}" && $"{myVae[1]}" == $"{srcVae[1]}")
                     {
@@ -1894,6 +1960,8 @@ public class WorkflowGeneratorSteps
             }
             g.RunOnNodesOfClass("VAEDecode", fixDecode);
             g.RunOnNodesOfClass("VAEDecodeTiled", fixDecode);
+            g.RemoveClassIfUnused("LTXVAudioVAEDecode");
+            g.RemoveClassIfUnused("LTXVSeparateAVLatent");
             g.RemoveClassIfUnused("VAEEncode");
             g.RemoveClassIfUnused("LTXVConditioning");
             g.RemoveClassIfUnused("CLIPTextEncode");
