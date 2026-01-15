@@ -31,17 +31,19 @@ public static class Permissions
         OrderedKeys = [.. OrderedKeys.GroupBy(k => Registered[k].Group.DisplayName).Flatten()];
     }
 
-    public static PermInfoGroup GroupSpecial = new("Admin", "Special permissions that don't make sense to give out.");
+    public static PermInfoGroup GroupSpecial = new("Special", "Special permissions that don't make sense to give out.");
 
     public static PermInfo Admin = Register(new("*", "Full Control", "Allows full control over everything.\nA magic wildcard to allow all permissions.\nOnly the owner should have this.", PermissionDefault.NOBODY, GroupSpecial, PermSafetyLevel.POWERFUL));
     public static PermInfo LocalImageFolder = Register(new("local_image_folder", "Local Image Folder", "Allows access to the button that opens a local image folder. Only functions if you're on the same PC as the server.", PermissionDefault.NOBODY, GroupSpecial, PermSafetyLevel.POWERFUL));
     public static PermInfo Install = Register(new("install", "Install", "Allows access to initial installer system. If you can read this text, you don't need to give this permission to anyone.", PermissionDefault.NOBODY, GroupSpecial, PermSafetyLevel.POWERFUL));
     public static PermInfo ServerDebugMessage = Register(new("server_debug_message", "Server Debug Message", "Allows the user to send server debug messages (this is for internal debugging, not anything normal).", PermissionDefault.NOBODY, GroupSpecial, PermSafetyLevel.SAFE));
+    public static PermInfo AutomatedControl = Register(new("automated_control", "Automated Control", "Allows the user account to be used as an automated remote control system.", PermissionDefault.NOBODY, GroupSpecial, PermSafetyLevel.POWERFUL));
 
     public static PermInfoGroup GroupAdmin = new("Admin", "Permissions for server administration access.");
 
     public static PermInfo ConfigureRoles = Register(new("configure_roles", "Configure Roles", "Allows access to role configuration.\nThis is basically total control, as you can give yourself more permissions with this.", PermissionDefault.NOBODY, GroupAdmin, PermSafetyLevel.POWERFUL));
     public static PermInfo ManageUsers = Register(new("manage_users", "Manage Users", "Allows access to administrative user management.\nThis is basically total control, as you can give yourself more permissions with this.", PermissionDefault.NOBODY, GroupAdmin, PermSafetyLevel.POWERFUL));
+    public static PermInfo InterruptOthers = Register(new("interrupt_others", "Interrupt Others", "Allows an admin to interrupt other user's sessions at will.", PermissionDefault.ADMINS, GroupAdmin, PermSafetyLevel.POWERFUL));
     public static PermInfo Shutdown = Register(new("shutdown", "Shutdown Server", "Allows the user to fully shut down the server.", PermissionDefault.NOBODY, GroupAdmin, PermSafetyLevel.SAFE));
     public static PermInfo Restart = Register(new("restart", "Restart Server", "Allows the user to fully restart the server.", PermissionDefault.ADMINS, GroupAdmin, PermSafetyLevel.SAFE));
     public static PermInfo ReadServerSettings = Register(new("read_server_settings", "Read Server Settings", "Allows the user to read (but not necessarily edit) server settings.", PermissionDefault.ADMINS, GroupAdmin, PermSafetyLevel.SAFE));
@@ -87,6 +89,7 @@ public static class Permissions
     public static PermInfoGroup GroupUser = new("User", "Permissions related to basic user access.");
 
     public static PermInfo BasicImageGeneration = Register(new("basic_image_generation", "Basic Image Generation", "Allows this user to generate images.", PermissionDefault.USER, GroupUser, PermSafetyLevel.SAFE));
+    public static PermInfo BasicTextGeneration = Register(new("basic_text_generation", "Basic Text Generation", "Allows this user to generate text (LLMs).", PermissionDefault.USER, GroupUser, PermSafetyLevel.SAFE));
     public static PermInfo ViewImageHistory = Register(new("view_image_history", "View Image History", "Allows this user to view their own image history.", PermissionDefault.USER, GroupUser, PermSafetyLevel.SAFE));
     public static PermInfo UserDeleteImage = Register(new("user_delete_image", "User Delete Image", "Allows this user to delete images they generated.", PermissionDefault.USER, GroupUser, PermSafetyLevel.SAFE));
     public static PermInfo UserStarImages = Register(new("user_star_images", "User Star Images", "Allows this user to star or unstar images they generated.", PermissionDefault.USER, GroupUser, PermSafetyLevel.SAFE));
@@ -97,6 +100,9 @@ public static class Permissions
     public static PermInfo EditUserSettings = Register(new("edit_user_settings", "Edit User Settings", "Allows this user to edit their own settings.", PermissionDefault.USER, GroupUser, PermSafetyLevel.SAFE));
     public static PermInfo EditParams = Register(new("edit_params", "Edit Params", "Allows this user to edit params (in a way that only affects themself, not other users).", PermissionDefault.USER, GroupUser, PermSafetyLevel.SAFE));
     public static PermInfo ManagePresets = Register(new("manage_presets", "Manage Presets", "Allows this user to manage (add, edit, delete) their own presets.", PermissionDefault.USER, GroupUser, PermSafetyLevel.SAFE));
+    public static PermInfo UtilitiesTab = Register(new("utilities_tab", "Utilities Tab", "Allows this user to view the Utilities tab.", PermissionDefault.USER, GroupUser, PermSafetyLevel.SAFE));
+    public static PermInfo SimpleTab = Register(new("simple_tab", "Simple Tab", "Allows this user to view the Simple tab.", PermissionDefault.USER, GroupUser, PermSafetyLevel.SAFE));
+    public static PermInfo UserTab = Register(new("user_tab", "User Tab", "Allows this user to view the User tab.", PermissionDefault.USER, GroupUser, PermSafetyLevel.SAFE));
     public static PermInfo Fundamental = Register(new("fundamental", "Fundamental", "Most basic possible permission for core functions.", PermissionDefault.GUEST, GroupUser, PermSafetyLevel.SAFE));
 
     public static PermInfoGroup GroupExtensionTabs = new("Extension Tabs", "Permissions related to extension tabs.");

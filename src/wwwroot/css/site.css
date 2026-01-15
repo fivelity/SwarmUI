@@ -84,7 +84,6 @@ body {
 }
 .top-status-bar-wrapper:hover {
     display: none;
-    opacity: 0.5;
 }
 .top-status-bar {
     position: absolute;
@@ -121,15 +120,15 @@ body {
 .auto-input-flex-wide {
     flex-basis: 100% !important;
 }
-.auto-input-image-preview {
+.auto-input-preview {
     width: fit-content;
     margin: auto;
 }
-.auto-input-image-remove-button {
+.auto-input-remove-button {
     position: absolute;
     left: 0.5rem;
 }
-.auto-input-image-preview img {
+.auto-input-preview img, .auto-input-preview video {
     max-width: 50rem;
     max-height: 10rem;
     margin: auto;
@@ -193,6 +192,9 @@ body {
 }
 .backend-errored .card-body {
     background-color: var(--background-danger);
+}
+.border-red {
+    border-color: var(--red);
 }
 .backend-card .card-header button {
     height: 1.8rem;
@@ -571,6 +573,7 @@ textarea, input, select {
 }
 .basic-button.btn-primary {
     background-color: var(--emphasis);
+    color: var(--emphasis-text) !important;
 }
 .basic-button:hover {
     background-color: var(--button-background-hover);
@@ -803,6 +806,12 @@ textarea, input, select {
 .parens {
     color: var(--text-soft);
 }
+.model-short-code {
+    color: var(--text-soft);
+    float: right;
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+}
 .sui-popover-notice {
     visibility: visible;
     opacity: 1;
@@ -848,6 +857,103 @@ textarea, input, select {
 .inline-block {
     display: inline-block;
 }
+.editable-textbox {
+    width: calc(100% - 1rem);
+    margin: 0.5rem;
+    vertical-align: top;
+    display: inline-block;
+    border: 1px solid var(--light-border);
+    background-color: var(--background-soft);
+    white-space: pre-wrap;
+}
+.wc_line_0 {
+    display: inline-block;
+    white-space: pre-wrap;
+    width: 100%;
+    min-height: 1lh;
+    background-color: rgba(255, 255, 255, 0.1);
+    vertical-align: top;
+}
+.wc_line_1 {
+    display: inline-block;
+    white-space: pre-wrap;
+    width: 100%;
+    min-height: 1.6em;
+    background-color: rgba(0, 0, 0, 0.1);
+    vertical-align: top;
+}
+.wc_line_comment {
+    color: var(--text-soft);
+}
+.video-container {
+    position: relative;
+    width: fit-content;
+    height: fit-content;
+    overflow: hidden;
+}
+.video-container video {
+    display: block;
+}
+.video-controls {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+    padding: 20px 15px 15px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    opacity: 0;
+    transition: opacity 0.5s;
+    font-family: var(--font-monospace);
+}
+.video-controls button {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.1s;
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+}
+.video-controls button:hover {
+    transform: scale(1.1);
+}
+.video-controls button:active {
+    transform: scale(0.95);
+}
+.video-time {
+    color: white;
+    font-size: 14px;
+    min-width: 45px;
+}
+.video-progress {
+    flex: 1;
+    height: 40px;
+    cursor: pointer;
+    position: relative;
+}
+.video-progress-inner {
+    position: relative;
+    top: 16px;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 3px;
+}
+.video-progress-inner > div {
+    height: 100%;
+    background: var(--emphasis);
+    border-radius: 3px;
+    width: 0%;
+    transition: width 0.1s linear;
+}
+
 
 
 
@@ -1037,11 +1143,11 @@ input[type="range"]::-moz-range-track {
 .input-group .auto-file-box {
     min-width: 100%;
 }
-.auto-input-image-preview img {
+.auto-input-preview img, .auto-input-preview video {
     width: 100%;
     object-fit: contain;
 }
-.auto-input-image-remove-button {
+.auto-input-remove-button {
     margin-top: 0.5rem;
 }
 .auto-file {

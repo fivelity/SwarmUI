@@ -2,8 +2,10 @@
 using FreneticUtilities.FreneticDataSyntax;
 using FreneticUtilities.FreneticExtensions;
 using FreneticUtilities.FreneticToolkit;
+using SwarmUI.Accounts;
 using SwarmUI.Backends;
 using SwarmUI.Core;
+using SwarmUI.Text2Image;
 using SwarmUI.Utils;
 using System.Diagnostics;
 using System.IO;
@@ -36,13 +38,14 @@ public class ComfyUISelfStartBackend : ComfyUIAPIAbstractBackend
         [ManualSettingsOptions(Impl = null, Vals = ["Latest", "None", "LatestSwarmValidated", "Legacy"], ManualNames = ["Latest", "None", "Latest Swarm Validated", "Legacy (Pre Sept 2024)"])]
         public string FrontendVersion = "LatestSwarmValidated";
 
-        [ConfigComment("If checked, tells Comfy to generate image previews. If unchecked, previews will not be generated, and images won't show up until they're done.")]
-        public bool EnablePreviews = true;
+        [ConfigComment("Whether Comfy should generate image previews. If disabled, previews will not be generated, and images won't show up until they're done.\nRegular enabled mode uses 'latent2rgb' which is nearly instant at the cost of a lower accuracy of the preview.\nThe 'HD' enabled variant uses TAESD (Tiny Auto Encoder for Stable Diffusion), which uses a small VAE-like model to get more accurate previews, at the cost of slowing down generation to run this extra model each step.\nTAESD only works if architecture-specific compatible models are present (some are included by default).")]
+        [ManualSettingsOptions(Impl = null, Vals = ["false", "true", "taesd"], ManualNames = ["Disabled", "Enabled (fast latent2rgb)", "Enabled HD (slow TAESD)"])]
+        public string EnablePreviews = "true";
 
         [ConfigComment("Which GPU to use, if multiple are available.\nShould be a single number, like '0'.\nYou can use syntax like '0,1' to provide multiple GPUs to one backend (only applicable if you have custom nodes that can take advantage of this.)")]
         public string GPU_ID = "0";
 
-        [ConfigComment("How many extra requests may queue up on this backend while one is processing.")]
+        [ConfigComment("How many extra requests may queue up on this backend while one is processing.\n0 means one a single live gen, 1 means a live gen and an extra waiting.\n-1 means this is a UI-only instance that cannot do actual gens.")]
         public int OverQueue = 1;
 
         [ConfigComment("If checked, if the backend crashes it will automatically restart.\nIf false, if the backend crashes it will sit in an errored state until manually restarted.")]
@@ -66,6 +69,56 @@ public class ComfyUISelfStartBackend : ComfyUIAPIAbstractBackend
     public static LockObject ComfyModelFileHelperLock = new();
 
     public static bool IsComfyModelFileEmitted = false;
+
+    /// <summary>Names of folders in comfy paths that should be blindly forwarded to correct for Comfy not properly propagating base_path without manual forwards.</summary>
+    public static List<string> FoldersToForwardInComfyPath = ["unet", "diffusion_models", "gligen", "ipadapter", "yolov8", "tensorrt", "clipseg", "style_models", "latent_upscale_models"];
+
+    /// <summary>Filepaths to where custom node packs for comfy can be found, such as extension dirs.</summary>
+    public static List<string> CustomNodePaths = [];
+
+    /// <summary>Mapping of node folder names to exact git commits to maintain.</summary>
+    public static ConcurrentDictionary<string, string> ComfyNodeGitPins = new()
+    {
+        // Example: ["ComfyUI-TeaCache"] = "b3429ef3dea426d2f167e348b44cd2f5a3674e7d"
+    };
+
+    public static string SwarmValidatedFrontendVersion = "1.35.9";
+
+    /// <summary>List of known required python packages, as pairs of strings: Item1 is the folder name within python packages to look for, Item2 is the pip install command.</summary>
+    public static List<(string, string)> RequiredPythonPackages =
+    [
+        // ComfyUI added these dependencies, didn't used to have it
+        ("kornia", "kornia"),
+        ("sentencepiece", "sentencepiece"),
+        ("spandrel", "spandrel"),
+        ("av", "av"),
+        ("pydantic", "pydantic"),
+        ("pydantic_settings", "pydantic-settings"),
+        ("comfyui_frontend_package", $"comfyui_frontend_package=={SwarmValidatedFrontendVersion}"),
+        ("alembic", "alembic"),
+        // Other added dependencies
+        ("rembg", "rembg"),
+        ("onnxruntime", "onnxruntime"), // subdependency of rembg but inexplicably not autoinstalled anymore?
+        ("matplotlib", "matplotlib"),
+        ("opencv_python_headless", "opencv-python-headless"),
+        ("imageio_ffmpeg", "imageio-ffmpeg"),
+        ("dill", "dill"),
+        ("omegaconf", "omegaconf"), // some yolo models require this but ultralytics itself doesn't? wut?
+        //("mesonpy", "meson-python") // Build requirement sometimes. Probably will be required when python 3.13 is stably supported.
+    ];
+
+    /// <summary>List of required python packages that need a specific version, in structure (string libFolder, string pipName, string rel, string version).</summary>
+    public static List<(string, string, string, string)> RequiredVersionPythonPackages =
+    [
+        ("diffusers", "diffusers", ">=", "0.36.0"),
+        ("aiohttp", "aiohttp", ">=", "3.11.8"),
+        ("yarl", "yarl", ">=", "1.18.0"),
+        ("av", "av", ">=", "14.2.0"),
+        ("spandrel", "spandrel", ">=", "0.4.1"),
+        ("transformers", "transformers", ">=", "4.57.3"),
+        ("ultralytics", "ultralytics", "==", "8.3.197"), // This is hard-pinned due to the malicious 8.3.41 incident, only manual updates when needed until security practices are improved.
+        ("pip", "pip", ">=", "25.0") // Don't need latest, just can't be too old, this is mostly just here for a sanity check.
+    ];
 
     /// <summary>Downloads or updates the named relevant ComfyUI custom node repo.</summary>
     public async Task<ComfyUISelfStartBackend[]> EnsureNodeRepo(string url, bool skipPipCache = false, bool doRestart = true)
@@ -120,12 +173,6 @@ public class ComfyUISelfStartBackend : ComfyUIAPIAbstractBackend
         }
         return null;
     }
-
-    /// <summary>Mapping of node folder names to exact git commits to maintain.</summary>
-    public static ConcurrentDictionary<string, string> ComfyNodeGitPins = new()
-    {
-        // Example: ["ComfyUI-TeaCache"] = "b3429ef3dea426d2f167e348b44cd2f5a3674e7d"
-    };
 
     public async Task EnsureNodeRepos()
     {
@@ -185,12 +232,6 @@ public class ComfyUISelfStartBackend : ComfyUIAPIAbstractBackend
         }
     }
 
-    /// <summary>Names of folders in comfy paths that should be blindly forwarded to correct for Comfy not properly propagating base_path without manual forwards.</summary>
-    public static List<string> FoldersToForwardInComfyPath = ["unet", "diffusion_models", "gligen", "ipadapter", "yolov8", "tensorrt", "clipseg", "style_models"];
-
-    /// <summary>Filepaths to where custom node packs for comfy can be found, such as extension dirs.</summary>
-    public static List<string> CustomNodePaths = [];
-
     private static readonly bool IsWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
 
     public void EnsureComfyFile()
@@ -243,6 +284,7 @@ public class ComfyUISelfStartBackend : ComfyUIAPIAbstractBackend
                     embeddings: {buildSection(rootFixed, Program.ServerSettings.Paths.SDEmbeddingFolder + ";embeddings")}
                     hypernetworks: {buildSection(rootFixed, "hypernetworks")}
                     controlnet: {buildSection(rootFixed, Program.ServerSettings.Paths.SDControlNetsFolder + ";ControlNet")}
+                    model_patches: {buildSection(rootFixed, Program.ServerSettings.Paths.SDControlNetsFolder + ";ControlNet;model_patches")}
                     clip: {buildSection(rootFixed, Program.ServerSettings.Paths.SDClipFolder + ";clip;CLIP")}
                     clip_vision: {buildSection(rootFixed, Program.ServerSettings.Paths.SDClipVisionFolder + ";clip_vision")}
 
@@ -282,8 +324,6 @@ public class ComfyUISelfStartBackend : ComfyUIAPIAbstractBackend
         return Process.Start(start);
     }
 
-    public static string SwarmValidatedFrontendVersion = "1.25.11";
-
     public override async Task Init()
     {
         AddLoadStatus("Starting init...");
@@ -303,9 +343,13 @@ public class ComfyUISelfStartBackend : ComfyUIAPIAbstractBackend
             {
                 addedArgs += " --fast fp16_accumulation cublas_ops"; // TODO: Temp due to fp8 mat mult being borked on Qwen Image
             }
-            if (Settings.EnablePreviews)
+            if (Settings.EnablePreviews == "true")
             {
                 addedArgs += " --preview-method latent2rgb";
+            }
+            else if (Settings.EnablePreviews == "taesd")
+            {
+                addedArgs += " --preview-method taesd";
             }
             if (Settings.FrontendVersion == "Latest")
             {
@@ -325,21 +369,40 @@ public class ComfyUISelfStartBackend : ComfyUIAPIAbstractBackend
             AddLoadStatus($"Will add args: {addedArgs}");
         }
         Settings.StartScript = Settings.StartScript.Trim(' ', '"', '\'', '\n', '\r', '\t');
-        if (!Settings.StartScript.EndsWith("main.py") && !string.IsNullOrWhiteSpace(Settings.StartScript))
+        if (string.IsNullOrWhiteSpace(Settings.StartScript))
+        {
+            AddLoadStatus($"Start script is empty, cannot load.");
+            Status = BackendStatus.DISABLED;
+            return;
+        }
+        if (!Settings.StartScript.EndsWith("main.py"))
         {
             AddLoadStatus($"Start script '{Settings.StartScript}' looks wrong");
             Logs.Warning($"ComfyUI start script is '{Settings.StartScript}', which looks wrong - did you forget to append 'main.py' on the end?");
         }
+        lock (ComfyModelFileHelperLock)
+        {
+            string inputFolder = $"{Directory.GetParent(Settings.StartScript).FullName}/input";
+            if (Directory.Exists(inputFolder) && !UserImageHistoryHelper.SharedSpecialFolders.Values.Contains(inputFolder))
+            {
+                UserImageHistoryHelper.SharedSpecialFolders[$"inputs/_comfy{BackendData.ID}/"] = inputFolder;
+            }
+            string outputFolder = $"{Directory.GetParent(Settings.StartScript).FullName}/output";
+            if (Directory.Exists(outputFolder) && !UserImageHistoryHelper.SharedSpecialFolders.Values.Contains(outputFolder))
+            {
+                UserImageHistoryHelper.SharedSpecialFolders[$"_comfy{BackendData.ID}/"] = outputFolder;
+            }
+        }
         Directory.CreateDirectory(Path.GetFullPath(ComfyUIBackendExtension.Folder + "/DLNodes"));
         string autoUpdNodes = Settings.UpdateManagedNodes.ToLowerFast();
         List<Task> tasks = [];
-        if ((autoUpdNodes == "true" || autoUpdNodes == "aggressive") && !string.IsNullOrWhiteSpace(Settings.StartScript))
+        if ((autoUpdNodes == "true" || autoUpdNodes == "aggressive"))
         {
             AddLoadStatus("Will track node repo load task...");
             tasks.Add(Task.Run(EnsureNodeRepos));
         }
         string autoUpd = Settings.AutoUpdate.ToLowerFast();
-        if ((autoUpd == "true" || autoUpd == "aggressive") && !string.IsNullOrWhiteSpace(Settings.StartScript))
+        if ((autoUpd == "true" || autoUpd == "aggressive"))
         {
             AddLoadStatus("Will track comfy git pull auto-update task...");
             tasks.Add(Task.Run(async () =>
@@ -456,15 +519,15 @@ public class ComfyUISelfStartBackend : ComfyUIAPIAbstractBackend
                 await install(libFolder, pipName);
             }
             string numpyVers = getVers("numpy");
-            if (numpyVers is null || Version.Parse(numpyVers) < Version.Parse("1.25"))
+            if (numpyVers is null || ParseVersion(numpyVers) < Version.Parse("1.25"))
             {
                 await update("numpy", "numpy==1.26.4");
             }
             foreach ((string libFolder, string pipName, string rel, string version) in RequiredVersionPythonPackages)
             {
                 string curVersRaw = getVers(libFolder);
-                Version curVers = curVersRaw is null ? null : Version.Parse(curVersRaw);
-                Version actualVers = Version.Parse(version);
+                Version curVers = curVersRaw is null ? null : ParseVersion(curVersRaw);
+                Version actualVers = ParseVersion(version);
                 bool doUpdate = curVers is null;
                 if (!doUpdate)
                 {
@@ -505,7 +568,7 @@ public class ComfyUISelfStartBackend : ComfyUIAPIAbstractBackend
                 await update("comfyui_workflow_templates", $"comfyui-workflow-templates=={templateVers}");
             }
             string actualEmbedVers = getVers("comfyui_embedded_docs");
-            if ((doFixFrontend || doLatestFrontend) && reqs.TryGetValue("comfyui-embedded-docs", out Version embedDocsVers) && (actualEmbedVers is null || embedDocsVers < Version.Parse(actualEmbedVers)))
+            if ((doFixFrontend || doLatestFrontend) && reqs.TryGetValue("comfyui-embedded-docs", out Version embedDocsVers) && (actualEmbedVers is null || Version.Parse(actualEmbedVers) < embedDocsVers))
             {
                 await update("comfyui_embedded_docs", $"comfyui-embedded-docs=={embedDocsVers}");
             }
@@ -516,6 +579,11 @@ public class ComfyUISelfStartBackend : ComfyUIAPIAbstractBackend
             else if (!doFixFrontend)
             {
                 await install("comfyui_frontend_package", "comfyui-frontend-package");
+            }
+            string actualKitchenVers = getVers("comfy_kitchen");
+            if (reqs.TryGetValue("comfy-kitchen", out Version kitchenVers) && (actualKitchenVers is null || Version.Parse(actualKitchenVers) < kitchenVers))
+            {
+                await update("comfy_kitchen", $"comfy-kitchen=={kitchenVers}");
             }
             if (Directory.Exists($"{ComfyUIBackendExtension.Folder}/DLNodes/ComfyUI_IPAdapter_plus") || Directory.Exists($"{ComfyUIBackendExtension.Folder}/DLNodes/ComfyUI-nunchaku"))
             {
@@ -583,18 +651,20 @@ public class ComfyUISelfStartBackend : ComfyUIAPIAbstractBackend
                 else if (torchPipVers.StartsWith("2.7.")) { torchVers = "2.7"; }
                 else if (torchPipVers.StartsWith("2.8.")) { torchVers = "2.8"; }
                 else if (torchPipVers.StartsWith("2.9.")) { torchVers = "2.9"; }
+                else if (torchPipVers.StartsWith("2.10.")) { torchVers = "2.10"; }
+                else if (torchPipVers.StartsWith("2.11.")) { torchVers = "2.11"; }
                 else
                 {
-                    Logs.Error($"Nunchaku is not currently supported on your Torch version ({torchPipVers} not in range [2.5, 2.9]).");
+                    Logs.Error($"Nunchaku is not currently supported on your Torch version ({torchPipVers} not in range [2.5, 2.11].");
                     isValid = false;
                 }
-                string nunchakuTargetVersion = "1.0.0";
+                string nunchakuTargetVersion = "1.2.0";
                 // eg https://github.com/nunchaku-tech/nunchaku/releases/download/v0.3.2/nunchaku-0.3.2+torch2.5-cp310-cp310-linux_x86_64.whl
                 string url = $"https://github.com/nunchaku-tech/nunchaku/releases/download/v{nunchakuTargetVersion}/nunchaku-{nunchakuTargetVersion}+torch{torchVers}-cp{pyVers}-cp{pyVers}-{osVers}.whl";
                 if (isValid)
                 {
                     string nunchakuVers = getVers("nunchaku");
-                    if (nunchakuVers is not null && (Version.Parse(nunchakuVers.Before(".dev")) < Version.Parse(nunchakuTargetVersion.Before(".dev")) || nunchakuVers.Contains(".dev")))
+                    if (nunchakuVers is not null && (ParseVersion(nunchakuVers) < ParseVersion(nunchakuTargetVersion) || nunchakuVers.Contains(".dev")))
                     {
                         await update("nunchaku", url);
                     }
@@ -619,43 +689,14 @@ public class ComfyUISelfStartBackend : ComfyUIAPIAbstractBackend
         }
     }
 
+    /// <summary>Wraps <see cref="Version.Parse(string)"/> but accounting for '.dev' versions.</summary>
+    public static Version ParseVersion(string vers)
+    {
+        return Version.Parse(vers.Before(".dev"));
+    }
+
     /// <summary>Strict matcher that will block any muckery, excluding URLs and etc.</summary>
     public static AsciiMatcher RequirementPartMatcher = new(AsciiMatcher.BothCaseLetters + AsciiMatcher.Digits + ".-_");
-
-    /// <summary>List of known required python packages, as pairs of strings: Item1 is the folder name within python packages to look for, Item2 is the pip install command.</summary>
-    public static List<(string, string)> RequiredPythonPackages =
-    [
-        // ComfyUI added these dependencies, didn't used to have it
-        ("kornia", "kornia"),
-        ("sentencepiece", "sentencepiece"),
-        ("spandrel", "spandrel"),
-        ("av", "av"),
-        ("pydantic", "pydantic"),
-        ("pydantic_settings", "pydantic-settings"),
-        ("comfyui_frontend_package", $"comfyui_frontend_package=={SwarmValidatedFrontendVersion}"),
-        ("alembic", "alembic"),
-        // Other added dependencies
-        ("rembg", "rembg"),
-        ("onnxruntime", "onnxruntime"), // subdependency of rembg but inexplicably not autoinstalled anymore?
-        ("matplotlib", "matplotlib"),
-        ("opencv_python_headless", "opencv-python-headless"),
-        ("imageio_ffmpeg", "imageio-ffmpeg"),
-        ("dill", "dill"),
-        ("omegaconf", "omegaconf"), // some yolo models require this but ultralytics itself doesn't? wut?
-        //("mesonpy", "meson-python") // Build requirement sometimes. Probably will be required when python 3.13 is stably supported.
-    ];
-
-    /// <summary>List of required python packages that need a specific version, in structure (string libFolder, string pipName, string rel, string version).</summary>
-    public static List<(string, string, string, string)> RequiredVersionPythonPackages =
-    [
-        ("aiohttp", "aiohttp", ">=", "3.11.8"),
-        ("yarl", "yarl", ">=", "1.18.0"),
-        ("av", "av", ">=", "14.2.0"),
-        ("spandrel", "spandrel", ">=", "0.4.1"),
-        ("transformers", "transformers", ">=", "4.37.2"),
-        ("ultralytics", "ultralytics", "==", "8.3.197"), // This is hard-pinned due to the malicious 8.3.41 incident, only manual updates when needed until security practices are improved.
-        ("pip", "pip", ">=", "25.0") // Don't need latest, just can't be too old, this is mostly just here for a sanity check.
-    ];
 
     public override async Task Shutdown()
     {
@@ -677,16 +718,19 @@ public class ComfyUISelfStartBackend : ComfyUIAPIAbstractBackend
 
     public string ComfyPathBase => (SettingsRaw as ComfyUISelfStartSettings).StartScript.Replace('\\', '/').BeforeLast('/');
 
-    public override void PostResultCallback(string filename)
+    public override void PostResultCallback(string filename, T2IParamInput input)
     {
         string path = $"{ComfyPathBase}/output/{filename}";
-        Task.Run(() =>
+        if (!input.Get(T2IParamTypes.NoInternalSpecialHandling, false))
         {
-            if (File.Exists(path))
+            Task.Run(() =>
             {
-                File.Delete(path);
-            }
-        });
+                if (File.Exists(path))
+                {
+                    File.Delete(path);
+                }
+            });
+        }
     }
 
     public override bool RemoveInputFile(string filename)
