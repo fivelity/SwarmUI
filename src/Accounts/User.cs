@@ -88,6 +88,10 @@ public class User
     public void Save()
     {
         Data.RawSettings = Settings.Save(false).ToString();
+        if (Program.NoPersist)
+        {
+            return;
+        }
         lock (SessionHandlerSource.DBLock)
         {
             if (!MayCreateSessions)
@@ -134,6 +138,10 @@ public class User
     /// <summary>Saves a new generic-data on the user's account.</summary>
     public void SaveGenericData(string dataname, string name, string data)
     {
+        if (Program.NoPersist)
+        {
+            return;
+        }
         lock (SessionHandlerSource.DBLock)
         {
             if (!MayCreateSessions)
@@ -148,6 +156,10 @@ public class User
     /// <summary>Deletes a user generic-data, returns true if anything was deleted.</summary>
     public bool DeleteGenericData(string dataname, string name)
     {
+        if (Program.NoPersist)
+        {
+            return false;
+        }
         lock (SessionHandlerSource.DBLock)
         {
             return SessionHandlerSource.GenericData.Delete($"{UserID}///${dataname}///{name.ToLowerFast()}");
@@ -192,6 +204,10 @@ public class User
     /// <summary>Saves a new preset on the user's account.</summary>
     public void SavePreset(T2IPreset preset)
     {
+        if (Program.NoPersist)
+        {
+            return;
+        }
         lock (SessionHandlerSource.DBLock)
         {
             if (!MayCreateSessions)
@@ -211,6 +227,10 @@ public class User
     /// <summary>Deletes a user preset, returns true if anything was deleted.</summary>
     public bool DeletePreset(string name)
     {
+        if (Program.NoPersist)
+        {
+            return false;
+        }
         lock (SessionHandlerSource.DBLock)
         {
             string id = $"{UserID}///{name.ToLowerFast()}";
@@ -262,6 +282,23 @@ public class User
 
     /// <summary>Incrementing counter of request IDs.</summary>
     public long RequestIdCounter = 1000;
+
+    /// <summary>Cache for a generic non-persistent internal session.</summary>
+    public Session GenericSession;
+
+    /// <summary>Get a generic internal use session instance for this user.</summary>
+    public Session GetGenericSession()
+    {
+        if (GenericSession is not null)
+        {
+            return GenericSession;
+        }
+        lock (UserLock)
+        {
+            GenericSession ??= SessionHandlerSource.CreateSession("generic_internal", UserID, false);
+            return GenericSession;
+        }
+    }
 
     /// <summary>Gets the next request ID for this user, incrementing the counter.</summary>
     public long GetNextRequestId()

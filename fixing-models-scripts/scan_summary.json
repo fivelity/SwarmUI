@@ -1,0 +1,26 @@
+{
+  "total": 796,
+  "already_valid_count": 161,
+  "tagged_count": 3,
+  "metadata_damage_only_count": 2,
+  "tensor_definition_damage_count": 1,
+  "metadata_damage_samples": [
+    "K:\\.ai_local\\SwarmUI\\Models\\lora\\Character\\Elle.safetensors",
+    "K:\\.ai_local\\SwarmUI\\Models\\vae\\Flux\\ae.safetensors"
+  ],
+  "tensor_damage_samples": [
+    "K:\\.ai_local\\SwarmUI\\Models\\vae\\ae.safetensors"
+  ],
+  "untagged_samples": [
+    "K:\\.ai_local\\SwarmUI\\Models\\checkpoints\\v1-5-pruned-emaonly-fp16.safetensors",
+    "K:\\.ai_local\\SwarmUI\\Models\\clip\\clip_l.safetensors",
+    "K:\\.ai_local\\SwarmUI\\Models\\clip\\gemma_2_2b_fp16.safetensors",
+    "K:\\.ai_local\\SwarmUI\\Models\\clip\\gemma_3_12B_it_fp4_mixed.safetensors",
+    "K:\\.ai_local\\SwarmUI\\Models\\clip\\llama_3.1_8b_instruct_fp8_scaled.safetensors",
+    "K:\\.ai_local\\SwarmUI\\Models\\clip\\long_clip_g_hi_dream.safetensors",
+    "K:\\.ai_local\\SwarmUI\\Models\\clip\\long_clip_l_hi_dream.safetensors",
+    "K:\\.ai_local\\SwarmUI\\Models\\clip\\qwen_2.5_vl_7b_fp8_scaled.safetensors",
+    "K:\\.ai_local\\SwarmUI\\Models\\clip\\qwen_3_4b.safetensors",
+    "K:\\.ai_local\\SwarmUI\\Models\\clip\\t5xxl_enconly.safetensors"
+  ]
+}

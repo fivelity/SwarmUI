@@ -46,6 +46,10 @@
     box-shadow: var(--button-shadow);
     transition: background .2s;
 }
+.alt-text-add-button {
+    padding-left: 2.5px !important;
+    font-weight: 700 !important;
+}
 
 .nav-tabs, #currentimagecontent, #inputsidebartab_content, #rightsidebarcontent, #t2i_bottom_bar, .browser-folder-tree-container, .browser-fullcontent-container {
     background-color: var(--background-panel);
@@ -390,7 +394,7 @@
 #alt_generate_button:hover,
 #alt_center_button:hover {
     background: color-mix(in srgb, var(--emphasis) 70%, white);
-    color: var(--button-foreground-hover);
+    color: var(--button-foreground-hover) !important;
 }
 
 #alt_center_button::after {
@@ -398,7 +402,7 @@
     padding: 0 2px;
 }
 
-#Text2Image .seed-button {
+.seed-button {
     width: 28px;
     height: 28px;
     font-size: 0px;

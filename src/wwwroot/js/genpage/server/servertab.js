@@ -157,6 +157,7 @@ class UserAdminManager {
         this.rightBox.innerHTML = `<div class="admin-user-right-titlebar">User: <span class="admin-user-right-titlebar-name">${escapeHtml(name)}</span></div>`
             + (name == user_id ? `<div class="admin-user-manage-notice translate">This is you! You shouldn't admin-edit yourself.</div>` : `<button type="button" class="basic-button translate" onclick="userAdminManager.deleteUser(unescapeHtml('${escapeHtml(name)}'))">Delete User</button>`)
             + `<br><br><button type="button" class="basic-button translate" onclick="userAdminManager.editUserPw(unescapeHtml('${escapeHtml(name)}'))">Change User Password</button>`
+            + `&emsp;<span class="translate">Password was set by: </span><b class="translate password-set-by-field"></b>`
             + `<br><br><div class="admin_edit_user_settings_container" id="admin_edit_user_settings_container"></div>
             <div class="settings_submit_confirmer" id="${prefix}confirmer">
                 <span class="settings_submit_confirmer_text">Save <span id="${prefix}edit_count">0</span> edited setting(s)?</span>
@@ -168,6 +169,7 @@ class UserAdminManager {
             if (this.displayedUser != name) {
                 return;
             }
+            this.rightBox.querySelector('.password-set-by-field').innerText = data.password_set_by_admin ? 'Admin' : 'User';
             buildSettingsMenu(userSettingsContainer, data.settings, prefix, this.curUserSettingsEditTracker);
         });
     }
@@ -582,6 +584,10 @@ function server_clear_sysram() {
     genericRequest('FreeBackendMemory', { 'system_ram': true }, data => {});
 }
 
+function adminInterruptUser(userId) {
+    genericRequest('AdminInterruptUser', { 'name': userId }, data => {});
+}
+
 function serverResourceLoop() {
     if (isVisible(getRequiredElementById('server_tab'))) {
         fixTabHeights();
@@ -620,9 +626,10 @@ function serverResourceLoop() {
                 priorWidth = parseFloat(target.style.minWidth.replaceAll('px', ''));
             }
             target.style.minWidth = `${Math.max(priorWidth, target.offsetWidth)}px`;
-            let html = '<table class="simple-table"><tr><th>Name</th><th>Last Active</th><th>Active Sessions</th></tr>';
+            let html = '<table class="simple-table"><tr><th>Name</th><th>Last Active</th><th>Active Sessions</th><th>Current Gens</th></tr>';
             for (let user of data.users) {
-                html += `<tr><td>${user.id}</td><td>${user.last_active}</td><td>${user.active_sessions.map(sess => `${sess.count}x from ${sess.address}`).join(', ')}</td></tr>`;
+                let button = (user.waiting_gens == 0 && user.loading_models == 0 && user.waiting_backends == 0 && user.live_gens == 0) ? '' : `<button class="basic-button" onclick="adminInterruptUser('${escapeHtml(user.id)}')">Interrupt</button>`;
+                html += `<tr><td>${user.id}</td><td>${user.last_active}</td><td>${user.active_sessions.map(sess => `${sess.count}x from ${sess.address}`).join(', ')}</td><td>${currentGenString(user.waiting_gens, user.loading_models, user.live_gens, user.waiting_backends)}${button}</td></tr>`;
             }
             html += '</table>';
             target.innerHTML = html;
