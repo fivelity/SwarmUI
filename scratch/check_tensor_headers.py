@@ -15,8 +15,7 @@ for f in tensor_files:
         head = fp.read(8)
     u64 = struct.unpack("<Q", head)[0]
     header_lens.append((f.name, u64))
-    if u64 < min_header_len:
-        min_header_len = u64
+    min_header_len = min(min_header_len, u64)
 
 print(f"Minimum header length among 182 tensor-damaged files: {min_header_len}")
 header_lens.sort(key=lambda x: x[1])
